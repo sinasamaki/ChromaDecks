@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
-    id("org.jetbrains.compose-hot-reload") version "1.0.0-dev.33.1"
+    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha01"
 }
 
 composeCompiler {
@@ -40,6 +40,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation("io.github.petertrr:kotlin-multiplatform-diff-jvm:0.7.0")
             implementation("dev.andrewbailey.difference:difference:1.0.0")
+            implementation("clojure-interop:javax.sound:1.0.5")
+            implementation("dev.snipme:highlights:1.0.0")
         }
     }
 }

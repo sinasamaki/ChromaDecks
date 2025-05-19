@@ -3,6 +3,7 @@ package com.sinasamaki.chromadecks.ui.components
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -21,11 +21,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chromadecks.extensions.moveItem
 import com.sinasamaki.chromadecks.ui.theme.Slate50
+import com.sinasamaki.chromadecks.ui.theme.Slate500
 import com.sinasamaki.chromadecks.ui.theme.Transparent
+import com.sinasamaki.chromadecks.ui.util.highlightLine
 import dev.andrewbailey.diff.differenceOf
 import kotlinx.coroutines.delay
 import kotlin.random.Random
@@ -36,7 +39,10 @@ fun CodeBlock(
     code: String,
     style: TextStyle = MaterialTheme.typography.labelMedium,
     highlightAnimation: Boolean = true,
-    useIndexAsKey: Boolean = false
+    useIndexAsKey: Boolean = false,
+    enableAnimations: Boolean = true,
+    fadeAnimations: Boolean = true,
+    darkMode: Boolean = true,
 ) {
 
     val states = remember { mutableStateListOf<LineState>() }
@@ -71,12 +77,18 @@ fun CodeBlock(
 
     LazyColumn(
         modifier = modifier
-            .animateContentSize(
-                animationSpec = spring(
-                    stiffness = Spring.StiffnessMediumLow,
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                )
-            ),
+            .let {
+                if (enableAnimations) {
+                    it.animateContentSize(
+                        animationSpec = spring(
+                            stiffness = Spring.StiffnessMediumLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                        )
+                    )
+                } else {
+                    it
+                }
+            },
         verticalArrangement = Arrangement.Top,
     ) {
         itemsIndexed(
@@ -94,9 +106,10 @@ fun CodeBlock(
             LaunchedEffect(line.justAdded) {
                 delay(delay)
                 if (line.justAdded && line.text.trim() != ")") {
-                    color.snapTo(Slate50.copy(alpha = .2f))
+                    val highlightColor = if (darkMode) Slate50 else Slate500
+                    color.snapTo(highlightColor.copy(alpha = .2f))
                     color.animateTo(
-                        Slate50.copy(alpha = .1f),
+                        highlightColor.copy(alpha = .1f),
                         animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
                     )
                     color.animateTo(
@@ -108,7 +121,8 @@ fun CodeBlock(
                 }
             }
             Text(
-                line.text,
+                text = highlightLine(line.text, darkMode),
+                color = if (darkMode) Color.White else Color.Black,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)
@@ -120,15 +134,20 @@ fun CodeBlock(
                     .background(
                         color = color.value,
                         shape = RoundedCornerShape(4.dp),
-                    )
-                    .animateItem(
-                        fadeInSpec = tween(delayMillis = delay.toInt()),
-                        fadeOutSpec = spring(stiffness = Spring.StiffnessHigh),
-                        placementSpec = spring(
-                            stiffness = Spring.StiffnessMediumLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy
-                        )
-                    ),
+                    ).let {
+                        if (enableAnimations) {
+                            it.animateItem(
+                                fadeInSpec = if (fadeAnimations) tween(delayMillis = delay.toInt()) else snap(),
+                                fadeOutSpec = if (fadeAnimations) spring(stiffness = Spring.StiffnessHigh) else snap(),
+                                placementSpec = spring(
+                                    stiffness = Spring.StiffnessMediumLow,
+                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                )
+                            )
+                        } else {
+                            it
+                        }
+                    },
                 style = style,
             )
         }

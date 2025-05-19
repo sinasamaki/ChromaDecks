@@ -13,6 +13,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -34,42 +36,57 @@ import chromadecks.composeapp.generated.resources.img
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun TitleFrame(modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .fillMaxSize()
-            .padding(36.dp)
+fun TitleFrame(
+    modifier: Modifier = Modifier,
+    title: String,
+    description: String,
+    hint: String,
+    bookNumber: Int,
+    contentColor: Color = LocalContentColor.current
+) {
+    CompositionLocalProvider(
+        LocalContentColor provides contentColor
     ) {
-        Title(
-            modifier = Modifier
-                .align(Alignment.Center)
-        )
+        Box(
+            modifier
+                .fillMaxSize()
+                .padding(36.dp)
+        ) {
+            Title(
+                modifier = Modifier
+                    .align(Alignment.Center),
+                title = title,
+            )
 
-        VersionTag(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-        )
+            VersionTag(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+            )
 
-        Description(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-        )
+            Description(
+                modifier = Modifier
+                    .align(Alignment.BottomStart),
+                description = description,
+                bookNumber = bookNumber,
+            )
 
-        HintTag(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-        )
+            HintTag(
+                modifier = Modifier
+                    .align(Alignment.TopEnd),
+                hint = hint,
+            )
 
-        TechLogos(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-        )
+            TechLogos(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+            )
 
+        }
     }
 }
 
 @Composable
-private fun Title(modifier: Modifier = Modifier) {
+private fun Title(modifier: Modifier = Modifier, title: String) {
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
 
@@ -77,7 +94,7 @@ private fun Title(modifier: Modifier = Modifier) {
         modifier = modifier.onSizeChanged { width = with(density) { it.width.toDp() } },
     ) {
         Text(
-            "mesh \ngradients",
+            title,
             style = MaterialTheme.typography.labelLarge.copy(
                 fontSize = 96.sp,
                 fontWeight = FontWeight.Bold,
@@ -129,23 +146,21 @@ private fun VersionTag(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Description(modifier: Modifier = Modifier) {
+private fun Description(modifier: Modifier = Modifier, bookNumber: Int, description: String) {
 
     Column(
         modifier = modifier.width(300.dp)
     ) {
 
         Text(
-            text = "001",
+            text = bookNumber.toString().padStart(3, '0'),
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
         )
         Text(
-            text = "beautiful gradients defined on a " +
-                    "2d grid in which each point has " +
-                    "a unique position and color",
+            text = description,
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
@@ -157,9 +172,9 @@ private fun Description(modifier: Modifier = Modifier) {
 
 
 @Composable
-private fun HintTag(modifier: Modifier = Modifier) {
+private fun HintTag(modifier: Modifier = Modifier, hint: String) {
     Text(
-        text = "drawVertices()",
+        text = hint,
         modifier = modifier
             .graphicsLayer {
                 val pivot = (size.width - (size.height / 2)) / size.width

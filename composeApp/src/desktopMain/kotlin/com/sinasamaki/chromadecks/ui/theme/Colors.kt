@@ -294,5 +294,5 @@ val Rose900 = Color(0xFF881337)
 val Rose950 = Color(0xFF4C0519)
 
 val Black = Color(0xFF000000)
-val White = Color(0x00FFFFFF)
+val White = Color(0xFFFFFFFF)
 val Transparent = Color(0x00000000)

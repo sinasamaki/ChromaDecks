@@ -81,7 +81,7 @@ fun ChromaTheme(
                 fontWeight = FontWeight.W400,
             ),
             labelLarge = TextStyle(
-                fontSize = 28.sp,
+                fontSize = 24.sp,
                 fontFamily = monoFontFamily
             ),
             labelMedium = TextStyle(

@@ -46,7 +46,7 @@ internal class TitleSlide : ListSlide<TitleSlideState>() {
         get() = listOf(
             TitleSlideState(false),
             TitleSlideState(true),
-            )
+        )
 
     @Composable
     override fun content(state: TitleSlideState) {
@@ -66,57 +66,61 @@ internal class TitleSlide : ListSlide<TitleSlideState>() {
         )
 
         val dark = Zinc900
-        CompositionLocalProvider(
-            LocalContentColor provides dark
-        ) {
-            TitleFrame(
-                modifier = Modifier
+
+        TitleFrame(
+            modifier = Modifier
 //                    .background(Color.White)
-                    .clip(RectangleShape)
-                    .meshGradient(
-                        showPoints = false,
-                        points = listOf(
-                            listOf(
-                                Offset(-.3f, -10f) to dark,
-                                Offset(.5f, -10f) to dark,
-                                Offset(1.3f, -10f) to dark,
-                            ),
-
-
-                            listOf(
-                                Offset(-.3f, lerp(1.5f, -2.5f, t)) to dark,
-                                Offset(.5f, lerp(1.1f, -6.7f, t)) to dark,
-                                Offset(1.3f, lerp(1.5f, -2.5f, t)) to dark,
-                            ),
-                            listOf(
-                                Offset(-.3f, lerp(2.5f, -1.8f, t)) to Rose800,
-                                Offset(.35f, lerp(1.2f, -2.9f, t)) to Rose800,
-                                Offset(1.3f, lerp(2.5f, -1.8f, t)) to Rose800,
-                            ),
-                            listOf(
-                                Offset(-.3f, lerp(3.5f, -1.2f, t)) to Yellow500,
-                                Offset(.5f, lerp(2.8f, -2.2f, t)) to Yellow500,
-                                Offset(1.3f, lerp(3.5f, -1.2f, t)) to Yellow500,
-                            ),
-                            listOf(
-                                Offset(-.3f, lerp(5f, 0f, t)) to Slate50,
-                                Offset(.3f, lerp(2.9f, 0f, t)) to Slate50,
-                                Offset(1.3f, lerp(5f, 0f, t)) to Slate50,
-                            ),
-
-
-                            listOf(
-                                Offset(-.3f, 1f) to Slate50,
-                                Offset(.5f, 1.1f) to Slate50,
-                                Offset(1.3f, 1f) to Slate50,
-                            ),
+                .clip(RectangleShape)
+                .meshGradient(
+                    showPoints = false,
+                    points = listOf(
+                        listOf(
+                            Offset(-.3f, -10f) to dark,
+                            Offset(.5f, -10f) to dark,
+                            Offset(1.3f, -10f) to dark,
                         ),
+
+
+                        listOf(
+                            Offset(-.3f, lerp(1.5f, -2.5f, t)) to dark,
+                            Offset(.5f, lerp(1.1f, -6.7f, t)) to dark,
+                            Offset(1.3f, lerp(1.5f, -2.5f, t)) to dark,
+                        ),
+                        listOf(
+                            Offset(-.3f, lerp(2.5f, -1.8f, t)) to Rose800,
+                            Offset(.35f, lerp(1.2f, -2.9f, t)) to Rose800,
+                            Offset(1.3f, lerp(2.5f, -1.8f, t)) to Rose800,
+                        ),
+                        listOf(
+                            Offset(-.3f, lerp(3.5f, -1.2f, t)) to Yellow500,
+                            Offset(.5f, lerp(2.8f, -2.2f, t)) to Yellow500,
+                            Offset(1.3f, lerp(3.5f, -1.2f, t)) to Yellow500,
+                        ),
+                        listOf(
+                            Offset(-.3f, lerp(5f, 0f, t)) to Slate50,
+                            Offset(.3f, lerp(2.9f, 0f, t)) to Slate50,
+                            Offset(1.3f, lerp(5f, 0f, t)) to Slate50,
+                        ),
+
+
+                        listOf(
+                            Offset(-.3f, 1f) to Slate50,
+                            Offset(.5f, 1.1f) to Slate50,
+                            Offset(1.3f, 1f) to Slate50,
+                        ),
+                    ),
 //                        showPoints = true,
-                        resolutionX = 24,
-                        resolutionY = 24,
-                    )
-            )
-        }
+                    resolutionX = 24,
+                    resolutionY = 24,
+                ),
+            title = "mesh \ngradients",
+            description = "beautiful gradients defined on a " +
+                    "2d grid in which each point has " +
+                    "a unique position and color",
+            hint = "drawVertices()",
+            bookNumber = 1,
+            contentColor = dark
+        )
 
         return
         Box(
@@ -124,7 +128,8 @@ internal class TitleSlide : ListSlide<TitleSlideState>() {
                 .fillMaxSize()
                 .padding(32.dp),
             contentAlignment = Alignment.Center
-        ) {
+        )
+        {
 
             Text(
                 text = "_001_MeshGradients",
