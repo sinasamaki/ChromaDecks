@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.sinasamaki.chromadecks._002_PathAnimations.PathAnimationPresentation
 import com.sinasamaki.chromadecks.ui.theme.Black
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import com.sinasamaki.chromadecks.ui.theme.ChromaTheme
@@ -34,7 +35,8 @@ fun App() {
                     .fillMaxSize()
                     .clip(RoundedCornerShape(16.dp))
             ) {
-                MeshGradientPresentation()
+//                MeshGradientPresentation()
+                PathAnimationPresentation()
             }
         }
     }

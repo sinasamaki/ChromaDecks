@@ -111,18 +111,19 @@ fun HeartLogo(modifier: Modifier = Modifier) {
             delay(1000)
         }
     }
-    Box(modifier = modifier
-        .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-        ) {
-            scope.launch {
-                value.animateTo(
-                    if (value.targetValue == 0f) 1f else 0f,
-                    animationSpec = tween(durationMillis = 3000)
-                )
+    Box(
+        modifier = modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+            ) {
+                scope.launch {
+                    value.animateTo(
+                        if (value.targetValue == 0f) 1f else 0f,
+                        animationSpec = tween(durationMillis = 3000)
+                    )
+                }
             }
-        }
     ) {
 
         Column(
@@ -298,7 +299,6 @@ object SmallCircle : Shape {
 }
 
 
-
 @Composable
 fun SimpleLogo(modifier: Modifier) {
     Column(
@@ -354,6 +354,33 @@ fun createHeartPath(size: Size): Path {
             }
         }
     }
+}
+
+fun createHeartPath2(size: Size): Path {
+
+    var path = Path()
+//    moveTo(0f, 0f)
+    val width = size.width / logo[0].size
+    val height = size.height / logo.size
+    for (y in 0..logo.lastIndex) {
+        for (x in 0..logo[y].lastIndex) {
+            val isSolid = logo[y][x] == 1
+            if (isSolid) {
+                val square = Path()
+                square.moveTo(x * width, y * height)
+                square.addRect(
+                    rect = Rect(
+                        offset = Offset(x * width, y * height),
+                        size = Size(width, height)
+                    )
+                )
+                path = path.plus(square)
+            }
+        }
+    }
+
+    return path
+
 }
 
 fun DrawScope.renderShading(width: Float, height: Float) {

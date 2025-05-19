@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chromadecks.ui.theme.Emerald500
 import com.sinasamaki.chromadecks.ui.theme.Lime500
@@ -28,7 +29,8 @@ import kotlin.random.Random
 
 @Composable
 fun Modifier.circler(
-    color: Color = Lime500
+    color: Color = Lime500,
+    lineWidth: Dp = 4.dp,
 ): Modifier {
 
     val scope = rememberCoroutineScope()
@@ -63,7 +65,7 @@ fun Modifier.circler(
                     color = color.copy(alpha = circleAlpha.value),
                     radius = size.width * 1.1f,
                     style = Stroke(
-                        width = 4.dp.toPx(),
+                        width = lineWidth.toPx(),
                         cap = StrokeCap.Round,
                         pathEffect = PathEffect.dashPathEffect(
                             intervals = floatArrayOf(
