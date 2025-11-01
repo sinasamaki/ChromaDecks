@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+//    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha11"
     id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha01"
 }
 
@@ -13,6 +14,9 @@ composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
 
+//tasks.withType<ComposeHotRun>().configureEach {
+//    mainClass.set("com.sinasamaki.chromadecks._bites.test.TestKt")
+//}
 tasks.register<ComposeHotRun>("runHot") {
     mainClass.set("com.sinasamaki.chromadecks.DevKt")
 }
