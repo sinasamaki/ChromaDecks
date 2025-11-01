@@ -4,6 +4,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.window.WindowPlacement
+import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.singleWindowApplication
 import com.sinasamaki.chromadecks._002_PathAnimations.slides.Butterflies
 import com.sinasamaki.chromadecks._002_PathAnimations.slides.CartVsPolar
 import com.sinasamaki.chromadecks._002_PathAnimations.slides.ChainPathEffect
@@ -23,6 +26,18 @@ import com.sinasamaki.chromadecks._002_PathAnimations.slides.StampPathEffect
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
 import com.sinasamaki.chromadecks.ui.theme.Slate50
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
+
+
+fun main() {
+    singleWindowApplication(
+        state = WindowState(
+            placement = WindowPlacement.Maximized
+        ),
+        title = "ChromaDecks",
+    ) {
+        PathAnimationPresentation()
+    }
+}
 
 @Composable
 fun PathAnimationPresentation() {

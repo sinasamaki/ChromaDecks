@@ -1,20 +1,15 @@
 package com.sinasamaki.chromadecks
 
 import App
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
-import org.jetbrains.compose.reload.DevelopmentEntryPoint
+import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.singleWindowApplication
 
-fun main() = application {
-    Window(
-        state = rememberWindowState(
-            placement = WindowPlacement.Maximized
-        ),
-        onCloseRequest = ::exitApplication,
-        title = "ChromaDecks",
-    ) {
-        App()
-    }
+fun main() = singleWindowApplication(
+    state = WindowState(
+        placement = WindowPlacement.Maximized,
+    ),
+    title = "ChromaDecks"
+) {
+    App()
 }
