@@ -24,6 +24,7 @@ import com.sinasamaki.chromadecks._002_PathAnimations.slides.PolarExamples
 import com.sinasamaki.chromadecks._002_PathAnimations.slides.QuadraticCubic
 import com.sinasamaki.chromadecks._002_PathAnimations.slides.StampPathEffect
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
+import com.sinasamaki.chromadecks.ui.theme.ChromaContainer
 import com.sinasamaki.chromadecks.ui.theme.Slate50
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
 
@@ -35,7 +36,9 @@ fun main() {
         ),
         title = "ChromaDecks",
     ) {
-        PathAnimationPresentation()
+        ChromaContainer {
+            PathAnimationPresentation()
+        }
     }
 }
 
