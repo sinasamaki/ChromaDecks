@@ -1,7 +1,7 @@
 package com.sinasamaki.chromadecks._talks.ui_delight.components
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -10,16 +10,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Rect
@@ -36,22 +43,19 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.withSaveLayer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chromadecks.composeapp.generated.resources.Res
 import chromadecks.composeapp.generated.resources.RobotoFlex
 import com.sinasamaki.chromadecks.ui.theme.Black
-import com.sinasamaki.chromadecks.ui.theme.Indigo300
-import com.sinasamaki.chromadecks.ui.theme.Indigo400
-import com.sinasamaki.chromadecks.ui.theme.Lime400
-import com.sinasamaki.chromadecks.ui.theme.Orange600
-import com.sinasamaki.chromadecks.ui.theme.Pink400
-import com.sinasamaki.chromadecks.ui.theme.Pink500
+import com.sinasamaki.chromadecks.ui.theme.Neutral200
 import com.sinasamaki.chromadecks.ui.theme.Transparent
-import com.sinasamaki.chromadecks.ui.theme.Yellow400
 import com.sinasamaki.chromadecks.ui.theme.Zinc50
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
+import kotlin.random.Random
 
 @Composable
 fun TitleCardFrame(
@@ -92,6 +96,9 @@ fun TitleCardFrame(
             )
         )
 
+        AnimatedCheckerBoard()
+        AnimatedCheckerBoard()
+
         Cube(
             modifier = Modifier.size(300.dp),
             angleX = -20f,
@@ -101,17 +108,17 @@ fun TitleCardFrame(
                 modifier = Modifier.fillMaxSize()
                     .drawBehind {
                         drawRect(
-                            color = Black.copy(alpha = .8f)
+                            color = Black.copy(alpha = .3f)
                         )
                         drawCheckerboard(
-                            primary = Indigo300,
-                            secondary = Indigo400,
-                            squareLength = 200f
+                            primary = borderColor,
+                            secondary = borderColor,
+                            squareNumber = 3
                         )
                     }
                     .border(
-                        width = 2.dp,
-                        color = Pink500,
+                        width = 3.dp,
+                        color = backgroundColor,
                     )
             )
         }
@@ -158,61 +165,6 @@ fun TitleCardFrame(
                 }
         )
 
-        val xCheck by rememberInfiniteTransition().animateFloat(
-            initialValue = -5f,
-            targetValue = 5f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse,
-            )
-        )
-        val yCheck by rememberInfiniteTransition().animateFloat(
-            initialValue = -5f,
-            targetValue = 5f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(2000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse,
-            )
-        )
-
-        Box(
-            modifier = Modifier
-                .offset {
-                    IntOffset(
-                        x = (xCheck.toInt() * 60.dp.toPx()).toInt(),
-                        y = (yCheck.toInt() * 60.dp.toPx()).toInt(),
-//                            y = 0,
-                    )
-                }
-                .size(300.dp)
-                .drawBehind {
-                    drawCheckerboard(
-                        primary = Yellow400,
-                        secondary = Lime400,
-                        squareLength = 60.dp.toPx(),
-                    )
-                }
-        )
-
-        Box(
-            modifier = Modifier
-                .offset {
-                    IntOffset(
-                        x = -(xCheck.toInt() * 60.dp.toPx()).toInt(),
-                        y = (yCheck.toInt() * 60.dp.toPx()).toInt(),
-//                            y = 0,
-                    )
-                }
-                .size(300.dp)
-                .drawBehind {
-                    drawCheckerboard(
-                        primary = Pink400,
-                        secondary = Orange600,
-                        squareLength = 60.dp.toPx(),
-                    )
-                }
-        )
-
 
         val fontFamily = FontFamily(
             Font(
@@ -229,8 +181,10 @@ fun TitleCardFrame(
         )
 
         Column {
-            Text(
+            MaxText(
                 text = title,
+                modifier = Modifier.padding(horizontal = 32.dp),
+                maxFont = 280.sp,
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontFamily = fontFamily,
                     fontSize = 280.sp,
@@ -238,18 +192,73 @@ fun TitleCardFrame(
                     shadow = Shadow(
                         blurRadius = 50f,
                         color = Black.copy(alpha = .3f)
-                    )
+                    ),
+                    color = Zinc50,
                 ),
-
-                color = Zinc50,
             )
             Text(
                 description,
+                modifier = Modifier.fillMaxWidth(.5f)
+                    .align(Alignment.CenterHorizontally),
+                maxLines = 10,
+                overflow = TextOverflow.Ellipsis,
                 color = Zinc50
             )
         }
     }
 
+}
+
+
+@Composable
+fun AnimatedCheckerBoard(modifier: Modifier = Modifier) {
+    var xCheck by remember { mutableStateOf(0) }
+    var yCheck by remember { mutableStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+//            val to = Random.nextInt(-8, 8)
+//            val x = if (Random.nextBoolean()) 1 else -1
+//            val y = if (Random.nextBoolean()) 1 else -1
+//            Animatable(xCheck.toFloat())
+//                .animateTo(
+//                    to.toFloat(),
+//                    animationSpec = tween(
+//                        durationMillis = 2000,
+//                        easing = LinearEasing,
+//                    )
+//                ) {
+//                    xCheck = this.value.toInt() * x
+//                    yCheck = this.value.toInt() * y
+//                }
+//            delay(300)
+
+            xCheck = Random.nextInt(-8, 8)
+            yCheck = Random.nextInt(-8, 8)
+            delay(500)
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .offset {
+                IntOffset(
+                    x = (xCheck.toInt() * 60.dp.toPx()).toInt(),
+                    y = (yCheck.toInt() * 60.dp.toPx()).toInt(),
+                )
+            }
+            .alpha(.1f)
+//            .fillMaxSize(.5f)
+//            .aspectRatio(1f)
+            .size(500.dp)
+            .drawBehind {
+                drawCheckerboard(
+                    primary = Neutral200,
+                    secondary = Neutral200,
+                    squareNumber = 5,
+                )
+            }
+    )
 }
 
 
@@ -281,8 +290,10 @@ private fun DrawScope.drawStripes(
 private fun DrawScope.drawCheckerboard(
     primary: Color,
     secondary: Color,
-    squareLength: Float = 40f
+    squareNumber: Int = 5,
 ) {
+    val width = size.width / squareNumber
+    val height = size.width / squareNumber
     layer {
         drawRect(
             brush = Brush.verticalGradient(
@@ -292,7 +303,7 @@ private fun DrawScope.drawCheckerboard(
                 1f to Transparent,
                 tileMode = TileMode.Repeated,
                 startY = 0f,
-                endY = squareLength * 2,
+                endY = width * 2,
             )
         )
         drawRect(
@@ -303,7 +314,7 @@ private fun DrawScope.drawCheckerboard(
                 1f to Transparent,
                 tileMode = TileMode.Repeated,
                 startX = 0f,
-                endX = squareLength * 2,
+                endX = height * 2,
             ),
             blendMode = BlendMode.Xor
         )

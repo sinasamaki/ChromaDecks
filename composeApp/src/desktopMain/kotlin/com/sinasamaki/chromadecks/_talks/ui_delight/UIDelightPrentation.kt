@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.AboutMeSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.AnimatedListItemSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.AnimationsTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.CustomSwipeGestureSlide
@@ -19,9 +20,11 @@ import com.sinasamaki.chromadecks._talks.ui_delight.slides.LayoutFundamentalsSli
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.LayoutFundamentalsTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ListItemLayoutSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ListItemSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierAppliedSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierClickableSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifiersTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.MyAnimationsSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.ThankYouTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.TitleSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.WhySlide
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
@@ -43,7 +46,7 @@ fun main() {
 
 @Composable
 fun UIDelightPresentation() {
-    Surface (
+    Surface(
 //        containerColor = Zinc900,
         contentColor = Slate50,
     ) {
@@ -51,23 +54,37 @@ fun UIDelightPresentation() {
             modifier = Modifier,
             slides = remember {
                 listOf(
-                    ListItemSlide(),
-                    TitleSlide(),
+//                    AboutMeSlide(),
+//                    ThankYouTitleCard(),
+//                    HapticFeedbackSlide(),
+//
+//                    ListItemSlide(),
+//                    TitleSlide(),
+
+
                     IntroductionSlide(),
-                    MyAnimationsSlide(),
-                    WhySlide(),
+                    AboutMeSlide(),
+//                    MyAnimationsSlide(),
+//                    WhySlide(),
                     LayoutFundamentalsTitleCard(),
                     LayoutFundamentalsSlide(),
                     ListItemLayoutSlide(),
+
                     ModifiersTitleCard(),
+                    ModifierAppliedSlide(),
                     ModifierClickableSlide(),
+
                     GesturesTitleCard(),
                     CustomTapGestureSlide(),
                     CustomSwipeGestureSlide(),
+
                     AnimationsTitleCard(),
                     AnimatedListItemSlide(),
+
                     HapticFeedbackTitleCard(),
                     HapticFeedbackSlide(),
+
+                    ThankYouTitleCard(),
                 )
             }
         )

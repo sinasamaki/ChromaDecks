@@ -1,9 +1,7 @@
 package com.sinasamaki.chromadecks._talks.ui_delight.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -13,7 +11,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -45,6 +42,7 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,14 +56,14 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.sinasamaki.chromadecks.ui.theme.Blue500
 import com.sinasamaki.chromadecks.ui.theme.Blue950
 import com.sinasamaki.chromadecks.ui.theme.Red600
 import com.sinasamaki.chromadecks.ui.theme.Transparent
-import com.sinasamaki.chromadecks.ui.theme.White
 import com.sinasamaki.chromadecks.ui.theme.Zinc100
 import com.sinasamaki.chromadecks.ui.theme.Zinc200
 import com.sinasamaki.chromadecks.ui.theme.Zinc400
@@ -79,8 +77,8 @@ import kotlinx.coroutines.launch
 
 
 const val title = "Droidcon Conference"
-const val subtitle = "Droidcon Conference"
-const val time = "00:00"
+const val subtitle = "Dear sinasmaki,..."
+const val time = "09:41"
 
 @Composable
 fun ListItems(modifier: Modifier = Modifier) {
@@ -91,18 +89,18 @@ fun ListItems(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        ListItem_01()
+        BasicListItem()
         SmallClickArea()
         BigClickArea()
         JustRightClickArea()
         CustomClickArea()
-        ListItem_02()
+        WithoutAnimations()
         AnimatedListItem()
     }
 }
 
 @Composable
-fun ListItem_01(modifier: Modifier = Modifier) {
+fun BasicListItem(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -132,7 +130,7 @@ fun ListItem_01(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ListItem_02(modifier: Modifier = Modifier) {
+fun WithoutAnimations(modifier: Modifier = Modifier) {
 
     val state = rememberSwipeToDismissBoxState()
 
@@ -550,6 +548,17 @@ fun AnimatedListItem(modifier: Modifier = Modifier) {
         }
     }
 
+    val haptic = LocalHapticFeedback.current
+    LaunchedEffect(willTrigger) {
+        haptic.performHapticFeedback(
+            if (willTrigger) {
+                HapticFeedbackType.LongPress
+            } else {
+                HapticFeedbackType.SegmentTick
+            }
+        )
+    }
+
     SwipeToDismissBox(
         state = state,
         modifier = modifier,
@@ -624,7 +633,7 @@ fun AnimatedListItem(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun AnimatedCustomClickArea(modifier: Modifier = Modifier) {
+private fun AnimatedCustomClickArea(modifier: Modifier = Modifier) {
     var selected by remember { mutableStateOf(false) }
     val interaction = remember { MutableInteractionSource() }
     val isHovered by interaction.collectIsHoveredAsState()

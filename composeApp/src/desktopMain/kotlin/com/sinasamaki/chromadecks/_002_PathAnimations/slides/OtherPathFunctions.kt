@@ -361,10 +361,10 @@ fun <S> BlurredAnimatedChange(
             fadeIn(
                 animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
             ) + slideInVertically(
-                initialOffsetY = { it / 10 },
+                initialOffsetY = { -it / 10 },
                 animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
             ) togetherWith slideOutVertically(
-                targetOffsetY = { -it / 2 },
+                targetOffsetY = { it / 2 },
                 animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
             ) + scaleOut(
                 targetScale = .9f,

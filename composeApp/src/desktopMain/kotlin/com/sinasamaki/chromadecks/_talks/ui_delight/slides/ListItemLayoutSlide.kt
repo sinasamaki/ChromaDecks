@@ -1,25 +1,49 @@
 package com.sinasamaki.chromadecks._talks.ui_delight.slides
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import com.sinasamaki.chromadecks._talks.ui_delight.components.BasicListItem
+import com.sinasamaki.chromadecks._talks.ui_delight.components.ListItemDisplay
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 
+private val codeBlockCode = """
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .background(color = Zinc800)
+        )
+        Column {
+            Text(
+                text = title,
+                color = Zinc200,
+            )
+            Text(
+                text = subtitle,
+                color = Zinc400,
+            )
+        }
+        Text(
+            text = time,
+            color = Zinc500,
+        )
+    }
+""".trimIndent()
+
 class ListItemLayoutSlideState
-class ListItemLayoutSlide: ListSlideAdvanced<ListItemLayoutSlideState>() {
+class ListItemLayoutSlide : ListSlideAdvanced<ListItemLayoutSlideState>() {
 
     override val initialState: ListItemLayoutSlideState
         get() = ListItemLayoutSlideState()
 
     @Composable
     override fun content(state: ListItemLayoutSlideState) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+        ListItemDisplay(
+            code = codeBlockCode
         ) {
-
+            BasicListItem()
         }
     }
 }
