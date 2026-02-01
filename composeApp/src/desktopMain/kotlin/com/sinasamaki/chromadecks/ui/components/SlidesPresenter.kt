@@ -40,6 +40,7 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chromadecks.data.ListSlide
@@ -76,28 +77,29 @@ fun SlidesPresenter2(
     }
     Box(
         modifier
-        .onPreviewKeyEvent {
-            if (it.type == KeyEventType.KeyUp) {
-                val currentSlide = slides[currentSlideIndex]
-                if (it.key == Key.DirectionRight) {
-                    if (!currentSlide.next())
-                        currentSlideIndex++
-                } else if (it.key == Key.DirectionLeft) {
-                    if (!currentSlide.previous())
-                        currentSlideIndex--
+            .onPreviewKeyEvent {
+                if (it.type == KeyEventType.KeyUp) {
+                    val currentSlide = slides[currentSlideIndex]
+                    if (it.key == Key.DirectionRight) {
+                        if (!currentSlide.next())
+                            currentSlideIndex++
+                    } else if (it.key == Key.DirectionLeft) {
+                        if (!currentSlide.previous())
+                            currentSlideIndex--
+                    }
+                    currentSlideIndex =
+                        currentSlideIndex.coerceIn(slides.indices)
                 }
-                currentSlideIndex =
-                    currentSlideIndex.coerceIn(slides.indices)
+                true
             }
-            true
-        }
-        .focusRequester(requester)
-        .focusable()
-        .fillMaxSize()
-        .onSizeChanged {
-            size = with(density) { DpSize(it.width.toDp(), it.height.toDp()) }
-        }
+            .focusRequester(requester)
+            .focusable()
+            .fillMaxSize()
+            .onSizeChanged {
+                size = with(density) { DpSize(it.width.toDp(), it.height.toDp()) }
+            }
     ) {
+        val multiplier = remember { 1.0f }
         if (size != DpSize.Zero) {
             LazyColumn(
                 modifier = Modifier
@@ -114,16 +116,25 @@ fun SlidesPresenter2(
                             slideIndex = index,
                         )
                     ) {
-                        Box(Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .size(size)) {
-                            when (slide) {
-                                is ListSlideSimple -> {
-                                    slide.content()
-                                }
+                        Box(
+                            Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .size(size)
+                        ) {
+                            CompositionLocalProvider(
+                                LocalDensity provides Density(
+                                    density = density.density * multiplier,
+                                    fontScale = density.fontScale * multiplier,
+                                )
+                            ) {
+                                when (slide) {
+                                    is ListSlideSimple -> {
+                                        slide.content()
+                                    }
 
-                                else -> {
-                                    slide.currentContent()
+                                    else -> {
+                                        slide.currentContent()
+                                    }
                                 }
                             }
                         }
@@ -164,27 +175,27 @@ fun SlidesPresenter(
     }
     Box(
         modifier
-        .onPreviewKeyEvent {
-            if (it.type == KeyEventType.KeyUp) {
-                val currentSlide = slides[currentSlideIndex]
-                if (it.key == Key.DirectionRight) {
-                    if (!currentSlide.next())
-                        currentSlideIndex++
-                } else if (it.key == Key.DirectionLeft) {
-                    if (!currentSlide.previous())
-                        currentSlideIndex--
+            .onPreviewKeyEvent {
+                if (it.type == KeyEventType.KeyUp) {
+                    val currentSlide = slides[currentSlideIndex]
+                    if (it.key == Key.DirectionRight) {
+                        if (!currentSlide.next())
+                            currentSlideIndex++
+                    } else if (it.key == Key.DirectionLeft) {
+                        if (!currentSlide.previous())
+                            currentSlideIndex--
+                    }
+                    currentSlideIndex =
+                        currentSlideIndex.coerceIn(slides.indices)
                 }
-                currentSlideIndex =
-                    currentSlideIndex.coerceIn(slides.indices)
+                true
             }
-            true
-        }
-        .focusRequester(requester)
-        .focusable()
-        .fillMaxSize()
-        .onSizeChanged {
-            size = with(density) { DpSize(it.width.toDp(), it.height.toDp()) }
-        }
+            .focusRequester(requester)
+            .focusable()
+            .fillMaxSize()
+            .onSizeChanged {
+                size = with(density) { DpSize(it.width.toDp(), it.height.toDp()) }
+            }
     ) {
         if (size != DpSize.Zero) {
             LazyColumn(
