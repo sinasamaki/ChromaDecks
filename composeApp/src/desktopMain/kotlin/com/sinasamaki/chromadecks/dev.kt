@@ -5,7 +5,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import org.jetbrains.compose.reload.DevelopmentEntryPoint
 
 fun main() = application {
     Window(
@@ -15,8 +14,6 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "ChromaDecks",
     ) {
-        DevelopmentEntryPoint {
-            App()
-        }
+        App()
     }
 }

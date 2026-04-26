@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 //    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha11"
-    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha01"
+//    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha01"
 }
 
 composeCompiler {
@@ -17,9 +17,9 @@ composeCompiler {
 //tasks.withType<ComposeHotRun>().configureEach {
 //    mainClass.set("com.sinasamaki.chromadecks._bites.test.TestKt")
 //}
-tasks.register<ComposeHotRun>("runHot") {
-    mainClass.set("com.sinasamaki.chromadecks.DevKt")
-}
+//tasks.register<ComposeHotRun>("runHot") {
+//    mainClass.set("com.sinasamaki.chromadecks.DevKt")
+//}
 
 kotlin {
     jvm("desktop")
@@ -45,12 +45,20 @@ kotlin {
 
         }
         desktopMain.dependencies {
+            implementation("com.sinasamaki:chroma-dial:1.0.0-Alpha8")
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation("io.github.petertrr:kotlin-multiplatform-diff-jvm:0.7.0")
             implementation("dev.andrewbailey.difference:difference:1.0.0")
             implementation("clojure-interop:javax.sound:1.0.5")
             implementation("dev.snipme:highlights:1.0.0")
+            implementation("uk.co.caprica:vlcj:4.8.3")
+            implementation("org.slf4j:slf4j-simple:2.0.9")
+            implementation("org.openjfx:javafx-controls:21:mac-aarch64")
+            implementation("org.openjfx:javafx-media:21:mac-aarch64")
+            implementation("org.openjfx:javafx-swing:21:mac-aarch64")
+            implementation("org.openjfx:javafx-graphics:21:mac-aarch64")
+            implementation("org.openjfx:javafx-base:21:mac-aarch64")
         }
     }
 }

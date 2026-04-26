@@ -99,16 +99,17 @@ fun HeartLogo(modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         while (true) {
+            delay(300)
             value.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(durationMillis = 500)
+                animationSpec = tween(durationMillis = 700)
             )
-            delay(2000)
-            value.animateTo(
-                targetValue = 0f,
-                animationSpec = tween(durationMillis = 500)
-            )
-            delay(1000)
+//            delay(2000)
+//            value.animateTo(
+//                targetValue = 0f,
+//                animationSpec = tween(durationMillis = 500)
+//            )
+//            delay(1000)
         }
     }
     Box(

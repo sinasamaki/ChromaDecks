@@ -51,8 +51,12 @@ abstract class ListSlideAdvanced<T> {
 
     @Composable
     abstract fun content(state: T)
+
+    open val animator: (@Composable (@Composable () -> Unit) -> Unit)? = null
+
 }
 
+@Deprecated(message = "Do not use this anymore")
 abstract class ListSlide<T> {
 
     private var stateIndex = MutableStateFlow(0)
@@ -86,6 +90,7 @@ abstract class ListSlide<T> {
 }
 
 
+@Deprecated(message = "Do not use this anymore")
 abstract class ListSlideSimple : ListSlide<Unit>() {
 
     override val states: List<Unit>

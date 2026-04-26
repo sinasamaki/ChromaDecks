@@ -12,13 +12,13 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
-        maven("https://packages.jetbrains.team/maven/p/firework/dev")
+//        maven("https://packages.jetbrains.team/maven/p/firework/dev")
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
+//plugins {
+//    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+//}
 
 dependencyResolutionManagement {
     repositories {
@@ -30,7 +30,7 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
-        maven("https://packages.jetbrains.team/maven/p/firework/dev")
+//        maven("https://packages.jetbrains.team/maven/p/firework/dev")
         maven { url = uri("https://clojars.org/repo") }
     }
 }

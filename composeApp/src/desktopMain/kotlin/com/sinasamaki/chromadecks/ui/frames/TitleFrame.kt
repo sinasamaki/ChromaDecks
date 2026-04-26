@@ -20,12 +20,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.drawscope.draw
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.CompositingStrategy
 import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +43,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chromadecks.composeapp.generated.resources.Res
 import chromadecks.composeapp.generated.resources.img
+import com.sinasamaki.chromadecks.ui.modifiers.layer
+import com.sinasamaki.chromadecks.ui.theme.Green300
+import com.sinasamaki.chromadecks.ui.theme.Green400
+import com.sinasamaki.chromadecks.ui.theme.Green500
+import com.sinasamaki.chromadecks.ui.theme.Lime400
+import com.sinasamaki.chromadecks.ui.theme.Yellow200
 import org.jetbrains.compose.resources.painterResource
+import kotlin.math.sin
 
 @Composable
 fun TitleFrame(
@@ -42,6 +59,7 @@ fun TitleFrame(
     description: String,
     hint: String,
     bookNumber: Int,
+    animationProgress: Float = 1f,
     contentColor: Color = LocalContentColor.current
 ) {
     CompositionLocalProvider(
@@ -56,6 +74,7 @@ fun TitleFrame(
                 modifier = Modifier
                     .align(Alignment.Center),
                 title = title,
+                animationProgress = animationProgress,
             )
 
             VersionTag(
@@ -86,21 +105,56 @@ fun TitleFrame(
 }
 
 @Composable
-private fun Title(modifier: Modifier = Modifier, title: String) {
+private fun Title(
+    modifier: Modifier = Modifier,
+    title: String,
+    animationProgress: Float,
+) {
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
 
     Column(
         modifier = modifier.onSizeChanged { width = with(density) { it.width.toDp() } },
     ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.labelLarge.copy(
-                fontSize = 96.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 96.sp
-            )
-        )
+        Row {
+            title.forEachIndexed { index, char ->
+                val layer = rememberGraphicsLayer()
+                Text(
+                    char.toString(),
+                    modifier = Modifier
+                        .drawWithContent {
+                            layer.record { this@drawWithContent.drawContent() }
+                            val offset =
+                                50f * (1f - animationProgress) * (sin((index + 1) * animationProgress / title.length.toFloat()))
+                            for (i in 0..20) {
+                                val x = (i / 20f)
+
+                                translate(
+                                    offset * x,
+                                    -offset * x,
+                                ) {
+                                    layer {
+                                        drawLayer(layer)
+                                        drawRect(
+                                            color = lerp(Lime400, Green500, x),
+                                            blendMode = BlendMode.SrcIn
+                                        )
+                                    }
+                                }
+                            }
+                            translate(offset, -offset) {
+                                drawLayer(layer)
+//                        this@drawWithContent.drawContent()
+                            }
+                        },
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontSize = 96.sp,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 96.sp
+                    )
+                )
+            }
+        }
 
         Box(
             Modifier
@@ -136,7 +190,7 @@ private fun Title(modifier: Modifier = Modifier, title: String) {
 @Composable
 private fun VersionTag(modifier: Modifier = Modifier) {
     Text(
-        text = "v1.7.0",
+        text = "v1.10.2",
         modifier = modifier,
         style = MaterialTheme.typography.labelSmall.copy(
             fontSize = 20.sp,
@@ -164,7 +218,7 @@ private fun Description(modifier: Modifier = Modifier, bookNumber: Int, descript
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
-                lineHeight = 18.sp
+                lineHeight = 20.sp
             )
         )
     }

@@ -15,9 +15,10 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ChromaContainer(
+    codeColors: CodeColors = CodeColors(),
     content: @Composable () -> Unit,
 ) {
-    ChromaTheme {
+    ChromaTheme(codeColors = codeColors) {
         Box(
             Modifier
                 .fillMaxSize()

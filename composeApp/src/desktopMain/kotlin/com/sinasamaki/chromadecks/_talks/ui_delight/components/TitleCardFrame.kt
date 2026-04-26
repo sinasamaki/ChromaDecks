@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chromadecks.composeapp.generated.resources.Res
 import chromadecks.composeapp.generated.resources.RobotoFlex
+import com.sinasamaki.chromadecks.ui.modifiers.layer
 import com.sinasamaki.chromadecks.ui.theme.Black
 import com.sinasamaki.chromadecks.ui.theme.Neutral200
 import com.sinasamaki.chromadecks.ui.theme.Transparent
@@ -321,14 +322,3 @@ private fun DrawScope.drawCheckerboard(
     }
 
 }
-
-private fun DrawScope.layer(
-    bounds: Rect = size.toRect(),
-    block: DrawScope.() -> Unit
-) =
-    drawIntoCanvas { canvas ->
-        canvas.withSaveLayer(
-            bounds = bounds,
-            paint = Paint(),
-        ) { block() }
-    }

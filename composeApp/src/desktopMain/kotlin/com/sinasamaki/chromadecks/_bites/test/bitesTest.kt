@@ -36,7 +36,6 @@ import com.sinasamaki.chromadecks.ui.theme.Black
 import com.sinasamaki.chromadecks.ui.theme.ChromaTheme
 import com.sinasamaki.chromadecks.ui.theme.Green500
 import com.sinasamaki.chromadecks.ui.theme.Zinc950
-import org.jetbrains.compose.reload.DevelopmentEntryPoint
 import kotlin.math.roundToInt
 
 fun main() {
@@ -47,10 +46,8 @@ fun main() {
         ),
         title = "BitesTest"
     ) {
-        DevelopmentEntryPoint {
-            ChromaTheme {
-                BitesTest()
-            }
+        ChromaTheme {
+            BitesTest()
         }
     }
 }
@@ -109,7 +106,6 @@ fun BiteDisplay(
     ) {
 
 
-
         val visualBlur by animateDpAsState(
             targetValue = when (state) {
                 BiteDisplayState.Visual -> 0.dp
@@ -151,7 +147,6 @@ fun BiteDisplay(
                 BiteDisplayState.Code -> spring(stiffness = Spring.StiffnessVeryLow)
             }
         )
-
 
 
         val codeBlur by animateDpAsState(
