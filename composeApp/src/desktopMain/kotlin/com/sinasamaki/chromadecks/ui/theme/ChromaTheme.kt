@@ -23,6 +23,7 @@ import org.jetbrains.compose.resources.Font
 @Composable
 fun ChromaTheme(
     colors: ColorScheme = darkColorScheme(),
+    codeColors: CodeColors = CodeColors(),
     content: @Composable () -> Unit,
 ) {
 
@@ -40,10 +41,25 @@ fun ChromaTheme(
     )
 
     val monoFontFamily = FontFamily(
+//        Font(
+//            resource = Res.font.space_mono_regular,
+//            weight = FontWeight.W400,
+//            style = FontStyle.Normal
+//        ),
         Font(
-            resource = Res.font.space_mono_regular,
+            resource = Res.font.jet_brains_mono_regular,
             weight = FontWeight.W400,
             style = FontStyle.Normal
+        ),
+        Font(
+            resource = Res.font.jet_brains_mono_bold,
+            weight = FontWeight.W700,
+            style = FontStyle.Normal
+        ),
+        Font(
+            resource = Res.font.jet_brains_mono_boldItalic,
+            weight = FontWeight.W700,
+            style = FontStyle.Italic,
         ),
     )
 
@@ -89,7 +105,7 @@ fun ChromaTheme(
                 fontFamily = monoFontFamily
             ),
             labelSmall = TextStyle(
-                fontSize = 14.sp,
+                fontSize = 18.sp,
                 fontFamily = monoFontFamily
             ),
         ),
@@ -97,6 +113,7 @@ fun ChromaTheme(
         CompositionLocalProvider(
             LocalTextStyle provides MaterialTheme.typography.bodyLarge,
             LocalContentColor provides MaterialTheme.colorScheme.onSurface,
+            LocalCodeColors provides codeColors,
         ) {
             content()
         }
