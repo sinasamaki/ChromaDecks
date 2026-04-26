@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -30,7 +29,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
@@ -43,9 +41,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.sinasamaki.chromadecks.data.ListSlide
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.data.ListSlideSimple
+import com.sinasamaki.chromadecks.extensions.toPx
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -53,6 +53,13 @@ import kotlinx.coroutines.launch
 fun SlidesPresenter2(
     modifier: Modifier = Modifier,
     slides: List<ListSlideAdvanced<*>>,
+    scrollAnimationSpec: AnimationSpec<Float> = spring(
+        stiffness = Spring.StiffnessVeryLow,
+        dampingRatio = Spring.DampingRatioLowBouncy
+    ),
+    animator: @Composable (
+        @Composable () -> Unit
+    ) -> Unit = { content -> content() }
 ) {
 
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = 1)
@@ -70,7 +77,8 @@ fun SlidesPresenter2(
             scope.launch {
                 listState.animateTo2(
                     index = currentSlideIndex + 1,
-                    height = with(density) { size.height.roundToPx() + 32.dp.roundToPx() }
+                    height = with(density) { size.height.roundToPx() + 32.dp.roundToPx() },
+                    animationSpec = scrollAnimationSpec,
                 )
             }
         }
@@ -116,16 +124,29 @@ fun SlidesPresenter2(
                             slideIndex = index,
                         )
                     ) {
+                        val slideProgress = remember { SlideProgress(listState) }
+                        var progress by remember { mutableStateOf(0f) }
+                        LaunchedEffect(listState.layoutInfo.visibleItemsInfo) {
+                            listState.layoutInfo.visibleItemsInfo.firstOrNull() { itemInfo ->
+                                itemInfo.index == index + 1
+                            }?.let { itemInfo ->
+                                progress = itemInfo.offset.toFloat() / itemInfo.size.toFloat()
+                            }
+                        }
                         Box(
                             Modifier
-                                .clip(RoundedCornerShape(16.dp))
+                                .zIndex(when (currentSlideIndex) {
+                                    index -> 2f
+                                    else -> 1f
+                                })
                                 .size(size)
                         ) {
                             CompositionLocalProvider(
                                 LocalDensity provides Density(
                                     density = density.density * multiplier,
                                     fontScale = density.fontScale * multiplier,
-                                )
+                                ),
+                                LocalSlideProgress provides slideProgress
                             ) {
                                 when (slide) {
                                     is ListSlideSimple -> {
@@ -133,7 +154,9 @@ fun SlidesPresenter2(
                                     }
 
                                     else -> {
-                                        slide.currentContent()
+                                        (slide.animator ?: animator) {
+                                            slide.currentContent()
+                                        }
                                     }
                                 }
                             }
@@ -147,6 +170,10 @@ fun SlidesPresenter2(
 }
 
 
+@Deprecated(
+    message = "Do not use this",
+    replaceWith = ReplaceWith("SlidePresenter2")
+)
 @Composable
 fun SlidesPresenter(
     modifier: Modifier = Modifier,
@@ -252,3 +279,20 @@ data class SlideState(
     val currentIndex: Int,
     val slideIndex: Int,
 )
+
+val LocalSlideProgress = compositionLocalOf<SlideProgress> { error("No Slide progress set") }
+
+class SlideProgress(
+    private val listState: LazyListState
+) {
+
+    val progress: Float
+        @Composable get() {
+            val index = LocalSlideState.current.slideIndex
+            return listState.layoutInfo.visibleItemsInfo.firstOrNull() { itemInfo ->
+                itemInfo.index == index + 1
+            }?.let { itemInfo ->
+                 itemInfo.offset.toFloat() / itemInfo.size.toFloat()
+            } ?: 0f
+        }
+}
