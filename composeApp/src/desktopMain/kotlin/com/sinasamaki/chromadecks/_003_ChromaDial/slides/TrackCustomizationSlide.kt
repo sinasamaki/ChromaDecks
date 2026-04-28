@@ -122,7 +122,7 @@ drawEveryInterval(
 
         val tabs = buildList {
             add("CustomTrack.kt" to trackCode)
-            if (state.showGradation) add("Gradation.kt" to gradationCode)
+            add("Gradation.kt" to gradationCode)
         }
 
         Row(
