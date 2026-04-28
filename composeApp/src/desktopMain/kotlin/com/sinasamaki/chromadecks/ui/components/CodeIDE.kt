@@ -1,5 +1,15 @@
 package com.sinasamaki.chromadecks.ui.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -72,7 +82,7 @@ fun CodeIDE(
                     Text(
                         text = fileName,
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (isSelected) Slate50 else Slate400,
+                        color = if (isSelected) Slate50 else Slate400.copy(alpha = .2f),
                         modifier = Modifier
                             .clip(
                                 RoundedCornerShape(
@@ -102,15 +112,36 @@ fun CodeIDE(
                 )
         )
 
-        CodeBlock(
-            modifier = Modifier.padding(16.dp),
-            code = tabs.getOrNull(selectedTab)?.second ?: "",
-            style = style,
-            highlightAnimation = highlightAnimation,
-            useIndexAsKey = useIndexAsKey,
-            enableAnimations = enableAnimations,
-            fadeAnimations = fadeAnimations,
-            darkMode = darkMode,
-        )
+        AnimatedContent(
+            targetState = selectedTab,
+            modifier = Modifier
+                .fillMaxWidth(),
+            transitionSpec = {
+                val goingRight = targetState > initialState
+                val enter = slideInHorizontally(tween(300)) { width -> if (goingRight) (width * 0.3f).toInt() else -(width * 0.3f).toInt() } +
+                        fadeIn(tween(300))
+                val exit = slideOutHorizontally(tween(300)) { width -> if (goingRight) -(width * 0.3f).toInt() else (width * 0.3f).toInt() } +
+                        fadeOut(tween(300))
+                enter togetherWith exit using SizeTransform(
+                    sizeAnimationSpec = { _,_ ->
+                        spring(
+                            stiffness = Spring.StiffnessVeryLow,
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                        )
+                    }
+                )
+            },
+        ) { tab ->
+            CodeBlock(
+                modifier = Modifier.padding(16.dp),
+                code = tabs.getOrNull(tab)?.second ?: "",
+                style = style,
+                highlightAnimation = highlightAnimation,
+                useIndexAsKey = useIndexAsKey,
+                enableAnimations = enableAnimations,
+                fadeAnimations = fadeAnimations,
+                darkMode = darkMode,
+            )
+        }
     }
 }

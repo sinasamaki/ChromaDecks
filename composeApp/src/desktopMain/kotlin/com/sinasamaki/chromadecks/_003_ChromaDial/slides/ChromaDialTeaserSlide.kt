@@ -90,10 +90,10 @@ internal class ChromaDialTeaserSlide : ListSlideAdvanced<ChromaDialTeaserState>(
             AnimatedVisibility(
                 visible = state.showCode,
                 modifier = Modifier,
-                enter = slideInHorizontally(
+                enter = expandHorizontally(
                     animationSpec = spring(
-                        stiffness = Spring.StiffnessLow,
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessVeryLow,
+                        dampingRatio = Spring.DampingRatioLowBouncy,
                     )
                 ),
                 exit = shrinkHorizontally(shrinkTowards = Alignment.Start),
@@ -124,7 +124,7 @@ $degreesComment
                         onTabSelect = {},
                         fadeAnimations = false,
                         enableAnimations = true,
-                        highlightAnimation = false,
+                        highlightAnimation = rawOffset == Offset.Zero,
                     )
                 }
             }

@@ -150,7 +150,8 @@ private fun Title(
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontSize = 96.sp,
                         fontWeight = FontWeight.Bold,
-                        lineHeight = 96.sp
+                        lineHeight = 96.sp,
+                        letterSpacing = -1.sp
                     )
                 )
             }
@@ -158,7 +159,7 @@ private fun Title(
 
         Box(
             Modifier
-                .padding(top = 32.dp, bottom = 16.dp)
+                .padding(top = 24.dp, bottom = 16.dp)
                 .width(width)
                 .height(2.dp)
                 .background(LocalContentColor.current)

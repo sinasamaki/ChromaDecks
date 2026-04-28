@@ -19,6 +19,7 @@ import com.sinasamaki.chromadecks._003_ChromaDial.slides.DialShowcasesSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.OutroSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.ThumbCustomizationSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.TitleSlide
+import com.sinasamaki.chromadecks._003_ChromaDial.slides.TrackCustomizationSlide
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
 import com.sinasamaki.chromadecks.ui.slideanimations.blurIn
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeIn
@@ -27,18 +28,12 @@ import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.scaleIn
 import com.sinasamaki.chromadecks.ui.theme.ChromaContainer
 import com.sinasamaki.chromadecks.ui.theme.CodeColors
-import com.sinasamaki.chromadecks.ui.theme.Emerald700
 import com.sinasamaki.chromadecks.ui.theme.Green400
-import com.sinasamaki.chromadecks.ui.theme.Green700
 import com.sinasamaki.chromadecks.ui.theme.Lime200
 import com.sinasamaki.chromadecks.ui.theme.Lime300
-import com.sinasamaki.chromadecks.ui.theme.Lime400
 import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Lime600
-import com.sinasamaki.chromadecks.ui.theme.Lime800
-import com.sinasamaki.chromadecks.ui.theme.Red500
 import com.sinasamaki.chromadecks.ui.theme.Slate50
-import com.sinasamaki.chromadecks.ui.theme.Yellow700
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
 
 
@@ -76,8 +71,9 @@ fun ChromaDialPresentation() {
                 modifier = Modifier,
                 slides = remember {
                     listOf(
-                        ChromaDialTeaserSlide(),
+                        TrackCustomizationSlide(),
                         ThumbCustomizationSlide(),
+                        ChromaDialTeaserSlide(),
                         DialShowcasesSlide(),
                         OutroSlide(),
                         AddDependencySlide(),
