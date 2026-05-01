@@ -50,12 +50,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chroma.dial.Dial
 import com.sinasamaki.chroma.dial.drawEveryInterval
+import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Neutral500
 import com.sinasamaki.chromadecks.ui.theme.Neutral600
 import com.sinasamaki.chromadecks.ui.theme.Neutral700
 import com.sinasamaki.chromadecks.ui.theme.Neutral800
 import com.sinasamaki.chromadecks.ui.theme.Neutral950
 import com.sinasamaki.chromadecks.ui.theme.Orange400
+
+private val accentColor = Lime500
 
 @Composable
 fun RadioShowcase(modifier: Modifier = Modifier) {
@@ -142,7 +145,7 @@ fun RadioShowcase(modifier: Modifier = Modifier) {
                                         top = it.position.y,
                                     ) {
                                         drawLine(
-                                            color = Orange400,
+                                            color = accentColor,
                                             start = Offset(0f, 10f),
                                             end = Offset(0f, 40f),
                                             strokeWidth = 6f,
@@ -256,7 +259,7 @@ fun RowScope.RadioButton(
     Icon(
         imageVector = imageVector,
         contentDescription = null,
-        tint = Orange400,
+        tint = accentColor,
         modifier = modifier
             .clickable(
                 interactionSource = interaction,

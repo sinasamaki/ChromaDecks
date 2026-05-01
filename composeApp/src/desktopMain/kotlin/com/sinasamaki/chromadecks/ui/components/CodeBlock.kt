@@ -8,6 +8,8 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,10 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import com.sinasamaki.chromadecks.extensions.moveItem
 import com.sinasamaki.chromadecks.ui.theme.Slate50
 import com.sinasamaki.chromadecks.ui.theme.Slate500
@@ -103,6 +107,7 @@ fun CodeBlock(
         ) { _, line ->
             val delay = remember { line.addedAt * 50L }
             val color = remember { Animatable(Transparent) }
+            val scope = rememberCoroutineScope()
             LaunchedEffect(line.justAdded) {
                 delay(delay)
                 if (line.justAdded && line.text.trim() != ")") {
@@ -134,7 +139,25 @@ fun CodeBlock(
                     .background(
                         color = color.value,
                         shape = RoundedCornerShape(4.dp),
-                    ).let {
+                    )
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                    ) {
+                        scope.launch {
+                            val highlightColor = if (darkMode) Slate50 else Slate500
+                            color.snapTo(highlightColor.copy(alpha = .3f))
+                            color.animateTo(
+                                highlightColor.copy(alpha = .1f),
+                                animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
+                            )
+                            color.animateTo(
+                                Transparent,
+                                animationSpec = spring(stiffness = Spring.StiffnessVeryLow)
+                            )
+                        }
+                    }
+                    .let {
                         if (enableAnimations) {
                             it.animateItem(
                                 fadeInSpec = if (fadeAnimations) tween(delayMillis = delay.toInt()) else snap(),

@@ -54,6 +54,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 internal data class ChromaDialTeaserState(
+    val showPoint: Boolean = false,
     val showTrack: Boolean = false,
     val showCode: Boolean = false,
 )
@@ -64,6 +65,7 @@ internal class ChromaDialTeaserSlide : ListSlideAdvanced<ChromaDialTeaserState>(
 
     override val stateMutations
         get() = listOf<ChromaDialTeaserState.() -> ChromaDialTeaserState>(
+            { copy(showPoint = true) },
             { copy(showTrack = true) },
             { copy(showCode = true) },
         )
@@ -135,6 +137,22 @@ $degreesComment
             ) {
                 val thumbSizeDp = 32.dp
 
+                val pointRadiusFraction by animateFloatAsState(
+                    targetValue = if (state.showPoint) 1f else 0f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMedium,
+                    )
+                )
+
+                val pointSlideOffset by animateFloatAsState(
+                    targetValue = if (state.showPoint) 0f else 40.dp.value,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow,
+                    )
+                )
+
                 val trackRadiusFraction by animateFloatAsState(
                     targetValue = if (state.showTrack) 1f else 0f,
                     animationSpec = if (state.showTrack) {
@@ -175,17 +193,20 @@ $degreesComment
                     val maxRadius = size.minDimension / 2f - thumbSizePx / 2f - 40.dp.toPx()
                     val currentRadius = maxRadius * trackRadiusFraction
 
+                    if (pointRadiusFraction > 0f) {
+                        drawCircle(
+                            color = Lime400,
+                            radius = 6.dp.toPx() * pointRadiusFraction,
+                            center = center + Offset(0f, pointSlideOffset.dp.toPx()),
+                        )
+                    }
+
                     if (currentRadius > 0f) {
                         drawCircle(
                             color = Lime800,
                             radius = currentRadius,
                             center = center,
                             style = Stroke(width = 4.dp.toPx()),
-                        )
-                        drawCircle(
-                            color = Lime400,
-                            radius = 6.dp.toPx() * trackRadiusFraction,
-                            center = center,
                         )
                     }
 

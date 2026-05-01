@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.sinasamaki.chroma.dial.Dial
 import com.sinasamaki.chroma.dial.createTubePath
 import com.sinasamaki.chroma.dial.drawEveryInterval
+import com.sinasamaki.chromadecks.ui.theme.Blue400
+import com.sinasamaki.chromadecks.ui.theme.Emerald400
 import com.sinasamaki.chromadecks.ui.theme.Lime400
 import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Lime600
@@ -47,6 +49,12 @@ import com.sinasamaki.chromadecks.ui.theme.Lime800
 import com.sinasamaki.chromadecks.ui.theme.Lime900
 import com.sinasamaki.chromadecks.ui.theme.Neutral950
 import com.sinasamaki.chromadecks.ui.theme.Purple400
+import com.sinasamaki.chromadecks.ui.theme.Purple500
+import com.sinasamaki.chromadecks.ui.theme.Sky400
+import com.sinasamaki.chromadecks.ui.theme.Violet400
+import com.sinasamaki.chromadecks.ui.theme.Yellow400
+
+private val accentColor = Sky400
 
 private fun buildHandPath(
     width: Float,
@@ -137,7 +145,7 @@ fun Type3() {
                                 rotate(degrees = data.rotationAngle, pivot = data.position) {
                                     if (isHour) {
                                         drawCircle(
-                                            color = color,
+                                            color = accentColor,
                                             center = data.position + Offset(0f, 3.dp.toPx()),
                                             radius = 3.dp.toPx(),
                                             style = Stroke(width = 1.dp.toPx()),
@@ -264,7 +272,7 @@ fun HourDial(modifier: Modifier = Modifier) {
                             rotate(degrees = data.rotationAngle, pivot = data.position) {
                                 if (isCurrent) {
                                     drawCircle(
-                                        color = Purple400,
+                                        color = accentColor,
                                         center = data.position + Offset(0f, 3.dp.toPx()),
                                         radius = 4.dp.toPx(),
                                         style = Stroke(4f)
@@ -334,7 +342,7 @@ fun SecondsDial(modifier: Modifier = Modifier) {
                             val isMinuteMark = data.index % 5 == 0
                             rotate(degrees = data.rotationAngle, pivot = data.position) {
                                 drawLine(
-                                    color = if (isMinuteMark) Lime600 else Lime900,
+                                    color = if (isMinuteMark) accentColor else Lime900,
                                     start = data.position,
                                     end = data.position + Offset(
                                         0f,
@@ -361,7 +369,7 @@ fun SecondsDial(modifier: Modifier = Modifier) {
                                         cornerRadius = 4.dp.toPx(),
                                         topCornerRadius = 8.dp.toPx(),
                                     ),
-                                    color = Purple400,
+                                    color = Lime500,
                                 )
                             }
                         }
@@ -410,7 +418,7 @@ fun DayOfWeekDial(modifier: Modifier = Modifier) {
                                     tubeRadius = 2.dp.toPx(),
                                     density = this,
                                 ),
-                                color = if (day % 360f == data.intervalDegree) Purple400 else Lime500,
+                                color = if (day % 360f == data.intervalDegree) accentColor else Lime500,
                                 style = if (day % 360f == data.intervalDegree) Fill else Stroke(),
                             )
                         }

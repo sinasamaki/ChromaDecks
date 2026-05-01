@@ -88,7 +88,7 @@ internal class ThumbCustomizationSlide : ListSlideAdvanced<ThumbCustomizationSta
 
     @Composable
     override fun content(state: ThumbCustomizationState) {
-        var degree by remember { mutableFloatStateOf(0f) }
+        var degree by remember { mutableFloatStateOf(135f) }
         val density = LocalDensity.current
         var dialSizeDp by remember { mutableStateOf(280.dp) }
 

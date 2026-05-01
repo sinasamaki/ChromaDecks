@@ -2,7 +2,6 @@ package com.sinasamaki.chromadecks._003_ChromaDial.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -27,13 +26,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chroma.dial.Dial
-import com.sinasamaki.chromadecks.ui.theme.Lime300
-import com.sinasamaki.chromadecks.ui.theme.Lime400
-import com.sinasamaki.chromadecks.ui.theme.Violet500
+import com.sinasamaki.chromadecks.ui.theme.Blue
+import com.sinasamaki.chromadecks.ui.theme.Emerald600
+import com.sinasamaki.chromadecks.ui.theme.Lime500
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
+private val accentSwatch = Blue
 @Composable
 fun MaterialDial() {
     var degree by remember { mutableFloatStateOf(90f) }
@@ -62,7 +62,7 @@ fun MaterialDial() {
                             .width(6.dp)
                             .height(40.dp)
                             .graphicsLayer { scaleY = scale }
-                            .background(color = Lime400, shape = CircleShape)
+                            .background(color = accentSwatch.v500, shape = CircleShape)
                     )
                 }
             },
@@ -85,7 +85,7 @@ fun MaterialDial() {
 
                             if (inactiveSweep > 0f) {
                                 drawArc(
-                                    color = Violet500.copy(alpha = .2f),
+                                    color = Emerald600.copy(alpha = .2f),
                                     startAngle = inactiveStart,
                                     sweepAngle = inactiveSweep,
                                     topLeft = Offset(
@@ -100,7 +100,7 @@ fun MaterialDial() {
 
                             if (activeSweep > 0f) {
                                 drawArc(
-                                    color = Violet500,
+                                    color = Lime500,
                                     startAngle = startAngle,
                                     sweepAngle = activeSweep,
                                     topLeft = Offset(
@@ -120,7 +120,7 @@ fun MaterialDial() {
                             val stopIndicatorY =
                                 center.y + trackRadius * sin(endAngleRadians)
                             drawCircle(
-                                color = Lime300,
+                                color = accentSwatch.v400,
                                 radius = 4.dp.toPx(),
                                 center = Offset(stopIndicatorX, stopIndicatorY)
                             )

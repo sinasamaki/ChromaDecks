@@ -1,8 +1,6 @@
 package com.sinasamaki.chromadecks._003_ChromaDial.slides
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
@@ -11,36 +9,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.util.lerp
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.frames.TitleFrame
 import com.sinasamaki.chromadecks.ui.theme.Green400
 import com.sinasamaki.chromadecks.ui.theme.Lime400
-import com.sinasamaki.chromadecks.ui.theme.Orange500
-import com.sinasamaki.chromadecks.ui.theme.Pink400
 import com.sinasamaki.chromadecks.ui.theme.Zinc300
 import com.sinasamaki.chromadecks.ui.theme.Zinc50
 import kotlinx.coroutines.delay
+import com.sinasamaki.chromadecks.ui.util.StepsEasing
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-internal data class OutroSlideState(val placeholder: Unit = Unit)
+internal data class IntroSlideState(val placeholder: Unit = Unit)
 
-internal class OutroSlide : ListSlideAdvanced<OutroSlideState>() {
+internal class IntroSlide : ListSlideAdvanced<IntroSlideState>() {
 
-    override val initialState get() = OutroSlideState()
+    override val initialState get() = IntroSlideState()
 
     @Composable
-    override fun content(state: OutroSlideState) {
+    override fun content(state: IntroSlideState) {
         val radius = remember { Animatable(0f) }
         LaunchedEffect(Unit) {
             while (true) {
@@ -93,10 +89,6 @@ internal class OutroSlide : ListSlideAdvanced<OutroSlideState>() {
     }
 }
 
-fun StepsEasing(steps: Int) = Easing { fraction ->
-    (fraction * steps).toInt() / steps.toFloat()
-}
-
 data class InfluenceCircle(
     val center: Offset,
     val radius: Float,
@@ -131,12 +123,12 @@ fun CaratDisplay(
                                 val dx = center.x - circle.center.x
                                 val dy = center.y - circle.center.y
                                 val dist = sqrt(dx * dx + dy * dy) + ((index % 3f) / 3f) * 100f
-                                val distFromBorder = kotlin.math.abs(dist - circle.radius) * 2f
+                                val distFromBorder = kotlin.math.abs(dist - circle.radius) * 4f
                                 1f - (distFromBorder / circle.radius).coerceIn(0f, 1f)
                             } ?: 0f
                         )
 
-                        val scale = 0f + influence * ((index % 12f) / 12f) * 2f
+                        val scale = 0f + influence * ((index % 12f) / 12f) * 1.4f
                         val shapeSize = minOf(cellW, cellH) * scale
                         val half = shapeSize / 2f
 
@@ -163,11 +155,19 @@ fun CaratDisplay(
                                     }
                                 }
 
-                                1 -> drawRect(
-                                    color = color,
-                                    topLeft = Offset(cx - half, cy - half),
-                                    size = Size(shapeSize, shapeSize),
-                                )
+                                1 -> {
+                                    drawRect(
+                                        color = color.copy(alpha = .3f),
+                                        topLeft = Offset(cx - half, cy - half),
+                                        size = Size(shapeSize, shapeSize),
+                                    )
+                                    drawRect(
+                                        color = color,
+                                        topLeft = Offset(cx - half, cy - half),
+                                        size = Size(shapeSize, shapeSize),
+                                        style = Stroke(width = 2f),
+                                    )
+                                }
 
                                 2 -> {
                                     val path = Path()
@@ -175,7 +175,22 @@ fun CaratDisplay(
                                     path.lineTo(cx + half, cy + half)
                                     path.lineTo(cx - half, cy + half)
                                     path.close()
-                                    drawPath(path = path, color = color)
+                                    drawPath(
+                                        path = path,
+                                        brush = Brush.verticalGradient(
+                                            colors = listOf(
+                                                color.copy(alpha = .1f),
+                                                color.copy(alpha = .7f)
+                                            ),
+                                            startY = cy,
+                                            endY = cy + shapeSize,
+                                        )
+                                    )
+                                    drawPath(
+                                        path = path,
+                                        color = color,
+                                        style = Stroke(width = 1f),
+                                    )
                                 }
                             }
                         }

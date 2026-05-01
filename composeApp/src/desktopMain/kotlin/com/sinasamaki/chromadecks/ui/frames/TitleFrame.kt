@@ -1,5 +1,7 @@
 package com.sinasamaki.chromadecks.ui.frames
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,19 +22,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.drawscope.draw
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.layer.CompositingStrategy
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.rememberGraphicsLayer
@@ -44,13 +40,65 @@ import androidx.compose.ui.unit.sp
 import chromadecks.composeapp.generated.resources.Res
 import chromadecks.composeapp.generated.resources.img
 import com.sinasamaki.chromadecks.ui.modifiers.layer
-import com.sinasamaki.chromadecks.ui.theme.Green300
-import com.sinasamaki.chromadecks.ui.theme.Green400
 import com.sinasamaki.chromadecks.ui.theme.Green500
 import com.sinasamaki.chromadecks.ui.theme.Lime400
-import com.sinasamaki.chromadecks.ui.theme.Yellow200
+import com.sinasamaki.chromadecks.ui.util.StepsEasing
 import org.jetbrains.compose.resources.painterResource
+import kotlin.math.PI
+import kotlin.math.roundToInt
 import kotlin.math.sin
+
+private val versionRange    = 0.0f..0.5f
+private val hintRange       = 0.0f..0.7f
+private val bookNumberRange  = 0.2f..0.5f
+private val descriptionRange = 0.45f..0.9f
+private val dividerRange     = 0.6f..1.0f
+
+private fun ClosedFloatingPointRange<Float>.progress(global: Float) =
+    ((global - start) / (endInclusive - start)).coerceIn(0f, 1f)
+
+private val scrambleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+private val scrambleDigits = "0123456789"
+
+private fun resolveText(text: String, progress: Float, charset: String = scrambleChars): String {
+    if (progress >= 1f) return text
+    return buildString {
+        text.forEachIndexed { index, char ->
+            val settleAt = (index + 1).toFloat() / text.length
+            if (progress >= settleAt || char == ' ' || char !in charset) {
+                append(char)
+            } else {
+                val step = (progress * 30).toInt()
+                val i = ((step + 1) * 17 + index * 31).let { if (it < 0) -it else it } % charset.length
+                append(charset[i])
+            }
+        }
+    }
+}
+
+private fun scrambleText(text: String, progress: Float): String {
+    if (progress >= 1f) return text
+    if (progress <= 0f) return ""
+    val scrambleSteps = 6
+    val scrambleDuration = 0.06f
+    return buildString {
+        text.forEachIndexed { index, char ->
+            val revealAt = index.toFloat() / text.length
+            val settleAt = revealAt + scrambleDuration
+            when {
+                progress < revealAt -> {}
+                progress >= settleAt || char == ' ' -> append(char)
+                else -> {
+                    val localP = (progress - revealAt) / scrambleDuration
+                    val step = (localP * scrambleSteps).toInt()
+                    val i = ((step + 1) * 17 + index * 31).let { if (it < 0) -it else it } % scrambleChars.length
+                    append(scrambleChars[i])
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun TitleFrame(
@@ -71,35 +119,32 @@ fun TitleFrame(
                 .padding(36.dp)
         ) {
             Title(
-                modifier = Modifier
-                    .align(Alignment.Center),
+                modifier = Modifier.align(Alignment.Center),
                 title = title,
                 animationProgress = animationProgress,
             )
 
             VersionTag(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
+                modifier = Modifier.align(Alignment.TopStart),
+                animationProgress = animationProgress,
             )
 
             Description(
-                modifier = Modifier
-                    .align(Alignment.BottomStart),
+                modifier = Modifier.align(Alignment.BottomStart),
                 description = description,
                 bookNumber = bookNumber,
+                animationProgress = animationProgress,
             )
 
             HintTag(
-                modifier = Modifier
-                    .align(Alignment.TopEnd),
+                modifier = Modifier.align(Alignment.TopEnd),
                 hint = hint,
+                animationProgress = animationProgress,
             )
 
             TechLogos(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                modifier = Modifier.align(Alignment.BottomEnd)
             )
-
         }
     }
 }
@@ -113,22 +158,31 @@ private fun Title(
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
 
+    // Tuneable shadow variables
+    val shadowMaxOffset = 30f
+    val shadowStagger = 0.3f  // 0 = all chars move together, approach 1 = fully spread
+
+    val n = title.length
+
     Column(
         modifier = modifier.onSizeChanged { width = with(density) { it.width.toDp() } },
     ) {
         Row {
             title.forEachIndexed { index, char ->
                 val layer = rememberGraphicsLayer()
+                val localStart = if (n > 1) index.toFloat() / (n - 1) * shadowStagger else 0f
+                val localProgress = ((animationProgress - localStart) / (1f - shadowStagger).coerceAtLeast(0.001f)).coerceIn(0f, 1f).let {
+                    StepsEasing(6).transform(it)
+                }
+                val offset = shadowMaxOffset * sin(localProgress * PI.toFloat()).coerceAtLeast(0f)
                 Text(
                     char.toString(),
                     modifier = Modifier
                         .drawWithContent {
+                            if (localProgress <= 0f) return@drawWithContent
                             layer.record { this@drawWithContent.drawContent() }
-                            val offset =
-                                50f * (1f - animationProgress) * (sin((index + 1) * animationProgress / title.length.toFloat()))
                             for (i in 0..20) {
                                 val x = (i / 20f)
-
                                 translate(
                                     offset * x,
                                     -offset * x,
@@ -144,7 +198,6 @@ private fun Title(
                             }
                             translate(offset, -offset) {
                                 drawLayer(layer)
-//                        this@drawWithContent.drawContent()
                             }
                         },
                     style = MaterialTheme.typography.labelLarge.copy(
@@ -162,6 +215,12 @@ private fun Title(
                 .padding(top = 24.dp, bottom = 16.dp)
                 .width(width)
                 .height(2.dp)
+                .graphicsLayer {
+                    scaleX = LinearOutSlowInEasing.transform(
+                        dividerRange.progress(animationProgress)
+                    )
+                    transformOrigin = TransformOrigin(0f, 0.5f)
+                }
                 .background(LocalContentColor.current)
         )
 
@@ -189,9 +248,9 @@ private fun Title(
 }
 
 @Composable
-private fun VersionTag(modifier: Modifier = Modifier) {
+private fun VersionTag(modifier: Modifier = Modifier, animationProgress: Float) {
     Text(
-        text = "v1.10.2",
+        text = resolveText("v1.10.2", versionRange.progress(animationProgress), scrambleDigits),
         modifier = modifier,
         style = MaterialTheme.typography.labelSmall.copy(
             fontSize = 20.sp,
@@ -201,21 +260,27 @@ private fun VersionTag(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Description(modifier: Modifier = Modifier, bookNumber: Int, description: String) {
+private fun Description(
+    modifier: Modifier = Modifier,
+    bookNumber: Int,
+    description: String,
+    animationProgress: Float,
+) {
+    val animatedBookNumber = if (bookNumber == 0) 0 else
+        (StepsEasing(bookNumber).transform(bookNumberRange.progress(animationProgress)) * bookNumber).roundToInt()
 
     Column(
         modifier = modifier.width(300.dp)
     ) {
-
         Text(
-            text = bookNumber.toString().padStart(3, '0'),
+            text = animatedBookNumber.toString().padStart(3, '0'),
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold
             )
         )
         Text(
-            text = description,
+            text = scrambleText(description, descriptionRange.progress(animationProgress)),
             style = MaterialTheme.typography.labelSmall.copy(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
@@ -227,9 +292,9 @@ private fun Description(modifier: Modifier = Modifier, bookNumber: Int, descript
 
 
 @Composable
-private fun HintTag(modifier: Modifier = Modifier, hint: String) {
+private fun HintTag(modifier: Modifier = Modifier, hint: String, animationProgress: Float) {
     Text(
-        text = hint,
+        text = resolveText(hint, hintRange.progress(animationProgress)),
         modifier = modifier
             .graphicsLayer {
                 val pivot = (size.width - (size.height / 2)) / size.width
@@ -238,7 +303,6 @@ private fun HintTag(modifier: Modifier = Modifier, hint: String) {
                     pivotFractionY = .5f,
                 )
                 rotationZ = -90f
-
             },
         style = MaterialTheme.typography.labelSmall.copy(
             fontSize = 20.sp,

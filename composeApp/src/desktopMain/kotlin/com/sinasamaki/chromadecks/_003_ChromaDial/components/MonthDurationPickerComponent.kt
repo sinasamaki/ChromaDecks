@@ -56,238 +56,287 @@ import com.sinasamaki.chromadecks.ui.theme.Sky200
 import com.sinasamaki.chromadecks.ui.theme.Sky300
 import com.sinasamaki.chromadecks.ui.theme.Sky500
 import com.sinasamaki.chromadecks.ui.theme.Blue600
+import com.sinasamaki.chromadecks.ui.theme.Lime
+import com.sinasamaki.chromadecks.ui.theme.Neutral400
+import com.sinasamaki.chromadecks.ui.theme.Sky
 import com.sinasamaki.chromadecks.ui.theme.Transparent
 import com.sinasamaki.chromadecks.ui.theme.Zinc100
+import com.sinasamaki.chromadecks.ui.theme.Zinc200
+import com.sinasamaki.chromadecks.ui.theme.Zinc300
 import com.sinasamaki.chromadecks.ui.theme.Zinc800
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
+import com.sinasamaki.chromadecks.ui.theme.Zinc950
+import com.sinasamaki.chromadecks.ui.theme.or
+import com.sinasamaki.chromadecks.ui.theme.plus
 import kotlin.math.roundToInt
 
 @Composable
 fun MonthDurationPicker() {
-    val background = Zinc800
-    val track = Zinc900
-    val trackEdge = Neutral950
-    val textColor = Neutral300
+    val x = 1
+    val background = Zinc950 or Zinc200
+    val track = Zinc900 or Zinc300
+    val trackEdge = Neutral950 or Neutral400
+    val textColor = Neutral300 or Neutral950
 
-    var degree by remember { mutableStateOf(90f) }
-    val animatedDegree by animateFloatAsState(targetValue = degree)
-    Dial(
-        degree = animatedDegree,
-        onDegreeChange = { degree = it },
-        sweepDegrees = 330f,
-        startDegrees = 30f,
-        interval = 30f,
-        modifier = Modifier.fillMaxSize(),
-        valueRange = 1f..12f,
-        overshootDecay = .8f,
-        overshootAnimationSpec = spring(
-            stiffness = Spring.StiffnessLow,
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-        ),
-        thumb = {
-            Box(
-                Modifier
-                    .size(56.dp)
-                    .padding(8.dp)
-                    .graphicsLayer {
-                        rotationZ = -it.absoluteDegree
-                    }
-                    .dropShadow(shape = CircleShape) {
-                        radius = 10f
-                        alpha = .4f
-                    }
-                    .border(
-                        width = 2.dp,
-                        shape = CircleShape,
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Sky200.copy(alpha = .3f),
-                                track.copy(alpha = .8f),
-                            )
-                        )
-                    )
-                    .background(background, CircleShape)
-            )
-        },
-        track = { dialState ->
-            BoxWithConstraints {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(400.dp)
+            .background(background, RoundedCornerShape(16.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+
+        val swatch = Lime
+        var degree by remember { mutableStateOf(90f) }
+        val animatedDegree by animateFloatAsState(targetValue = degree)
+        Dial(
+            degree = animatedDegree,
+            onDegreeChange = { degree = it },
+            sweepDegrees = 330f,
+            startDegrees = 30f,
+            interval = 30f,
+            modifier = Modifier.size(280.dp),
+            valueRange = 1f..12f,
+            overshootDecay = .8f,
+            overshootAnimationSpec = spring(
+                stiffness = Spring.StiffnessLow,
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+            ),
+            thumb = {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .dropShadow(shape = CircleShape) {
-                            radius = 7f
-                            alpha = .15f
-                            offset = Offset(0f, -8f)
-                            spread = 4f
+                    Modifier
+                        .size(56.dp)
+                        .padding(8.dp)
+                        .graphicsLayer {
+                            rotationZ = -it.absoluteDegree
                         }
-                        .background(shape = CircleShape, color = track)
-                        .drawBehind {
-                            val ringStroke = 56.dp.toPx()
-                            val ringRadius = center.x - (ringStroke / 2)
-
-                            drawEveryInterval(
-                                startDegrees = 0f,
-                                sweepDegrees = 330f,
-                                radius = ringRadius,
-                                spacing = 30f,
-                            ) { data ->
-                                drawCircle(
-                                    color = Neutral500,
-                                    radius = 3.dp.toPx(),
-                                    center = data.position,
-                                )
-                            }
-                        },
-                )
-
-                val density = LocalDensity.current
-                val tubeRadius = with(density) { 56.dp.toPx() / 2 }
-                val tubeCornerRadius = RoundedCornerShape(
-                    topStart = 20f,
-                    bottomStart = 20f,
-                    topEnd = tubeRadius,
-                    bottomEnd = tubeRadius,
-                )
-
-                val activeShape = remember(dialState.degree, dialState.overshootDegrees) {
-                    TubeShape(
-                        startAngleDegrees = 0f,
-                        sweepAngleDegrees = 30f + dialState.degree + dialState.overshootDegrees,
-                        tubeRadius = tubeRadius,
-                        cornerRadius = tubeCornerRadius,
-                    )
-                }
-
-                val donutShape = remember {
-                    TubeShape(
-                        startAngleDegrees = 0f,
-                        sweepAngleDegrees = 360f,
-                        tubeRadius = tubeRadius,
-                        cornerRadius = tubeCornerRadius,
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(donutShape)
-                        .blur(
-                            radius = 8.dp,
-                            edgeTreatment = BlurredEdgeTreatment.Unbounded,
-                        )
-                        .border(
-                            width = 4.dp,
-                            shape = donutShape,
-                            color = trackEdge
-                        ),
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .rotate(5f)
-                        .clip(donutShape)
-                        .blur(
-                            radius = 40.dp,
-                            edgeTreatment = BlurredEdgeTreatment.Unbounded,
-                        )
-                        .background(color = Sky500, shape = activeShape),
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = Sky500, shape = activeShape)
-                        .background(
-                            brush = Brush.radialGradient(
-                                .7f to Blue600.copy(alpha = 0.6f),
-                                1f to Transparent,
-                            ),
-                            shape = activeShape,
-                        )
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(activeShape)
-                        .blur(
-                            radius = 20.dp,
-                            edgeTreatment = BlurredEdgeTreatment.Unbounded,
-                        )
-                        .background(color = Sky300.copy(alpha = .2f), shape = activeShape)
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(activeShape)
-                        .blur(
-                            radius = 4.dp,
-                            edgeTreatment = BlurredEdgeTreatment.Unbounded,
-                        )
-                        .offset(x = (-3).dp, y = (-3).dp)
+                        .dropShadow(
+                            shape = CircleShape
+                        ) {
+                            radius = 10f
+                            alpha = .4f
+                        }
                         .border(
                             width = 2.dp,
+                            shape = CircleShape,
                             brush = Brush.verticalGradient(
-                                colors = listOf(Transparent, Zinc100)
-                            ),
-                            shape = activeShape,
+                                colors = listOf(
+                                    swatch.v200.copy(alpha = .3f),
+                                    track.copy(alpha = .8f),
+                                )
+                            )
                         )
+                        .background(background, CircleShape)
                 )
+            },
+            track = { dialState ->
+                BoxWithConstraints {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .dropShadow(shape = CircleShape) {
+                                radius = 7f
+                                alpha = .15f
+                                offset = Offset(0f, -8f)
+                                spread = 4f
+                            }
+                            .background(
+                                shape = CircleShape,
+                                color = track
+                            )
+                            .drawBehind {
+                                val ringStroke = 56.dp.toPx()
+                                val ringRadius = center.x - (ringStroke / 2)
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(56.dp)
-                        .background(color = background, shape = CircleShape)
-                        .innerShadow(shape = CircleShape) {
-                            radius = 6f
-                            offset = Offset(0f, -6f)
-                            alpha = .2f
-                            spread = 5f
-                        },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(
-                        0.dp,
-                        alignment = Alignment.CenterVertically,
-                    ),
-                ) {
-                    val monthIndex = dialState.mappedValue.roundToInt()
-                    AnimatedContent(
-                        targetState = monthIndex,
-                        modifier = Modifier.fillMaxWidth(),
-                        transitionSpec = {
-                            slideInVertically(
-                                initialOffsetY = {
-                                    (
-                                            if (targetState > initialState)
-                                                it * .05f
-                                            else
-                                                -it * .05f
-                                            ).roundToInt()
+//                                drawCircle(
+//                                    color = Zinc300,
+//                                    radius = ringRadius,
+//                                    style = Stroke(width = ringStroke),
+//                                )
+
+                                drawEveryInterval(
+                                    startDegrees = 0f,
+                                    sweepDegrees = 330f,
+                                    radius = ringRadius,
+                                    spacing = 30f,
+                                ) { data ->
+                                    drawCircle(
+                                        color = Neutral500,
+                                        radius = 3.dp.toPx(),
+                                        center = data.position,
+                                    )
                                 }
-                            ) togetherWith fadeOut(snap())
-                        }
-                    ) {
-                        Text(
-                            text = "$it",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center,
-                            color = textColor,
-                            fontSize = 72.sp,
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold,
+                            },
+                    )
+
+                    val tubeRadius = with(LocalDensity.current) { 56.dp.toPx() / 2 }
+                    val tubeCornerRadius = RoundedCornerShape(
+                        topStart = 20f,
+                        bottomStart = 20f,
+                        topEnd = tubeRadius,
+                        bottomEnd = tubeRadius,
+                    )
+
+                    val activeShape = remember(dialState.degree, dialState.overshootDegrees) {
+                        TubeShape(
+                            startAngleDegrees = 0f,
+                            sweepAngleDegrees = 30f + dialState.degree + dialState.overshootDegrees,
+                            tubeRadius = tubeRadius,
+                            cornerRadius = tubeCornerRadius,
                         )
                     }
-                    Text(
-                        text = if (monthIndex == 1) "month" else "months",
-                        color = textColor.copy(alpha = .5f),
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily.Monospace,
+
+                    val donutShape = remember {
+                        TubeShape(
+                            startAngleDegrees = 0f,
+                            sweepAngleDegrees = 360f,
+                            tubeRadius = tubeRadius,
+                            cornerRadius = tubeCornerRadius,
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(donutShape)
+                            .blur(
+                                radius = 8.dp,
+                                edgeTreatment = BlurredEdgeTreatment.Unbounded,
+                            )
+                            .border(
+                                width = 4.dp,
+                                shape = donutShape,
+                                color = trackEdge
+                            ),
                     )
+
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .rotate(5f)
+                            .clip(donutShape)
+                            .blur(
+                                radius = 40.dp,
+                                edgeTreatment = BlurredEdgeTreatment.Unbounded,
+                            )
+                            .background(
+                                color = swatch.v500,
+                                shape = activeShape,
+                            ),
+                    )
+
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                color = swatch.v500,
+                                shape = activeShape,
+                            )
+                            .background(
+                                brush = Brush.radialGradient(
+                                    .7f to (swatch + 1).v600,
+                                    1f to Transparent,
+                                ),
+                                shape = activeShape,
+                            )
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(activeShape)
+                            .blur(
+                                radius = 20.dp,
+                                edgeTreatment = BlurredEdgeTreatment.Unbounded,
+                            )
+                            .background(
+                                color = swatch.v300.copy(alpha = .2f),
+                                shape = activeShape,
+                            )
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(activeShape)
+                            .blur(
+                                radius = 4.dp,
+                                edgeTreatment = BlurredEdgeTreatment.Unbounded,
+                            )
+                            .offset(
+                                x = (-3).dp,
+                                y = (-3).dp,
+                            )
+                            .border(
+                                width = 2.dp,
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        Transparent,
+                                        Zinc100,
+                                    )
+                                ),
+                                shape = activeShape,
+                            )
+                    )
+
+
+
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(56.dp)
+                            .background(color = background, shape = CircleShape)
+                            .innerShadow(shape = CircleShape) {
+                                radius = 6f
+                                offset = Offset(0f, -6f)
+                                alpha = .2f
+                                spread = 5f
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(
+                            0.dp,
+                            alignment = Alignment.CenterVertically,
+                        ),
+                    ) {
+                        val monthIndex = dialState.mappedValue.roundToInt()
+                        AnimatedContent(
+                            targetState = monthIndex,
+                            modifier = Modifier.fillMaxWidth(),
+                            transitionSpec = {
+                                slideInVertically(
+                                    initialOffsetY = {
+                                        (
+                                                if (targetState > initialState)
+                                                    it * .05f
+                                                else
+                                                    -it * .05f
+                                                ).roundToInt()
+                                    }
+                                ) togetherWith fadeOut(snap())
+                            }
+                        ) {
+                            Text(
+                                text = "$it",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                                color = textColor,
+                                fontSize = 72.sp,
+                                fontFamily = FontFamily.Monospace,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                        Text(
+                            text = if (monthIndex == 1) "month" else "months",
+                            color = textColor.copy(alpha = .5f),
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily.Monospace,
+                        )
+                    }
                 }
-            }
-        },
-    )
+            },
+        )
+    }
 }

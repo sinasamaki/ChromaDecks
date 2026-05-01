@@ -21,6 +21,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chroma.dial.Dial
 import com.sinasamaki.chromadecks.ui.theme.Blue600
+import com.sinasamaki.chromadecks.ui.theme.Blue800
+import com.sinasamaki.chromadecks.ui.theme.Emerald500
+import com.sinasamaki.chromadecks.ui.theme.Emerald600
+import com.sinasamaki.chromadecks.ui.theme.Green500
+import com.sinasamaki.chromadecks.ui.theme.Lime500
+import com.sinasamaki.chromadecks.ui.theme.Red500
+import com.sinasamaki.chromadecks.ui.theme.Teal500
+import com.sinasamaki.chromadecks.ui.theme.Teal600
+import com.sinasamaki.chromadecks.ui.theme.Teal700
 import com.sinasamaki.chromadecks.ui.theme.Violet400
 import com.sinasamaki.chromadecks.ui.theme.Zinc950
 
@@ -44,13 +53,21 @@ fun GradientDial() {
                             rotationZ = state.degree - 90f + state.overshootDegrees
                         }
                         .drawBehind {
-                            val strokeWidth = 16.dp.toPx()
+                            val strokeWidth = 24.dp.toPx()
                             val trackRadius = state.radius - strokeWidth
 
                             val colors = listOf(
-                                Zinc950.copy(alpha = 1f),
-                                Blue600,
-                                Violet400,
+                                Zinc950,
+                                Blue800,
+                                Teal700,
+                                Emerald600,
+                                Lime500,
+                                Lime500,
+//                                Violet400,
+                            )
+
+                            drawCircle(
+                                color = Zinc950
                             )
 
                             drawArc(
@@ -71,8 +88,8 @@ fun GradientDial() {
                             val path = Path()
                             path.addArc(
                                 oval = Rect(center, state.radius - (strokeWidth / 1)),
-                                startAngleDegrees = 12f,
-                                sweepAngleDegrees = 337f,
+                                startAngleDegrees = 13.85f,
+                                sweepAngleDegrees = 334f,
                             )
                             drawPath(
                                 path,

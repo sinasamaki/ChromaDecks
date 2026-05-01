@@ -47,7 +47,7 @@ internal class TrackCustomizationSlide : ListSlideAdvanced<TrackCustomizationSta
 
     @Composable
     override fun content(state: TrackCustomizationState) {
-        var degree by remember { mutableFloatStateOf(0f) }
+        var degree by remember { mutableFloatStateOf(135f) }
 
         val trackCode = when (state.codeStyle) {
             0 -> """

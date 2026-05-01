@@ -15,8 +15,9 @@ import androidx.compose.ui.window.application
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.AddDependencySlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.ChromaDialTeaserSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.DefaultDialSlide
+import com.sinasamaki.chromadecks._003_ChromaDial.slides.DialLambdasSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.DialShowcasesSlide
-import com.sinasamaki.chromadecks._003_ChromaDial.slides.OutroSlide
+import com.sinasamaki.chromadecks._003_ChromaDial.slides.IntroSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.ThumbCustomizationSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.TitleSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.TrackCustomizationSlide
@@ -71,13 +72,14 @@ fun ChromaDialPresentation() {
                 modifier = Modifier,
                 slides = remember {
                     listOf(
-                        TrackCustomizationSlide(),
-                        ThumbCustomizationSlide(),
                         ChromaDialTeaserSlide(),
                         DialShowcasesSlide(),
-                        OutroSlide(),
+                        IntroSlide(),
                         AddDependencySlide(),
                         DefaultDialSlide(),
+                        DialLambdasSlide(),
+                        ThumbCustomizationSlide(),
+                        TrackCustomizationSlide(),
 
                         TitleSlide(),
                     )

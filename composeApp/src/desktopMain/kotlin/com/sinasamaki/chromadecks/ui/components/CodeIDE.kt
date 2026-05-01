@@ -20,12 +20,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chromadecks.ui.theme.Black
@@ -39,6 +41,7 @@ import com.sinasamaki.chromadecks.ui.theme.Transparent
 import com.sinasamaki.chromadecks.ui.theme.Zinc100
 import com.sinasamaki.chromadecks.ui.theme.Zinc200
 import com.sinasamaki.chromadecks.ui.theme.Zinc500
+import com.sinasamaki.chromadecks.ui.theme.Zinc800
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
 import com.sinasamaki.chromadecks.ui.theme.Zinc950
 
@@ -59,11 +62,17 @@ fun CodeIDE(
         modifier = modifier
             .border(
                 width = 1.dp,
-                color = Zinc500.copy(alpha = .3f),
+//                color = Zinc500.copy(alpha = .3f),
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Zinc500.copy(alpha = .3f),
+                        Zinc500.copy(alpha = .05f),
+                    )
+                ),
                 shape = RoundedCornerShape(24.dp)
             )
             .background(
-                Black.copy(alpha = .3f),
+                Zinc800.copy(alpha = .3f),
                 shape = RoundedCornerShape(24.dp),
             ),
     ) {
@@ -74,6 +83,7 @@ fun CodeIDE(
                         start = 8.dp,
                         end = 8.dp,
                         top = 8.dp,
+                        bottom = 8.dp
                     ),
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
             ) {
@@ -84,14 +94,7 @@ fun CodeIDE(
                         style = MaterialTheme.typography.labelSmall,
                         color = if (isSelected) Slate50 else Slate400.copy(alpha = .2f),
                         modifier = Modifier
-                            .clip(
-                                RoundedCornerShape(
-                                    topStart = 16.dp,
-                                    topEnd = 16.dp,
-//                                    bottomStart = 2.dp,
-//                                    bottomEnd = 2.dp,
-                                )
-                            )
+                            .clip(CircleShape)
                             .background(if (isSelected) Zinc200.copy(alpha = .1f) else Transparent)
                             .clickable { onTabSelect(index) }
                             .padding(horizontal = 12.dp, vertical = 6.dp),
@@ -100,17 +103,6 @@ fun CodeIDE(
             }
         }
 
-//        Space(1.dp)
-
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .padding(horizontal = 8.dp)
-                .background(
-                    color = Zinc500.copy(alpha = .3f),
-                )
-        )
 
         AnimatedContent(
             targetState = selectedTab,
@@ -125,15 +117,21 @@ fun CodeIDE(
                 enter togetherWith exit using SizeTransform(
                     sizeAnimationSpec = { _,_ ->
                         spring(
-                            stiffness = Spring.StiffnessVeryLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow,
+//                            dampingRatio = Spring.DampingRatioLowBouncy,
                         )
                     }
                 )
             },
         ) { tab ->
             CodeBlock(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier
+                    .padding(2.dp)
+                    .background(
+                        color = Zinc950,
+                        shape = RoundedCornerShape(22.dp),
+                    )
+                    .padding(16.dp),
                 code = tabs.getOrNull(tab)?.second ?: "",
                 style = style,
                 highlightAnimation = highlightAnimation,
