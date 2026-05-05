@@ -158,7 +158,7 @@ fun MonthDurationPicker() {
                                     startDegrees = 0f,
                                     sweepDegrees = 330f,
                                     radius = ringRadius,
-                                    spacing = 30f,
+                                    interval = 30f,
                                 ) { data ->
                                     drawCircle(
                                         color = Neutral500,

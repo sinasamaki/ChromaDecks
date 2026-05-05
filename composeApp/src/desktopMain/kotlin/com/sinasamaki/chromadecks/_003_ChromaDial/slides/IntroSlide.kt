@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.util.lerp
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.frames.TitleFrame
 import com.sinasamaki.chromadecks.ui.theme.Green400
@@ -56,22 +57,27 @@ internal class IntroSlide : ListSlideAdvanced<IntroSlideState>() {
                 Zinc300, Lime400, Green400,
             )
         ) {
+//            val progress = StepsEasing(20).transform(radius.value)
+            val progress = radius.value
             listOf(
 //                InfluenceCircle(
 //                    it.center + Offset(-500f * radius.value, 0f),
 //                    radius = it.width * radius.value
 //                ),
                 InfluenceCircle(
-                    Offset(it.width, it.height * (1f - radius.value)),
-                    radius = it.width * (1f - radius.value)
+                    Offset(lerp(it.width * .8f, it.width * 1.4f, progress), it.height * (1f - progress)),
+                    radius = lerp(it.width, it.width * .3f, progress)
                 ),
                 InfluenceCircle(
-                    Offset(0f, it.height * (1f - radius.value)),
-                    radius = it.width * (1f - radius.value)
+                    Offset(
+                        lerp(it.width, -it.width * .4f, progress),
+                        lerp(it.height * 1.5f, 0f, progress)
+                    ),
+                    radius = lerp(it.width, it.width * .3f, progress)
                 ),
                 InfluenceCircle(
-                    Offset(it.center.x, it.center.y + it.center.y * (radius.value)),
-                    radius = it.width * (1f - radius.value)
+                    Offset(it.center.x, lerp(0f, it.height * 1.5f, progress)),
+                    radius = lerp(it.width, it.width * .3f, progress)
                 ),
             )
         }

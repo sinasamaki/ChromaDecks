@@ -9,12 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import com.sinasamaki.chromadecks._003_ChromaDial.components.BraunFMRadio
+import com.sinasamaki.chromadecks._003_ChromaDial.components.CameraFocusDial
 import com.sinasamaki.chromadecks._003_ChromaDial.components.CameraModeDial
+import com.sinasamaki.chromadecks._003_ChromaDial.components.ColorPickerDial
+import com.sinasamaki.chromadecks._003_ChromaDial.components.EQDials
 import com.sinasamaki.chromadecks._003_ChromaDial.components.GradientDial
 import com.sinasamaki.chromadecks._003_ChromaDial.components.MaterialDial
-import com.sinasamaki.chromadecks._003_ChromaDial.components.MinimalClock
 import com.sinasamaki.chromadecks._003_ChromaDial.components.MonthDurationPicker
 import com.sinasamaki.chromadecks._003_ChromaDial.components.RadioShowcase
+import com.sinasamaki.chromadecks._003_ChromaDial.components.RotaryDial
 import com.sinasamaki.chromadecks._003_ChromaDial.components.TemperatureDial
 import com.sinasamaki.chromadecks._003_ChromaDial.components.Type3
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
@@ -35,6 +39,10 @@ internal class DialShowcasesSlide : ListSlideAdvanced<DialShowcasesState>() {
             { copy(showcaseIndex = 5) },
             { copy(showcaseIndex = 6) },
             { copy(showcaseIndex = 7) },
+            { copy(showcaseIndex = 8) },
+            { copy(showcaseIndex = 9) },
+            { copy(showcaseIndex = 10) },
+            { copy(showcaseIndex = 11) },
         )
 
     @Composable
@@ -53,14 +61,18 @@ internal class DialShowcasesSlide : ListSlideAdvanced<DialShowcasesState>() {
                 contentAlignment = Alignment.Center,
             ) {
                 when (state.showcaseIndex) {
-                    0 -> RadioShowcase()
-                    1 -> Type3()
-                    2 -> MonthDurationPicker()
-                    3 -> MinimalClock()
-                    4 -> GradientDial()
-                    5 -> MaterialDial()
-                    6 -> TemperatureDial()
-                    7 -> CameraModeDial()
+                    0  -> RadioShowcase()
+                    1  -> Type3()
+                    2  -> MonthDurationPicker()
+                    3  -> GradientDial()
+                    4  -> MaterialDial()
+                    5  -> TemperatureDial()
+                    6  -> CameraModeDial()
+                    7  -> BraunFMRadio()
+                    8  -> CameraFocusDial()
+                    9  -> EQDials()
+                    10 -> ColorPickerDial()
+                    11 -> RotaryDial()
                 }
             }
         }

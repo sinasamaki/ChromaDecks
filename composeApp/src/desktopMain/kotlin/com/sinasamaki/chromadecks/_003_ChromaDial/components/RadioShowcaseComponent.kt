@@ -108,7 +108,7 @@ fun RadioShowcase(modifier: Modifier = Modifier) {
                             drawEveryInterval(
                                 startDegrees = 0f,
                                 sweepDegrees = 360f,
-                                spacing = 10f,
+                                interval = 10f,
                                 radius = size.width * .52f
                             ) {
                                 rotate(
@@ -133,7 +133,7 @@ fun RadioShowcase(modifier: Modifier = Modifier) {
                             drawEveryInterval(
                                 startDegrees = 0f,
                                 sweepDegrees = 360f,
-                                spacing = 10f,
+                                interval = 10f,
                                 radius = size.width / 2f
                             ) {
                                 rotate(

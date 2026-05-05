@@ -23,15 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -39,23 +35,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chromadecks.composeapp.generated.resources.Res
 import chromadecks.composeapp.generated.resources.img
-import com.sinasamaki.chromadecks.ui.modifiers.layer
-import com.sinasamaki.chromadecks.ui.theme.Green500
-import com.sinasamaki.chromadecks.ui.theme.Lime400
+import com.sinasamaki.chromadecks.ui.components.AccordionText
 import com.sinasamaki.chromadecks.ui.util.StepsEasing
+import com.sinasamaki.chromadecks.ui.util.progress
 import org.jetbrains.compose.resources.painterResource
-import kotlin.math.PI
 import kotlin.math.roundToInt
-import kotlin.math.sin
 
 private val versionRange    = 0.0f..0.5f
 private val hintRange       = 0.0f..0.7f
 private val bookNumberRange  = 0.2f..0.5f
 private val descriptionRange = 0.45f..0.9f
 private val dividerRange     = 0.6f..1.0f
-
-private fun ClosedFloatingPointRange<Float>.progress(global: Float) =
-    ((global - start) / (endInclusive - start)).coerceIn(0f, 1f)
 
 private val scrambleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
@@ -158,57 +148,13 @@ private fun Title(
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
 
-    // Tuneable shadow variables
-    val shadowMaxOffset = 30f
-    val shadowStagger = 0.3f  // 0 = all chars move together, approach 1 = fully spread
-
-    val n = title.length
-
     Column(
         modifier = modifier.onSizeChanged { width = with(density) { it.width.toDp() } },
     ) {
-        Row {
-            title.forEachIndexed { index, char ->
-                val layer = rememberGraphicsLayer()
-                val localStart = if (n > 1) index.toFloat() / (n - 1) * shadowStagger else 0f
-                val localProgress = ((animationProgress - localStart) / (1f - shadowStagger).coerceAtLeast(0.001f)).coerceIn(0f, 1f).let {
-                    StepsEasing(6).transform(it)
-                }
-                val offset = shadowMaxOffset * sin(localProgress * PI.toFloat()).coerceAtLeast(0f)
-                Text(
-                    char.toString(),
-                    modifier = Modifier
-                        .drawWithContent {
-                            if (localProgress <= 0f) return@drawWithContent
-                            layer.record { this@drawWithContent.drawContent() }
-                            for (i in 0..20) {
-                                val x = (i / 20f)
-                                translate(
-                                    offset * x,
-                                    -offset * x,
-                                ) {
-                                    layer {
-                                        drawLayer(layer)
-                                        drawRect(
-                                            color = lerp(Lime400, Green500, x),
-                                            blendMode = BlendMode.SrcIn
-                                        )
-                                    }
-                                }
-                            }
-                            translate(offset, -offset) {
-                                drawLayer(layer)
-                            }
-                        },
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontSize = 96.sp,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 96.sp,
-                        letterSpacing = -1.sp
-                    )
-                )
-            }
-        }
+        AccordionText(
+            text = title,
+            animationProgress = animationProgress,
+        )
 
         Box(
             Modifier
@@ -317,7 +263,7 @@ fun TechLogos(modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(Res.drawable.img),
         contentDescription = null,
-        modifier = modifier.blendMode(BlendMode.Darken),
+        modifier = modifier.blendMode(BlendMode.Lighten),
     )
 }
 

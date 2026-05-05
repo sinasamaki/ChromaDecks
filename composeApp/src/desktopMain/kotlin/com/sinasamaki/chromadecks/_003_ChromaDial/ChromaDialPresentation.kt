@@ -13,13 +13,14 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.AddDependencySlide
+import com.sinasamaki.chromadecks._003_ChromaDial.slides.OutroSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.ChromaDialTeaserSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.DefaultDialSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.DialLambdasSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.DialShowcasesSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.IntroSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.ThumbCustomizationSlide
-import com.sinasamaki.chromadecks._003_ChromaDial.slides.TitleSlide
+import com.sinasamaki.chromadecks._003_ChromaDial.slides.ThumbnailSlide
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.TrackCustomizationSlide
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
 import com.sinasamaki.chromadecks.ui.slideanimations.blurIn
@@ -72,6 +73,7 @@ fun ChromaDialPresentation() {
                 modifier = Modifier,
                 slides = remember {
                     listOf(
+                        OutroSlide(),
                         ChromaDialTeaserSlide(),
                         DialShowcasesSlide(),
                         IntroSlide(),
@@ -81,7 +83,7 @@ fun ChromaDialPresentation() {
                         ThumbCustomizationSlide(),
                         TrackCustomizationSlide(),
 
-                        TitleSlide(),
+                        ThumbnailSlide(),
                     )
                 },
                 scrollAnimationSpec = spring(

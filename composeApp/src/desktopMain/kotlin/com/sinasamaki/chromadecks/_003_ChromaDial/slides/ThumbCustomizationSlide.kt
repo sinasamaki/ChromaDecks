@@ -7,6 +7,8 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +18,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +39,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onSizeChanged
@@ -45,14 +51,22 @@ import com.sinasamaki.chroma.dial.drawArc
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.components.CodeIDE
 import com.sinasamaki.chromadecks.ui.theme.Black
+import com.sinasamaki.chromadecks.ui.theme.Lime200
 import com.sinasamaki.chromadecks.ui.theme.Lime300
 import com.sinasamaki.chromadecks.ui.theme.Lime400
 import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Lime600
+import com.sinasamaki.chromadecks.ui.theme.Lime700
+import com.sinasamaki.chromadecks.ui.theme.Lime800
+import com.sinasamaki.chromadecks.ui.theme.Lime900
+import com.sinasamaki.chromadecks.ui.theme.Lime950
 import com.sinasamaki.chromadecks.ui.theme.Rose400
 import com.sinasamaki.chromadecks.ui.theme.Sky400
 import com.sinasamaki.chromadecks.ui.theme.Violet400
+import com.sinasamaki.chromadecks.ui.theme.Zinc700
+import com.sinasamaki.chromadecks.ui.theme.Zinc800
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
+import com.sinasamaki.chromadecks.ui.theme.Zinc950
 
 
 const val NORMAL_THUMB_SIZE = 84
@@ -78,7 +92,6 @@ internal class ThumbCustomizationSlide : ListSlideAdvanced<ThumbCustomizationSta
             { copy(isFlashing = true) },
             { copy(thumbSizeDp = LARGE_THUMB_SIZE) },
             { copy(thumbStyle = -1) },
-            { copy(isFlashing = false) },
             { copy(isFlashing = false, thumbSizeDp = NORMAL_THUMB_SIZE, thumbStyle = 2) },
             { copy(showNumber = true) },
             { copy(rotateText = true) },
@@ -118,7 +131,7 @@ internal class ThumbCustomizationSlide : ListSlideAdvanced<ThumbCustomizationSta
                 borderAlpha.animateTo(0.5f, tween(300))
                 while (true) {
                     borderAlpha.animateTo(1.0f, tween(600))
-                    borderAlpha.animateTo(0.5f, tween(600))
+                    borderAlpha.animateTo(0.1f, tween(10))
                 }
             } else {
                 borderAlpha.animateTo(0f, tween(300))
@@ -155,10 +168,11 @@ Dial(
     ...
     interactionSource = interactionSource,
     thumb = { _ ->
-        Canvas(
+        Box(
             modifier = Modifier
                 .size(84.dp)
                 .scale(thumbScale)
+                .padding(4.dp)
         ) {
             ...
         }
@@ -211,37 +225,63 @@ Dial(
                         ) {
                             when (state.thumbStyle) {
                                 -1 -> {}
-                                0 -> Canvas(modifier = Modifier.fillMaxSize()) {
-                                    drawCircle(color = Zinc900)
-                                    drawCircle(
-                                        brush = Brush.sweepGradient(
-                                            listOf(Lime400, Sky400, Rose400, Violet400, Lime400)
-                                        ),
-                                        style = Stroke(width = 3.dp.toPx()),
-                                    )
-                                }
+                                0 -> Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            brush = Brush.radialGradient(
+                                                listOf(Zinc950, Lime800)
+                                            ),
+                                            shape = CutCornerShape(40.dp)
+                                        )
+                                        .border(
+                                            width = 4.dp,
+                                            brush = Brush.sweepGradient(
+                                                listOf(Lime200, Lime400, Lime200)
+                                            ),
+                                            shape = CutCornerShape(40.dp)
+                                        )
+                                )
 
-                                1 -> Canvas(modifier = Modifier.fillMaxSize()) {
-                                    drawRoundRect(
-                                        brush = Brush.radialGradient(
-                                            listOf(Lime400, Lime600)
-                                        ),
-                                        cornerRadius = CornerRadius(8.dp.toPx()),
-                                    )
-                                    drawRoundRect(
-                                        color = Lime300,
-                                        cornerRadius = CornerRadius(8.dp.toPx()),
-                                        style = Stroke(width = 1.5.dp.toPx()),
-                                    )
-                                }
+                                1 -> Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(20.dp)
+                                        .background(
+                                            brush = Brush.verticalGradient(
+                                                colors = listOf(
+                                                    Lime800,
+                                                    Zinc950,
+                                                    Lime800,
+                                                )
+                                            ),
+                                            shape = CircleShape,
+                                        )
+                                        .border(
+                                            width = 2.dp,
+                                            shape = CircleShape,
+                                            color = Lime400,
+                                        )
+                                )
 
-                                else -> Canvas(modifier = Modifier.fillMaxSize()) {
-                                    drawCircle(color = Sky400)
-                                    drawCircle(
-                                        color = Zinc900,
-                                        radius = size.minDimension / 2 - 4.dp.toPx()
-                                    )
-                                }
+                                else -> Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            brush = Brush.radialGradient(
+                                                colors = listOf(
+                                                    Zinc950,
+                                                    Lime950,
+                                                )
+                                            ),
+                                            shape = CircleShape,
+                                        )
+                                        .border(
+                                            width = 2.dp,
+                                            shape = CircleShape,
+                                            color = Lime300,
+                                        )
+                                )
                             }
 
                             if (state.showNumber) {
@@ -318,114 +358,139 @@ private fun DrawScope.drawThumbBorder(alpha: Float) {
         Lime400.copy(alpha = alpha),
         Offset(inset, inset + cornerLen),
         Offset(inset, inset),
-        strokeThick
+        strokeThick,
+        cap = StrokeCap.Round,
     )
     drawLine(
         Lime400.copy(alpha = alpha),
         Offset(inset, inset),
         Offset(inset + cornerLen, inset),
-        strokeThick
+        strokeThick,
+        cap = StrokeCap.Round,
     )
     // top-right
     drawLine(
         Lime400.copy(alpha = alpha),
         Offset(r - cornerLen, inset),
         Offset(r, inset),
-        strokeThick
+        strokeThick,
+        cap = StrokeCap.Round,
     )
     drawLine(
         Lime400.copy(alpha = alpha),
         Offset(r, inset),
         Offset(r, inset + cornerLen),
-        strokeThick
+        strokeThick,
+        cap = StrokeCap.Round,
     )
     // bottom-left
     drawLine(
         Lime400.copy(alpha = alpha),
         Offset(inset, b - cornerLen),
         Offset(inset, b),
-        strokeThick
+        strokeThick,
+        cap = StrokeCap.Round,
     )
     drawLine(
         Lime400.copy(alpha = alpha),
         Offset(inset, b),
         Offset(inset + cornerLen, b),
-        strokeThick
+        strokeThick,
+        cap = StrokeCap.Round,
     )
     // bottom-right
-    drawLine(Lime400.copy(alpha = alpha), Offset(r - cornerLen, b), Offset(r, b), strokeThick)
-    drawLine(Lime400.copy(alpha = alpha), Offset(r, b - cornerLen), Offset(r, b), strokeThick)
+    drawLine(
+        Lime400.copy(alpha = alpha),
+        Offset(r - cornerLen, b),
+        Offset(r, b),
+        strokeThick,
+        cap = StrokeCap.Round,
+    )
+    drawLine(
+        Lime400.copy(alpha = alpha),
+        Offset(r, b - cornerLen),
+        Offset(r, b),
+        strokeThick,
+        cap = StrokeCap.Round,
+    )
 }
 
 private fun buildCustomThumbCode(state: ThumbCustomizationState): String {
     val size = "Modifier.size(${state.thumbSizeDp}.dp)"
 
     val thumbBody = when (state.thumbStyle) {
+        -1 -> """
+Box(modifier = $size)""".trimIndent()
+
         0 -> """
-Canvas(
+Box(
     modifier = $size
-) {
-    drawCircle(
-        color = Zinc900,
-    )
-    drawCircle(
-        brush = Brush.sweepGradient(
-            listOf(
-                Lime400,
-                Sky400,
-                Rose400,
-                Violet400,
-                Lime400,
-            )
-        ),
-        style = Stroke(
-            width = 3.dp.toPx()
-        ),
-    )
-}""".trimIndent()
+        .padding(4.dp)
+        .background(
+            brush = Brush.radialGradient(
+                listOf(Zinc950, Lime800)
+            ),
+            shape = CutCornerShape(40.dp),
+        )
+        .border(
+            width = 4.dp,
+            brush = Brush.sweepGradient(
+                listOf(Lime200, Lime400, Lime200)
+            ),
+            shape = CutCornerShape(40.dp),
+        )
+)""".trimIndent()
 
         1 -> """
-Canvas(
+Box(
     modifier = $size
-) {
-    drawRoundRect(
-        brush = Brush.radialGradient(
-            listOf(Lime400, Lime600)
-        ),
-        cornerRadius = CornerRadius(8.dp.toPx()),
-    )
-    drawRoundRect(
-        color = Lime300,
-        cornerRadius = CornerRadius(8.dp.toPx()),
-        style = Stroke(width = 1.5.dp.toPx()),
-    )
-}""".trimIndent()
+        .padding(4.dp)
+        .fillMaxHeight()
+        .width(20.dp)
+        .background(
+            brush = Brush.verticalGradient(
+                listOf(Lime800, Zinc950, Lime800)
+            ),
+            shape = CircleShape,
+        )
+        .border(
+            width = 2.dp,
+            shape = CircleShape,
+            color = Lime400,
+        )
+)""".trimIndent()
 
         else -> {
-            val rotateBlock = if (state.rotateText) """
-        .rotate(
+            val rotateBlock = if (state.rotateText) """.rotate(
             -(dialState.absoluteDegree
                 + dialState.overshootDegrees)
         )""" else ""
 
             val numberLine = if (state.showNumber) """
-
-Text(
-    text = "${"\$"}{value}",
-    color = Lime400,
-    modifier = Modifier$rotateBlock,
-)""" else ""
+    Text(
+        text = "${"\$"}{value}",
+        modifier = Modifier$rotateBlock,
+    )""" else ""
 
             """
-Canvas(
+Box(
     modifier = $size
-) {
-    drawCircle(color = Sky400)
-    drawCircle(
-        color = Zinc900,
-        radius = size.minDimension / 2 - 4.dp.toPx()
-    )
-}$numberLine""".trimIndent()
+        .padding(4.dp)
+        .background(
+            brush = Brush.radialGradient(
+                listOf(
+                    Zinc950, Zinc950, Lime950
+                )
+            ),
+            shape = CircleShape,
+        )
+        .border(
+            width = 2.dp,
+            shape = CircleShape,
+            color = Lime300,
+        )
+) {$numberLine
+}""".trimIndent()
         }
     }
 

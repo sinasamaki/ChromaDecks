@@ -16,10 +16,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sinasamaki.chroma.dial.Dial
 import com.sinasamaki.chroma.dial.drawArc
 import com.sinasamaki.chroma.dial.drawEveryInterval
@@ -56,11 +63,11 @@ track = { dialState ->
         modifier = Modifier.fillMaxSize()
     ) {
         val radius = dialState.radius - 42.dp.toPx()
-        val sweep = dialState.degreeRange.endInclusive - dialState.degreeRange.start
         drawArc(
             color = Neutral400,
             startAngle = dialState.startDegrees - 90f,
-            sweepAngle = sweep,
+            sweepAngle = 
+                dialState.degree + dialState.overshootDegrees,
             useCenter = false,
             topLeft = Offset(
                 x = center.x - radius,
@@ -80,25 +87,28 @@ track = { dialState ->
 
             else -> """
 track = { dialState ->
-    Box(
-        Modifier
-            .fillMaxSize()
-            .drawBehind {
-                drawArc(
-                    color = Neutral400,
-                    startAngle = dialState.startDegrees,
-                    sweepAngle = 270f,
-                    radius = dialState.radius - 42.dp.toPx(),
-                )
-            }
-    )
+    Canvas(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        drawArc(
+            color = Neutral400,
+            center = this.center,
+            radius = dialState.radius - 42.dp.toPx(),
+            startAngle = dialState.startDegrees,
+            sweepAngle = 
+                dialState.degree + dialState.overshootDegrees,
+        )
+    }
 }""".trimIndent()
         }
 
         val gradationCode = """
 drawEveryInterval(
-    dialState = dialState,
-    spacing = 9f,
+    interval = 3f,
+    radius = dialState.radius,
+    center = this.center,
+    startDegrees = dialState.startDegrees,
+    sweepDegrees = dialState.degree + dialState.overshootDegrees,
 ) { data ->
     rotate(
         degrees = data.rotationAngle,
@@ -109,11 +119,10 @@ drawEveryInterval(
             top = data.position.y,
         ) {
             drawLine(
-                color = if (data.inActiveRange) Lime400
-                        else Neutral400,
+                color = Zinc950,
                 start = Offset(0f, 0f),
-                end = Offset(0f, 16.dp.toPx()),
-                strokeWidth = 2.dp.toPx(),
+                end = Offset(0f, 8.dp.toPx()),
+                strokeWidth = 4.dp.toPx(),
                 cap = StrokeCap.Round,
             )
         }
@@ -131,7 +140,7 @@ drawEveryInterval(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CodeIDE(
-                modifier = Modifier.weight(1.4f),
+                modifier = Modifier.weight(1.8f),
                 tabs = tabs,
                 selectedTab = if (state.showGradation) 1 else 0,
                 onTabSelect = {},
@@ -149,6 +158,7 @@ drawEveryInterval(
                     sweepDegrees = 270f,
                     thumb = { _ -> Box(Modifier.size(84.dp)) },
                     track = { dialState ->
+                        val measure = rememberTextMeasurer()
                         Box(
                             Modifier
                                 .fillMaxSize()
@@ -159,6 +169,7 @@ drawEveryInterval(
                                         sweepAngle = dialState.degreeRange.endInclusive - dialState.degreeRange.start,
                                         radius = dialState.radius - 42.dp.toPx(),
                                         strokeWidth = 32.dp,
+                                        center = this.center,
                                     )
                                     drawArc(
                                         color = Lime500,
@@ -171,8 +182,8 @@ drawEveryInterval(
                                         drawEveryInterval(
                                             radius = dialState.radius - 34.dp.toPx(),
                                             startDegrees = dialState.startDegrees,
-                                            sweepDegrees = dialState.degreeRange.endInclusive - dialState.degreeRange.start,
-                                            spacing = 2f,
+                                            sweepDegrees = dialState.degree + dialState.overshootDegrees,
+                                            interval = 3f,
                                         ) { data ->
                                             rotate(
                                                 degrees = data.rotationAngle,
@@ -185,8 +196,8 @@ drawEveryInterval(
                                                     drawLine(
                                                         color = Zinc950,
                                                         start = Offset(0f, 0f),
-                                                        end = Offset(0f, 16.dp.toPx()),
-                                                        strokeWidth = 1.dp.toPx(),
+                                                        end = Offset(0f, 8.dp.toPx()),
+                                                        strokeWidth = 4.dp.toPx(),
                                                         cap = StrokeCap.Round,
                                                     )
                                                 }
@@ -195,26 +206,45 @@ drawEveryInterval(
 
 
                                         drawEveryInterval(
+                                            interval = 9f,
                                             radius = dialState.radius,
+                                            center = this.center,
                                             startDegrees = dialState.startDegrees,
                                             sweepDegrees = dialState.degreeRange.endInclusive - dialState.degreeRange.start,
-                                            spacing = 9f,
                                         ) { data ->
                                             rotate(
-                                                degrees = data.rotationAngle,
+                                                degrees = data.rotationAngle + dialState.overshootDegrees,
                                                 pivot = data.position,
                                             ) {
                                                 translate(
                                                     left = data.position.x,
                                                     top = data.position.y,
                                                 ) {
-                                                    drawLine(
-                                                        color = if (data.inActiveRange) Lime400 else Neutral400,
-                                                        start = Offset(0f, 0f),
-                                                        end = Offset(0f, 1.dp.toPx()),
-                                                        strokeWidth = 2.dp.toPx(),
-                                                        cap = StrokeCap.Round,
-                                                    )
+                                                    if (data.index % 5 == 0) {
+                                                        drawText(
+                                                            textMeasurer = measure,
+                                                            text = "${data.intervalDegree.toInt()}",
+                                                            style = TextStyle(
+                                                                color = Lime400,
+                                                                textAlign = TextAlign.Center,
+                                                                fontFamily = FontFamily.Monospace,
+                                                                fontSize = 18.sp
+                                                            ),
+                                                            size = Size(18.sp.toPx() * 3, 100f),
+                                                            topLeft = Offset(
+                                                                -50f,
+                                                                -18.sp.toPx() / 2,
+                                                            )
+                                                        )
+                                                    } else {
+                                                        drawLine(
+                                                            color = if (data.inActiveRange) Lime400 else Neutral400,
+                                                            start = Offset(0f, 0f),
+                                                            end = Offset(0f, 2.dp.toPx()),
+                                                            strokeWidth = 2.dp.toPx(),
+                                                            cap = StrokeCap.Round,
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }

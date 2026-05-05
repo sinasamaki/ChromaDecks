@@ -34,7 +34,7 @@ internal class AddDependencySlide : ListSlideAdvanced<AddDependencySlideState>()
                 tabs = listOf(
                     "build.gradle.kts" to """
 dependencies {
-    implementation("com.sinasamaki:chroma-dial:1.0.0-Alpha5")
+    implementation("com.sinasamaki:chroma-dial:1.0.0-Alpha10")
 }
                     """.trimIndent(),
                     "settings.gradle.kts" to """

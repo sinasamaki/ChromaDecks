@@ -27,10 +27,10 @@ fun ChromaContainer(
         ) {
             Surface(
                 Modifier
-                    .padding(16.dp)
+//                    .padding(16.dp)
                     .aspectRatio(4 / 3f)
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(16.dp))
+//                    .clip(RoundedCornerShape(16.dp))
             ) {
                 content()
             }

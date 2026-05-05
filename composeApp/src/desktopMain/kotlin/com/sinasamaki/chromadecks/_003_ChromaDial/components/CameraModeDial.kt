@@ -35,6 +35,7 @@ import com.sinasamaki.chroma.dial.DialInterval
 import com.sinasamaki.chroma.dial.drawEveryInterval
 import com.sinasamaki.chromadecks.ui.theme.Black
 import com.sinasamaki.chromadecks.ui.theme.Green500
+import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Red400
 import com.sinasamaki.chromadecks.ui.theme.Red500
 import com.sinasamaki.chromadecks.ui.theme.Transparent
@@ -42,7 +43,7 @@ import com.sinasamaki.chromadecks.ui.theme.White
 
 @Composable
 fun CameraModeDial() {
-    var degree by remember { mutableFloatStateOf(90f) }
+    var degree by remember { mutableFloatStateOf(100f) }
     val animatedDegree by animateFloatAsState(
         targetValue = degree,
         animationSpec = spring(
@@ -68,7 +69,7 @@ fun CameraModeDial() {
                             drawEveryInterval(
                                 startDegrees = -180f,
                                 sweepDegrees = 180f,
-                                spacing = 4f,
+                                interval = 3f,
                                 radius = it.radius,
                             ) { data ->
                                 rotate(
@@ -96,7 +97,7 @@ fun CameraModeDial() {
                         .padding(20.dp),
                     startDegrees = -220f,
                     sweepDegrees = 220f,
-                    spacing = 20f,
+                    interval = 20f,
                 ) { data ->
                     Box(
                         modifier = Modifier
@@ -109,7 +110,7 @@ fun CameraModeDial() {
                             .border(
                                 width = 1.dp,
                                 color = when (data.index) {
-                                    0 -> Green500
+                                    0 -> Lime500
                                     4 -> Red400
                                     else -> White
                                 },
@@ -120,7 +121,7 @@ fun CameraModeDial() {
                             0 -> Text(
                                 text = "Auto",
                                 fontSize = 8.sp,
-                                color = Green500,
+                                color = Lime500,
                                 fontFamily = FontFamily.Monospace,
                             )
                             1 -> Text(

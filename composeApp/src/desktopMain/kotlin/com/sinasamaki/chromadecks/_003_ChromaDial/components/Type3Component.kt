@@ -135,7 +135,7 @@ fun Type3() {
                                 startDegrees = 0f,
                                 sweepDegrees = 354f,
                                 radius = tickRadius,
-                                spacing = 6f,
+                                interval = 6f,
                             ) { data ->
                                 val isHour = data.index % 5 == 0
                                 val tickLen = if (isHour) 12.dp.toPx() else 5.dp.toPx()
@@ -266,7 +266,7 @@ fun HourDial(modifier: Modifier = Modifier) {
                             startDegrees = 0f,
                             sweepDegrees = 330f,
                             radius = hourTickRadius,
-                            spacing = 30f,
+                            interval = 30f,
                         ) { data ->
                             val isCurrent = hour % 360f == data.intervalDegree
                             rotate(degrees = data.rotationAngle, pivot = data.position) {
@@ -337,7 +337,7 @@ fun SecondsDial(modifier: Modifier = Modifier) {
                             startDegrees = 0f,
                             sweepDegrees = 354f,
                             radius = center.x - 4.dp.toPx(),
-                            spacing = 6f,
+                            interval = 6f,
                         ) { data ->
                             val isMinuteMark = data.index % 5 == 0
                             rotate(degrees = data.rotationAngle, pivot = data.position) {
@@ -406,7 +406,7 @@ fun DayOfWeekDial(modifier: Modifier = Modifier) {
                             startDegrees = 0f,
                             sweepDegrees = 360f - 360f / 7f,
                             radius = center.x - 2.dp.toPx(),
-                            spacing = 360f / 7f,
+                            interval = 360f / 7f,
                             currentDegree = state.degree,
                         ) { data ->
                             drawPath(

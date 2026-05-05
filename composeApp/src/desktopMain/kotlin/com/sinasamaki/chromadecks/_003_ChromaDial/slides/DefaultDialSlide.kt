@@ -88,7 +88,7 @@ internal class DefaultDialSlide : ListSlideAdvanced<DefaultDialState>() {
                 return@LaunchedEffect
             }
             while (true) {
-                delay(1500)
+                delay(800)
                 colorIndex = (colorIndex + 1) % colorSchemes.size
             }
         }

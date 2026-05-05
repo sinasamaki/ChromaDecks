@@ -63,7 +63,6 @@ fun GradientDial() {
                                 Emerald600,
                                 Lime500,
                                 Lime500,
-//                                Violet400,
                             )
 
                             drawCircle(
@@ -88,7 +87,7 @@ fun GradientDial() {
                             val path = Path()
                             path.addArc(
                                 oval = Rect(center, state.radius - (strokeWidth / 1)),
-                                startAngleDegrees = 13.85f,
+                                startAngleDegrees = 15.1f,
                                 sweepAngleDegrees = 334f,
                             )
                             drawPath(

@@ -9,6 +9,7 @@ fun main() = singleWindowApplication(
     state = WindowState(
         placement = WindowPlacement.Maximized,
     ),
+    undecorated = true,
     title = "ChromaDecks"
 ) {
     App()
