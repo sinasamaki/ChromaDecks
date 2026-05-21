@@ -29,6 +29,7 @@ import kotlinx.coroutines.delay
 import com.sinasamaki.chromadecks.ui.util.StepsEasing
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 internal data class IntroSlideState(val placeholder: Unit = Unit)
 
@@ -44,9 +45,9 @@ internal class IntroSlide : ListSlideAdvanced<IntroSlideState>() {
                 radius.snapTo(0f)
                 radius.animateTo(
                     targetValue = 1f,
-                    animationSpec = tween(durationMillis = 2000, easing = LinearEasing)
+                    animationSpec = tween(durationMillis = 4000, easing = LinearEasing)
                 )
-                delay(500)
+                delay(5000)
             }
         }
         CaratDisplay(
@@ -85,7 +86,7 @@ internal class IntroSlide : ListSlideAdvanced<IntroSlideState>() {
         TitleFrame(
             modifier = Modifier.fillMaxSize(),
             title = "chromadial",
-            description = "custom dial controls with\nsmooth animations and haptic feedback",
+            description = "custom dial slider with\nsmooth animations and boundless customizations",
             hint = "chromadial.sinasamaki.com",
             bookNumber = 3,
             animationProgress = radius.value,
@@ -138,7 +139,7 @@ fun CaratDisplay(
                         val shapeSize = minOf(cellW, cellH) * scale
                         val half = shapeSize / 2f
 
-                        val color = colors.random()
+                        val color = colors.random(Random(row * 31 + col))
 
                         translate(
                             left = when (row % 2 == 0) {

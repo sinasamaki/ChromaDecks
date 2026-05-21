@@ -1,8 +1,10 @@
 package com.sinasamaki.chromadecks._talks.ui_delight.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,6 +30,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -55,11 +59,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.sinasamaki.chromadecks.ui.modifiers.ShakeConfig
+import com.sinasamaki.chromadecks.ui.modifiers.rememberShakeController
+import com.sinasamaki.chromadecks.ui.modifiers.shake
 import com.sinasamaki.chromadecks.ui.theme.Blue500
 import com.sinasamaki.chromadecks.ui.theme.Blue950
 import com.sinasamaki.chromadecks.ui.theme.Red600
@@ -74,10 +83,11 @@ import com.sinasamaki.chromadecks.ui.theme.Zinc800
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 
-const val title = "Droidcon Conference"
-const val subtitle = "Dear sinasmaki,..."
+const val title = "KotlinConf 2026"
+const val subtitle = "Dear sinasmaki ..."
 const val time = "09:41"
 
 @Composable
@@ -548,6 +558,8 @@ fun AnimatedListItem(modifier: Modifier = Modifier) {
         }
     }
 
+    val shake = rememberShakeController()
+
     val haptic = LocalHapticFeedback.current
     LaunchedEffect(willTrigger) {
         haptic.performHapticFeedback(
@@ -557,11 +569,31 @@ fun AnimatedListItem(modifier: Modifier = Modifier) {
                 HapticFeedbackType.SegmentTick
             }
         )
+        shake.shake(
+            if (willTrigger) {
+                ShakeConfig(
+                    iterations = 10,
+                    intensity = 600_000f,
+                    translateX = 30f,
+                    translateY = 3f,
+                    rotate = .4f
+                )
+            } else {
+                ShakeConfig(
+                    iterations = 5,
+                    intensity = 600_000f,
+                    translateX = 30f,
+                    translateY = 3f,
+                    rotate = .4f
+                )
+            }
+        )
     }
 
     SwipeToDismissBox(
         state = state,
-        modifier = modifier,
+        modifier = modifier
+            .shake(shake),
         backgroundContent = {
             val color = when (state.dismissDirection) {
                 SwipeToDismissBoxValue.StartToEnd -> Blue500
@@ -633,7 +665,7 @@ fun AnimatedListItem(modifier: Modifier = Modifier) {
 
 
 @Composable
-private fun AnimatedCustomClickArea(modifier: Modifier = Modifier) {
+internal fun AnimatedCustomClickArea(modifier: Modifier = Modifier) {
     var selected by remember { mutableStateOf(false) }
     val interaction = remember { MutableInteractionSource() }
     val isHovered by interaction.collectIsHoveredAsState()
@@ -744,4 +776,126 @@ private fun AnimatedCustomClickArea(modifier: Modifier = Modifier) {
         )
     }
 
+}
+
+@Composable
+fun ArchiveSwipeListItem(modifier: Modifier = Modifier) {
+    val offset = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1500)
+            offset.animateTo(
+                320f,
+                spring(
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            )
+            delay(500)
+            offset.animateTo(
+                0f,
+                spring(
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            )
+        }
+    }
+
+    Box(modifier = modifier.fillMaxWidth()) {
+        Box(
+            Modifier
+                .matchParentSize()
+                .border(width = 1.dp, shape = RoundedCornerShape(24.dp), color = Blue500)
+                .dropShadow(shape = RoundedCornerShape(24.dp)) {
+                    color = Blue500; radius = 40f; alpha = .15f
+                }
+                .background(color = Blue500.copy(alpha = .06f), shape = RoundedCornerShape(24.dp))
+                .innerShadow(shape = RoundedCornerShape(24.dp)) {
+                    color = Blue500; radius = 40f; alpha = .3f
+                }
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Archive,
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .aspectRatio(1f)
+                    .fillMaxHeight()
+                    .padding(28.dp),
+                tint = Zinc50,
+            )
+        }
+        Box(modifier = Modifier.offset { IntOffset(offset.value.roundToInt(), 0) }) {
+            AnimatedCustomClickArea()
+        }
+    }
+}
+
+@Composable
+fun DeleteDragListItem(modifier: Modifier = Modifier) {
+    var rawDrag by remember { mutableStateOf(0f) }
+    var isDragging by remember { mutableStateOf(false) }
+    val animatedOffset by animateFloatAsState(
+        targetValue = rawDrag * 0.25f,
+        animationSpec = if (isDragging)
+            snap()
+        else
+            spring(
+                dampingRatio = Spring.DampingRatioHighBouncy,
+                stiffness = Spring.StiffnessMediumLow,
+            )
+    )
+
+    val showShadow by remember {
+        derivedStateOf {
+            animatedOffset != 0f
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(
+                    onDragStart = { isDragging = true },
+                    onDragEnd = {
+                        isDragging = false
+                        rawDrag = 0f
+                    },
+                    onDragCancel = {
+                        isDragging = false
+                        rawDrag = 0f
+                    },
+                ) { _, dragAmount ->
+//                    rawDrag = (rawDrag + dragAmount).coerceIn(-400f, 0f)
+                    rawDrag += dragAmount
+                }
+            }
+    ) {
+        Box(
+            Modifier
+                .matchParentSize()
+                .border(width = 1.dp, shape = RoundedCornerShape(24.dp), color = Red600)
+                .dropShadow(shape = RoundedCornerShape(24.dp)) {
+                    color = Red600; radius = 40f; alpha = .15f
+                }
+                .background(color = Red600.copy(alpha = .06f), shape = RoundedCornerShape(24.dp))
+                .innerShadow(shape = RoundedCornerShape(24.dp)) {
+                    color = Red600; radius = 40f; alpha = .3f
+                }
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Delete,
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .aspectRatio(1f)
+                    .fillMaxHeight()
+                    .padding(28.dp),
+                tint = Zinc50,
+            )
+        }
+        Box(modifier = Modifier.offset { IntOffset(animatedOffset.roundToInt(), 0) }) {
+            AnimatedCustomClickArea()
+        }
+    }
 }

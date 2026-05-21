@@ -1,5 +1,8 @@
 package com.sinasamaki.chromadecks._003_ChromaDial.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +17,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -42,31 +43,28 @@ import com.sinasamaki.chroma.dial.RadiusMode
 import com.sinasamaki.chroma.dial.drawArc
 import com.sinasamaki.chroma.dial.drawEveryInterval
 import com.sinasamaki.chromadecks.ui.theme.Black
-import com.sinasamaki.chromadecks.ui.theme.Lime100
 import com.sinasamaki.chromadecks.ui.theme.Lime200
-import com.sinasamaki.chromadecks.ui.theme.Lime300
 import com.sinasamaki.chromadecks.ui.theme.Lime400
 import com.sinasamaki.chromadecks.ui.theme.Lime500
-import com.sinasamaki.chromadecks.ui.theme.Lime800
-import com.sinasamaki.chromadecks.ui.theme.Lime950
-import com.sinasamaki.chromadecks.ui.theme.Neutral200
-import com.sinasamaki.chromadecks.ui.theme.Neutral400
-import com.sinasamaki.chromadecks.ui.theme.Neutral500
-import com.sinasamaki.chromadecks.ui.theme.Neutral600
-import com.sinasamaki.chromadecks.ui.theme.Red500
-import com.sinasamaki.chromadecks.ui.theme.Sky800
-import com.sinasamaki.chromadecks.ui.theme.Transparent
-import com.sinasamaki.chromadecks.ui.theme.Zinc100
-import com.sinasamaki.chromadecks.ui.theme.Zinc300
 import com.sinasamaki.chromadecks.ui.theme.Zinc400
-import com.sinasamaki.chromadecks.ui.theme.Zinc50
-import com.sinasamaki.chromadecks.ui.theme.Zinc500
 import com.sinasamaki.chromadecks.ui.theme.Zinc600
-import com.sinasamaki.chromadecks.ui.theme.Zinc800
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
+import kotlinx.coroutines.delay
 
 @Composable
 fun CameraFocusDial(modifier: Modifier = Modifier) {
+    val animatable = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            animatable.snapTo(180f)
+            animatable.animateTo(
+                targetValue = 0f,
+                animationSpec = tween(durationMillis = 400, easing = LinearEasing)
+            )
+            delay(600)
+        }
+    }
+
     Box(
         modifier = modifier
             .background(Zinc900, RoundedCornerShape(50))
@@ -88,15 +86,14 @@ fun CameraFocusDial(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Left: depth-of-field dial
             CameraNeedleDial(
+                degree = animatable.value,
                 modifier = Modifier
                     .weight(1f)
                     .aspectRatio(1 / 2f),
                 clockwise = false,
             )
 
-            // Bottom label
             Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp),
@@ -130,8 +127,8 @@ fun CameraFocusDial(modifier: Modifier = Modifier) {
                 )
             }
 
-            // Right: f-stop dial
             CameraNeedleDial(
+                degree = animatable.value,
                 modifier = Modifier.weight(1f).aspectRatio(1 / 2f),
                 clockwise = true,
             )
@@ -141,14 +138,13 @@ fun CameraFocusDial(modifier: Modifier = Modifier) {
 
 @Composable
 private fun CameraNeedleDial(
+    degree: Float,
     modifier: Modifier = Modifier,
     clockwise: Boolean,
 ) {
-    var degree by remember { mutableFloatStateOf(90f) }
-
     Dial(
         degree = degree,
-        onDegreeChange = { degree = it },
+        onDegreeChange = { },
         modifier = modifier,
         startDegrees = 0f,
         sweepDegrees = 180f,
@@ -162,7 +158,6 @@ private fun CameraNeedleDial(
                 Modifier
                     .fillMaxWidth(.8f)
                     .aspectRatio(1f)
-//                    .background(color = Blue400, shape = CircleShape)
             )
         },
         track = { state ->
@@ -177,15 +172,7 @@ private fun CameraNeedleDial(
                             y = center.y
                         )
 
-                        // Dial face
-                        clipRect {
-//                            drawCircle(
-//                                color = White,
-//                                radius = size.width,
-//                                center = center,
-//                            )
-
-                        }
+                        clipRect { }
 
                         drawArc(
                             color = Lime200.copy(alpha = .1f),
@@ -197,7 +184,6 @@ private fun CameraNeedleDial(
                             strokeCap = StrokeCap.Butt
                         )
 
-                        // Tick marks around the scale arc
                         drawEveryInterval(
                             startDegrees = state.startDegrees,
                             sweepDegrees = 180f * if (clockwise) 1f else -1f,
@@ -244,7 +230,6 @@ private fun CameraNeedleDial(
                             }
                         }
 
-
                         rotate(
                             degrees = (if (clockwise) 1f else -1f) * state.degree + state.overshootDegrees,
                             pivot = center,
@@ -257,7 +242,6 @@ private fun CameraNeedleDial(
                                 cap = StrokeCap.Round,
                             )
                         }
-                        // Center pivot
                         drawCircle(
                             color = Lime400,
                             radius = 4f,
@@ -269,23 +253,7 @@ private fun CameraNeedleDial(
                             center = center,
                         )
                     }
-            ) {
-                // Scale labels
-//                DialInterval(
-//                    modifier = Modifier.fillMaxSize().padding(6.dp),
-//                    startDegrees = 180f,
-//                    sweepDegrees = 180f,
-//                    interval = 54f,
-//                ) { data ->
-//                    Text(
-//                        text = labels.getOrElse(data.index) { "" },
-//                        modifier = Modifier.rotate(-data.rotationAngle - 90f),
-//                        fontSize = 7.sp,
-//                        fontFamily = FontFamily.Monospace,
-//                        color = Black,
-//                    )
-//                }
-            }
+            )
         }
     )
 }

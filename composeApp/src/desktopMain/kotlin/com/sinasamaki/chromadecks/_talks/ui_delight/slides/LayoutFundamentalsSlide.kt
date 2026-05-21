@@ -17,13 +17,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
-import com.sinasamaki.chromadecks.ui.components.CodeBlock
+import com.sinasamaki.chromadecks.ui.components.CodeIDE
 import com.sinasamaki.chromadecks.ui.theme.Blue500
 import com.sinasamaki.chromadecks.ui.theme.Green500
+import com.sinasamaki.chromadecks.ui.theme.Purple400
+import com.sinasamaki.chromadecks.ui.theme.Purple500
+import com.sinasamaki.chromadecks.ui.theme.Purple600
 import com.sinasamaki.chromadecks.ui.theme.Red500
+import com.sinasamaki.kotlinconf.logo.brush
 
 class LayoutFundamentalsSlideState
 class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>() {
@@ -35,14 +40,14 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
     override fun content(state: LayoutFundamentalsSlideState) {
         Column(
             modifier = Modifier
-                .padding(32.dp)
+                .padding(64.dp)
                 .fillMaxSize(),
 //            contentAlignment = Alignment.Center
         ) {
 
             Row(
                 modifier = Modifier.weight(.5f),
-                horizontalArrangement = Arrangement.spacedBy(32.dp)
+                horizontalArrangement = Arrangement.spacedBy(128.dp)
             ) {
                 Column(
                     modifier = Modifier.weight(1f)
@@ -52,19 +57,19 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        color = Red500
+                        color = Purple400
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        color = Green500
+                        color = Purple400.copy(alpha = .5f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        color = Blue500
+                        color = Purple400.copy(alpha = .25f)
                     )
                 }
 
@@ -76,19 +81,19 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f),
-                        color = Red500
+                        color = Purple400.copy(alpha = 1f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f),
-                        color = Green500
+                        color = Purple400.copy(alpha = .5f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f),
-                        color = Blue500
+                        color = Purple400.copy(alpha = .25f)
                     )
                 }
 
@@ -101,17 +106,17 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
                     Item(
                         modifier = Modifier
                             .fillMaxSize(1f),
-                        color = Red500
+                        color = Purple400.copy(alpha = 1f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxSize(.666f),
-                        color = Green500
+                        color = Purple400.copy(alpha = .5f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxSize(.333f),
-                        color = Blue500
+                        color = Purple400.copy(alpha = .25f)
                     )
                 }
 
@@ -122,40 +127,46 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
             Spacer(Modifier.height(32.dp))
             Row(
                 modifier = Modifier.weight(.3f),
-                horizontalArrangement = Arrangement.spacedBy(48.dp, Alignment.CenterHorizontally)
+                horizontalArrangement = Arrangement.spacedBy(128.dp, Alignment.CenterHorizontally)
             ) {
-                CodeBlock(
+                CodeIDE(
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.labelLarge,
-                    code = """
+                    tabs = listOf("Column.kt" to """
                         Column {
                             Item()
                             Item()
                             Item()
                         }
-                    """.trimIndent()
+                    """.trimIndent()),
+                    selectedTab = 0,
+                    onTabSelect = {},
                 )
-                CodeBlock(
+                CodeIDE(
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.labelLarge,
-                    code = """
+                    tabs = listOf("Row.kt" to """
                         Row {
                             Item()
                             Item()
                             Item()
                         }
-                    """.trimIndent()
+                    """.trimIndent()),
+                    selectedTab = 0,
+                    onTabSelect = {},
                 )
-                CodeBlock(
+                CodeIDE(
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.labelLarge,
-                    code = """
+                    tabs = listOf("Box.kt" to """
                         Box {
                             Item()
                             Item()
                             Item()
                         }
-                    """.trimIndent()
+                    """.trimIndent()),
+                    selectedTab = 0,
+                    onTabSelect = {},
                 )
             }
         }
@@ -172,13 +183,18 @@ private fun Item(
         modifier
             .padding(8.dp)
             .background(
-                color = color.copy(alpha = .2f),
-                shape = RoundedCornerShape(24.dp)
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        color.copy(alpha = .1f),
+                        color.copy(alpha = .02f),
+                    )
+                ),
+                shape = RoundedCornerShape(32.dp)
             )
             .border(
-                width = 5.dp,
+                width = 2.dp,
                 color = color,
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(32.dp)
             )
     )
 }

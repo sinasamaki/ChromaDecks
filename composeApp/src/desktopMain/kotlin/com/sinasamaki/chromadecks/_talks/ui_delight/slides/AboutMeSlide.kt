@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +39,7 @@ import com.sinasamaki.chromadecks.ui.theme.Zinc800
 import com.sinasamaki.chromadecks.ui.theme.Zinc950
 
 data class AboutMeSlideState(
-    val img: String = "imgly.png",
+    val img: String = "",
     val profile: String = "leshan.jpeg",
     val name: String = "Ian Leshan",
     val color: Color = Zinc300,
@@ -52,7 +53,7 @@ class AboutMeSlide : ListSlideAdvanced<AboutMeSlideState>() {
     override val stateMutations: List<AboutMeSlideState.() -> AboutMeSlideState>
         get() = listOf(
             {
-              copy(name = "Leshan")
+                copy(img = "imglyPic.png")
             },
             {
                 copy(img = "sinasamaki.png", profile = "myheart.png", name = "sinasamaki", color = Zinc950)
@@ -72,7 +73,8 @@ class AboutMeSlide : ListSlideAdvanced<AboutMeSlideState>() {
                 .background(
                     backgroundColor,
                 )
-                .fillMaxSize().padding(32.dp),
+                .fillMaxSize()
+                .padding(32.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -97,19 +99,23 @@ class AboutMeSlide : ListSlideAdvanced<AboutMeSlideState>() {
             }
             Spacer(
                 Modifier
-                    .width(32.dp)
+                    .width(64.dp)
             )
             BlurredAnimatedChange(
                 targetState = state.img,
-                modifier = Modifier.weight(1f, false)
+                modifier = Modifier
+                    .weight(1f, false)
             ) { img ->
-                AsyncImage(
-                    model = Res.getUri("drawable/${img}"),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxHeight(.7f)
+                if (img.isNotBlank()) {
+                    AsyncImage(
+                        model = Res.getUri("drawable/${img}"),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxHeight(.7f)
 //                        .align(Alignment.Center)
-                        .clip(RoundedCornerShape(24.dp))
-                )
+                            .clip(RoundedCornerShape(24.dp))
+                    )
+                }
             }
 
         }

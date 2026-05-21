@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ChromaContainer(
     codeColors: CodeColors = CodeColors(),
+    aspectRatio: Float = 4 / 3f,
     content: @Composable () -> Unit,
 ) {
     ChromaTheme(codeColors = codeColors) {
@@ -28,7 +29,7 @@ fun ChromaContainer(
             Surface(
                 Modifier
 //                    .padding(16.dp)
-                    .aspectRatio(4 / 3f)
+                    .aspectRatio(aspectRatio)
                     .fillMaxSize()
 //                    .clip(RoundedCornerShape(16.dp))
             ) {

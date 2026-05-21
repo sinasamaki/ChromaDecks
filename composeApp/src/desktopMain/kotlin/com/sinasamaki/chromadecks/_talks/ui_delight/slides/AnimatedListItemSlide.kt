@@ -22,7 +22,7 @@ class AnimatedListItemSlide: ListSlideAdvanced<AnimatedListItemSlideState>() {
         ListItemDisplay(
             code = """
                     val selectedAnimation by animateFloatAsState(
-                        targetValue = if (selected) 1f else 0f,
+                        targetValue = if (selected) .4f else 0f,
                         animationSpec = spring(stiffness = Spring.StiffnessLow)
                     )
                     val focusAnimation by animateFloatAsState(
@@ -36,7 +36,7 @@ class AnimatedListItemSlide: ListSlideAdvanced<AnimatedListItemSlideState>() {
                     ....
                     
                     .background(
-                        color = Blue950.copy(alpha = lerp(0f, .4f, selectedAnimation)),
+                        color = Blue950.copy(alpha = selectedAnimation),
                         shape = RoundedCornerShape(24.dp)
                     )
                     .innerShadow(

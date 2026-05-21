@@ -1,5 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.compose.reload.ComposeHotRun
+import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 plugins {
@@ -15,10 +15,7 @@ composeCompiler {
 }
 
 //tasks.withType<ComposeHotRun>().configureEach {
-//    mainClass.set("com.sinasamaki.chromadecks._bites.test.TestKt")
-//}
-//tasks.register<ComposeHotRun>("runHot") {
-//    mainClass.set("com.sinasamaki.chromadecks.DevKt")
+//    mainClass.set(providers.gradleProperty("mainClass"))
 //}
 
 kotlin {

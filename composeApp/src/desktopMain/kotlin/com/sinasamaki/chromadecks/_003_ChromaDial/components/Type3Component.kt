@@ -1,8 +1,11 @@
 package com.sinasamaki.chromadecks._003_ChromaDial.components
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,6 +57,7 @@ import com.sinasamaki.chromadecks.ui.theme.Purple500
 import com.sinasamaki.chromadecks.ui.theme.Sky400
 import com.sinasamaki.chromadecks.ui.theme.Violet400
 import com.sinasamaki.chromadecks.ui.theme.Yellow400
+import kotlinx.coroutines.delay
 
 private val accentColor = Sky400
 
@@ -91,16 +96,26 @@ private fun buildHandPath(
 
 @Composable
 fun Type3() {
+    val minuteAnimatable = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            minuteAnimatable.snapTo(0f)
+            minuteAnimatable.animateTo(
+                targetValue = 360f,
+                animationSpec = tween(durationMillis = 5000, easing = LinearEasing)
+            )
+            delay(600)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        var minute by remember { mutableStateOf(0f) }
-
         Dial(
-            degree = minute,
-            onDegreeChange = { minute = it },
+            degree = minuteAnimatable.value,
+            onDegreeChange = { },
             sweepDegrees = 360f,
             startDegrees = 0f,
             modifier = Modifier.fillMaxSize(),
@@ -240,15 +255,28 @@ fun Type3() {
 
 @Composable
 fun HourDial(modifier: Modifier = Modifier) {
-    var hour by remember { mutableStateOf(0f) }
-    val animatedHour by animateFloatAsState(
-        targetValue = hour,
-        animationSpec = spring(stiffness = Spring.StiffnessHigh)
+    var degree by remember { mutableFloatStateOf(0f) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            degree = 0f
+            for (i in 1..12) {
+                degree = 30f * i
+                delay(300)
+            }
+            delay(600)
+        }
+    }
+
+    val animatedDegree by animateFloatAsState(
+        targetValue = degree,
+        animationSpec = spring(
+            stiffness = Spring.StiffnessHigh,
+        )
     )
 
     Dial(
-        degree = animatedHour,
-        onDegreeChange = { hour = it },
+        degree = animatedDegree,
+        onDegreeChange = { },
         sweepDegrees = 360f,
         startDegrees = 0f,
         interval = 30f,
@@ -268,7 +296,7 @@ fun HourDial(modifier: Modifier = Modifier) {
                             radius = hourTickRadius,
                             interval = 30f,
                         ) { data ->
-                            val isCurrent = hour % 360f == data.intervalDegree
+                            val isCurrent = degree % 360f == data.intervalDegree
                             rotate(degrees = data.rotationAngle, pivot = data.position) {
                                 if (isCurrent) {
                                     drawCircle(
@@ -316,11 +344,23 @@ fun HourDial(modifier: Modifier = Modifier) {
 
 @Composable
 fun SecondsDial(modifier: Modifier = Modifier) {
-    var second by remember { mutableStateOf(0f) }
+    val animatable = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            animatable.snapTo(0f)
+            for (i in 1..60) {
+                animatable.animateTo(
+                    targetValue = 6f * i,
+                    animationSpec = tween(durationMillis = 60, easing = LinearEasing)
+                )
+            }
+            delay(600)
+        }
+    }
 
     Dial(
-        degree = second,
-        onDegreeChange = { second = it },
+        degree = animatable.value,
+        onDegreeChange = { },
         sweepDegrees = 360f,
         startDegrees = 0f,
         interval = 6f,
@@ -381,18 +421,33 @@ fun SecondsDial(modifier: Modifier = Modifier) {
 
 @Composable
 fun DayOfWeekDial(modifier: Modifier = Modifier) {
-    var day by remember { mutableStateOf(0f) }
-    val animatedDay by animateFloatAsState(
-        targetValue = day,
-        animationSpec = spring(stiffness = Spring.StiffnessHigh),
+    val interval = 360f / 7f
+
+    var degree by remember { mutableFloatStateOf(0f) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            degree = 0f
+            for (i in 1..7) {
+                degree = interval * i
+                delay(300)
+            }
+            delay(600)
+        }
+    }
+
+    val animatedDegree by animateFloatAsState(
+        targetValue = degree,
+        animationSpec = spring(
+            stiffness = Spring.StiffnessHigh,
+        )
     )
 
     Dial(
-        degree = animatedDay,
-        onDegreeChange = { day = it },
+        degree = animatedDegree,
+        onDegreeChange = { },
         sweepDegrees = 360f,
         startDegrees = 0f,
-        interval = 360f / 7f,
+        interval = interval,
         modifier = modifier,
         thumb = {
             Box(Modifier.fillMaxSize(.4f))
@@ -404,9 +459,9 @@ fun DayOfWeekDial(modifier: Modifier = Modifier) {
                     .drawBehind {
                         drawEveryInterval(
                             startDegrees = 0f,
-                            sweepDegrees = 360f - 360f / 7f,
+                            sweepDegrees = 360f - interval,
                             radius = center.x - 2.dp.toPx(),
-                            interval = 360f / 7f,
+                            interval = interval,
                             currentDegree = state.degree,
                         ) { data ->
                             drawPath(
@@ -418,8 +473,8 @@ fun DayOfWeekDial(modifier: Modifier = Modifier) {
                                     tubeRadius = 2.dp.toPx(),
                                     density = this,
                                 ),
-                                color = if (day % 360f == data.intervalDegree) accentColor else Lime500,
-                                style = if (day % 360f == data.intervalDegree) Fill else Stroke(),
+                                color = if (degree % 360f == data.intervalDegree) accentColor else Lime500,
+                                style = if (degree % 360f == data.intervalDegree) Fill else Stroke(),
                             )
                         }
 

@@ -21,10 +21,6 @@ class ModifierClickableSlide : ListSlideAdvanced<ModifierClickableSlideState>() 
             ListItemDisplay(
                 modifier = Modifier.weight(1f),
                 code = """
-                    .background(
-                        color = Zinc900,
-                        shape = RoundedCornerShape(24.dp)
-                    )
                     .padding(16.dp)
                     .clickable { selected = !selected },
                 """.trimIndent()
@@ -34,8 +30,6 @@ class ModifierClickableSlide : ListSlideAdvanced<ModifierClickableSlideState>() 
             ListItemDisplay(
                 modifier = Modifier.weight(1f),
                 code = """
-                    modifier = modifier
-                        .fillMaxWidth()
                         .clickable { selected = !selected }
                         .padding(4.dp)
                 """.trimIndent()
@@ -45,10 +39,6 @@ class ModifierClickableSlide : ListSlideAdvanced<ModifierClickableSlideState>() 
             ListItemDisplay(
                 modifier = Modifier.weight(1f),
                 code = """
-                    .background(
-                        color = Zinc900,
-                        shape = RoundedCornerShape(24.dp)
-                    )
                     .clip(RoundedCornerShape(24.dp))
                     .clickable { selected = !selected }
                     .padding(16.dp),

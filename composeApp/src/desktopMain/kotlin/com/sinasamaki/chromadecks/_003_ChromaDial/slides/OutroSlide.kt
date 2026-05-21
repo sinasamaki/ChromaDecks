@@ -44,9 +44,10 @@ internal class OutroSlide : ListSlideAdvanced<OutroSlideState>() {
 
         LaunchedEffect(Unit) {
             while (true) {
-                progress.snapTo(0f)
+                progress.snapTo(1f)
+                delay(1001)
                 progress.animateTo(
-                    targetValue = 1f,
+                    targetValue = 0f,
                     animationSpec = tween(durationMillis = 2500, easing = LinearEasing)
                 )
                 delay(1000)
@@ -72,14 +73,14 @@ internal class OutroSlide : ListSlideAdvanced<OutroSlideState>() {
                 modifier = Modifier.align(Alignment.Center),
             )
             images.forEachIndexed { index, url ->
-                FlyingImage(
-                    url = url,
-                    index = index,
-                    numImages = images.size,
-                    progress = p,
-                    slideWidthPx = slideWidthPx,
-                    slideHeightPx = slideHeightPx,
-                )
+//                FlyingImage(
+//                    url = url,
+//                    index = index,
+//                    numImages = images.size,
+//                    progress = p,
+//                    slideWidthPx = slideWidthPx,
+//                    slideHeightPx = slideHeightPx,
+//                )
             }
 
         }
@@ -108,7 +109,7 @@ private fun BoxScope.FlyingImage(
 
     val visibility = imageVisibility(localProgress)//.toInt().toFloat()
     val blur = lerp(50f, 0f, visibility)
-    val yTranslation = lerp(slideHeightPx * 0.1f, -slideHeightPx * 0.1f, localProgress)
+    val yTranslation = lerp(slideHeightPx * 0.01f, -slideHeightPx * 0.01f, localProgress)
 
     AsyncImage(
         model = url,

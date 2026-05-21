@@ -73,7 +73,6 @@ fun ChromaDialPresentation() {
                 modifier = Modifier,
                 slides = remember {
                     listOf(
-                        OutroSlide(),
                         ChromaDialTeaserSlide(),
                         DialShowcasesSlide(),
                         IntroSlide(),
@@ -82,7 +81,7 @@ fun ChromaDialPresentation() {
                         DialLambdasSlide(),
                         ThumbCustomizationSlide(),
                         TrackCustomizationSlide(),
-
+                        OutroSlide(),
                         ThumbnailSlide(),
                     )
                 },

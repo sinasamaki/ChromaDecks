@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -29,30 +28,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.toRect
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.withSaveLayer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.lerp
 import chromadecks.composeapp.generated.resources.Res
 import chromadecks.composeapp.generated.resources.RobotoFlex
+import com.sinasamaki.chromadecks._003_ChromaDial.slides.CaratDisplay
+import com.sinasamaki.chromadecks._003_ChromaDial.slides.InfluenceCircle
 import com.sinasamaki.chromadecks.ui.modifiers.layer
 import com.sinasamaki.chromadecks.ui.theme.Black
 import com.sinasamaki.chromadecks.ui.theme.Neutral200
+import com.sinasamaki.chromadecks.ui.theme.Orange400
+import com.sinasamaki.chromadecks.ui.theme.Orange500
+import com.sinasamaki.chromadecks.ui.theme.Pink50
+import com.sinasamaki.chromadecks.ui.theme.Pink500
+import com.sinasamaki.chromadecks.ui.theme.Purple400
 import com.sinasamaki.chromadecks.ui.theme.Transparent
+import com.sinasamaki.chromadecks.ui.theme.White
 import com.sinasamaki.chromadecks.ui.theme.Zinc50
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
@@ -65,6 +72,8 @@ fun TitleCardFrame(
     backgroundColor: Color,
     borderColor: Color,
 ) {
+    val backgroundColor = Black
+    val borderColor = Orange400
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -72,23 +81,23 @@ fun TitleCardFrame(
             .background(backgroundColor)
     ) {
 
-        Box(
-            Modifier
-                .fillMaxSize()
-                .drawWithContent {
-                    drawContent()
-                }
-                .padding(32.dp)
-                .border(
-                    width = 1.dp,
-                    color = borderColor,
-                )
-                .padding(4.dp)
-                .border(
-                    width = 4.dp,
-                    color = borderColor,
-                )
-        )
+//        Box(
+//            Modifier
+//                .fillMaxSize()
+//                .drawWithContent {
+//                    drawContent()
+//                }
+//                .padding(32.dp)
+//                .border(
+//                    width = 0.dp,
+//                    color = borderColor,
+//                )
+//                .padding(4.dp)
+//                .border(
+//                    width = 0.dp,
+//                    color = borderColor,
+//                )
+//        )
         val y by rememberInfiniteTransition().animateFloat(
             initialValue = 0f,
             targetValue = 360f,
@@ -97,32 +106,106 @@ fun TitleCardFrame(
             )
         )
 
-        AnimatedCheckerBoard()
-        AnimatedCheckerBoard()
+
+//        AnimatedCheckerBoard()
+//        AnimatedCheckerBoard()
+
+        data class LineData(val quadrant: Int, val startXFraction: Float, val endYFraction: Float)
+
+        val lines = remember {
+            (0..20).map {
+                LineData(
+                    quadrant = Random.nextInt(4),
+                    startXFraction = Random.nextFloat() * .25f,
+                    endYFraction = Random.nextFloat() * .25f,
+                )
+            }
+        }
 
         Cube(
             modifier = Modifier.size(300.dp),
             angleX = -20f,
             angleY = y,
-        ) {
+        ) { face ->
             Box(
                 modifier = Modifier.fillMaxSize()
                     .drawBehind {
                         drawRect(
-                            color = Black.copy(alpha = .3f)
+                            color = backgroundColor.copy(alpha = .7f)
                         )
-                        drawCheckerboard(
-                            primary = borderColor,
-                            secondary = borderColor,
-                            squareNumber = 3
-                        )
+//                        drawCheckerboard(
+//                            primary = borderColor,
+//                            secondary = borderColor,
+//                            squareNumber = 3
+//                        )
+                        for (line in lines) {
+                            rotate(degrees = 90f * line.quadrant) {
+                                drawLine(
+//                                    color = borderColor,
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(Orange400, Purple400, Pink500)
+                                    ),
+                                    start = Offset(x = line.startXFraction * size.width, y = 0f),
+                                    end = Offset(x = 0f, y = line.endYFraction * size.height),
+                                    strokeWidth = 1.dp.toPx()
+                                )
+                            }
+                        }
                     }
                     .border(
-                        width = 3.dp,
-                        color = backgroundColor,
+                        width = 2.dp,
+//                        color = borderColor,
+                        brush = Brush.linearGradient(
+                            colors = listOf(Orange400, Purple400, Pink500)
+                        ),
+                        shape = RectangleShape
                     )
+                    .innerShadow(
+                        shape = RectangleShape
+                    ) {
+//                        color = borderColor
+                        brush = Brush.linearGradient(
+                            colors = listOf(Orange400, Purple400, Pink500)
+                        )
+                        radius = 120f
+                        alpha = .2f
+                    }
             )
         }
+
+
+//        val titleReveal by rememberInfiniteTransition().animateFloat(
+//            initialValue = 0f,
+//            targetValue = 1f,
+//            animationSpec = infiniteRepeatable(
+//                animation = tween(6000, easing = LinearEasing)
+//            )
+//        )
+
+        val titleReveal = remember { Animatable(0f) }
+
+        LaunchedEffect(Unit) {
+            titleReveal.snapTo(0f)
+            delay(200)
+            titleReveal.animateTo(
+                targetValue = 1f,
+                animationSpec =  tween(6000, easing = LinearEasing)
+            )
+        }
+
+        CaratDisplay(
+            modifier = Modifier
+                .fillMaxSize(),
+            colors = listOf(Orange400, Purple400, Orange500),
+            circles = {
+                listOf(
+                    InfluenceCircle(
+                        center = it.center,
+                        radius = it.center.x + lerp(-200f, 900f, titleReveal.value),
+                    )
+                )
+            }
+        )
 
 //            Box(
 //                modifier = Modifier
@@ -184,17 +267,51 @@ fun TitleCardFrame(
         Column {
             MaxText(
                 text = title,
-                modifier = Modifier.padding(horizontal = 32.dp),
+                modifier = Modifier
+                    .offset(
+                        y = androidx.compose.ui.unit.lerp(60.dp, 0.dp, titleReveal.value)
+                    )
+                    .drawWithContent {
+                        layer {
+                            this@drawWithContent.drawContent()
+                            drawRect(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(White, Transparent),
+                                    startY = lerp(
+                                        -100f,
+                                        size.height,
+                                        (titleReveal.value / .2f).coerceIn(0f..1f)
+                                    ),
+                                    endY = lerp(
+                                        0f,
+                                        size.height * 1.1f,
+                                        (titleReveal.value / .2f).coerceIn(0f..1f)
+                                    ),
+                                ),
+                                blendMode = BlendMode.DstIn
+                            )
+                        }
+                    }
+                    .padding(horizontal = 32.dp),
                 maxFont = 280.sp,
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontFamily = fontFamily,
                     fontSize = 280.sp,
                     letterSpacing = -10.sp,
+//                    shadow = Shadow(
+//                        blurRadius = 50f,
+//                        color = Black.copy(alpha = .3f)
+//                    ),
                     shadow = Shadow(
-                        blurRadius = 50f,
-                        color = Black.copy(alpha = .3f)
+                        blurRadius = 1f,
+                        color = White,
                     ),
-                    color = Zinc50,
+//                    color = backgroundColor,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Zinc50, backgroundColor),
+                        startY = lerp(-1000f, 900f, titleReveal.value),
+                        endY = lerp(0f, 2900f, titleReveal.value),
+                    )
                 ),
             )
             Text(
@@ -203,7 +320,7 @@ fun TitleCardFrame(
                     .align(Alignment.CenterHorizontally),
                 maxLines = 10,
                 overflow = TextOverflow.Ellipsis,
-                color = Zinc50
+                color = Zinc50.copy(alpha = .2f)
             )
         }
     }
