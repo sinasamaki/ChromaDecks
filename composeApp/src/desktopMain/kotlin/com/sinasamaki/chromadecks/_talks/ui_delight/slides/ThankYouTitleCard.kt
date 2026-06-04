@@ -21,7 +21,7 @@ class ThankYouTitleCard: ListSlideAdvanced<ThankYouTitleCardState>() {
     @Composable
     override fun content(state: ThankYouTitleCardState) {
         TitleCardFrame(
-            title = "sinasamaki.com",
+            title = "Thank you!",
             description = "",
             backgroundColor = Zinc950,
             borderColor = Zinc700,

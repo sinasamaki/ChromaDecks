@@ -19,7 +19,8 @@ class CustomSwipeGestureSlide: ListSlideAdvanced<CustomSwipeGestureSlideState>()
     @Composable
     override fun content(state: CustomSwipeGestureSlideState) {
         ListItemDisplay(
-            code = """
+            tabs = listOf(
+                "ListItem.kt" to """
                     val state = rememberSwipeToDismissBoxState()
                     val willTrigger by remember {
                         derivedStateOf {
@@ -44,6 +45,7 @@ class CustomSwipeGestureSlide: ListSlideAdvanced<CustomSwipeGestureSlideState>()
                         alpha = if (willTrigger) 1f else .2f
                     }
                 """.trimIndent()
+            )
         ) {
             WithoutAnimations()
         }

@@ -18,7 +18,8 @@ class HapticFeedbackSlide: ListSlideAdvanced<HapticFeedbackSlideState>() {
     @Composable
     override fun content(state: HapticFeedbackSlideState) {
         ListItemDisplay(
-            code = """
+            tabs = listOf(
+                "ListItem.kt" to """
                 val haptic = LocalHapticFeedback.current
                 LaunchedEffect(willTrigger) {
                     haptic.performHapticFeedback(
@@ -30,8 +31,9 @@ class HapticFeedbackSlide: ListSlideAdvanced<HapticFeedbackSlideState>() {
                     )
                 }
                 """.trimIndent()
+            )
         ) {
-            AnimatedListItem()
+            AnimatedListItem(pleaseShake = true)
         }
     }
 }

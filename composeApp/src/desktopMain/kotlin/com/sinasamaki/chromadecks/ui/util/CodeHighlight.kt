@@ -25,8 +25,9 @@ private val STRING_RE   = Regex(""""(?:[^"\\]|\\.)*"""")
 private val NUMBER_RE   = Regex("""\b\d+\.?\d*[fFdDlL]?\b""")
 // Named parameter: word followed by optional space and `=` but not `==`
 private val PARAM_RE    = Regex("""\b([a-zA-Z_]\w*)\s*=(?!=)""")
-// Capture group 1 = the function name only (excludes the opening paren)
-private val FUN_CALL_RE = Regex("""\b([a-zA-Z_]\w*)\s*\(""")
+// Capture group 1 = the function name only (excludes the opening paren or brace).
+// Matches both regular calls `foo(` and trailing-closure calls `Box {`.
+private val FUN_CALL_RE = Regex("""\b([a-zA-Z_]\w*)\s*[({]""")
 private val KEYWORD_RE  = Regex("""\b(${KOTLIN_KEYWORDS.joinToString("|")})\b""")
 
 @Composable

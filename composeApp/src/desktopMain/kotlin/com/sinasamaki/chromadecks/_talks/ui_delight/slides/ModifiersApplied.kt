@@ -18,7 +18,8 @@ class ModifierAppliedSlide : ListSlideAdvanced<ModifierAppliedSlideState>() {
     @Composable
     override fun content(state: ModifierAppliedSlideState) {
         ListItemDisplay(
-            code = """
+            tabs = listOf(
+                "ListItem.kt" to """
                     .border(
                         width = 1.dp,
                         brush = Brush.verticalGradient(
@@ -39,6 +40,7 @@ class ModifierAppliedSlide : ListSlideAdvanced<ModifierAppliedSlideState>() {
                     Spacer(Modifier.width(10.dp))
 
                 """.trimIndent()
+            )
         ) {
             SmallClickArea()
         }

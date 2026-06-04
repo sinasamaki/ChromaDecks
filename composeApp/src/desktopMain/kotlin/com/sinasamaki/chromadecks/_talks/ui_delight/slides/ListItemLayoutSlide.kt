@@ -41,7 +41,7 @@ class ListItemLayoutSlide : ListSlideAdvanced<ListItemLayoutSlideState>() {
     @Composable
     override fun content(state: ListItemLayoutSlideState) {
         ListItemDisplay(
-            code = codeBlockCode
+            tabs = listOf("ListItem.kt" to codeBlockCode)
         ) {
             BasicListItem()
         }

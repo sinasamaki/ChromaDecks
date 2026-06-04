@@ -19,8 +19,9 @@ class CustomTapGestureSlide: ListSlideAdvanced<CustomTapGestureSlideState>() {
     @Composable
     override fun content(state: CustomTapGestureSlideState) {
         ListItemDisplay(
-            code = """
-                    val interaction = remember { 
+            tabs = listOf(
+                "ListItem.kt" to """
+                    val interaction = remember {
                         MutableInteractionSource() 
                     }
                     val isHovered by interaction.collectIsHoveredAsState()
@@ -53,6 +54,7 @@ class CustomTapGestureSlide: ListSlideAdvanced<CustomTapGestureSlideState>() {
                         }
                     }
                 """.trimIndent()
+            )
         ) {
             CustomClickArea()
         }

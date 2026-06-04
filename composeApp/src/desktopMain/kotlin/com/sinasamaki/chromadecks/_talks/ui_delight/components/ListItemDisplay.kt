@@ -20,8 +20,8 @@ import com.sinasamaki.chromadecks.ui.components.CodeIDE
 @Composable
 fun ListItemDisplay(
     modifier: Modifier = Modifier,
-    code: String,
-    tabName: String = "ListItem.kt",
+    tabs: List<Pair<String, String>>,
+    tabIndex: Int = 0,
     implementation: @Composable () -> Unit,
 ) {
 
@@ -31,11 +31,11 @@ fun ListItemDisplay(
     ) {
 
         CodeIDE(
-            tabs = listOf(tabName to code),
-            selectedTab = 0,
+            tabs = tabs,
+            selectedTab = tabIndex,
             onTabSelect = {},
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.weight(1f).padding(24.dp),
+            modifier = Modifier.weight(1.3f).padding(24.dp),
         )
         Box(
             modifier = Modifier

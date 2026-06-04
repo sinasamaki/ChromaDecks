@@ -86,7 +86,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 
-const val title = "KotlinConf 2026"
+const val title = "mDevCamp 2026"
 const val subtitle = "Dear sinasmaki ..."
 const val time = "09:41"
 
@@ -547,7 +547,10 @@ fun CustomClickArea(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun AnimatedListItem(modifier: Modifier = Modifier) {
+fun AnimatedListItem(
+    modifier: Modifier = Modifier,
+    pleaseShake: Boolean = false,
+) {
 
     val state = rememberSwipeToDismissBoxState()
 
@@ -569,25 +572,27 @@ fun AnimatedListItem(modifier: Modifier = Modifier) {
                 HapticFeedbackType.SegmentTick
             }
         )
-        shake.shake(
-            if (willTrigger) {
-                ShakeConfig(
-                    iterations = 10,
-                    intensity = 600_000f,
-                    translateX = 30f,
-                    translateY = 3f,
-                    rotate = .4f
-                )
-            } else {
-                ShakeConfig(
-                    iterations = 5,
-                    intensity = 600_000f,
-                    translateX = 30f,
-                    translateY = 3f,
-                    rotate = .4f
-                )
-            }
-        )
+        if (pleaseShake) {
+            shake.shake(
+                if (willTrigger) {
+                    ShakeConfig(
+                        iterations = 10,
+                        intensity = 600_000f,
+                        translateX = 30f,
+                        translateY = 3f,
+                        rotate = .4f
+                    )
+                } else {
+                    ShakeConfig(
+                        iterations = 5,
+                        intensity = 600_000f,
+                        translateX = 30f,
+                        translateY = 3f,
+                        rotate = .4f
+                    )
+                }
+            )
+        }
     }
 
     SwipeToDismissBox(

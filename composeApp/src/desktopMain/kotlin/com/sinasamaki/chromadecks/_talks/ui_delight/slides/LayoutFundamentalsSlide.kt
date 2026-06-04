@@ -2,6 +2,9 @@ package com.sinasamaki.chromadecks._talks.ui_delight.slides
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,8 +18,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -179,9 +185,12 @@ private fun Item(
     modifier: Modifier = Modifier,
     color: Color,
 ) {
+    val interaction = remember { MutableInteractionSource() }
+    val isHovered by interaction.collectIsHoveredAsState()
     Box(
         modifier
             .padding(8.dp)
+            .hoverable(interaction)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -193,8 +202,14 @@ private fun Item(
             )
             .border(
                 width = 2.dp,
-                color = color,
+                color = if (isHovered) color.copy(alpha = 1f) else color,
                 shape = RoundedCornerShape(32.dp)
             )
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp)
+            ) {
+                this.color = if (isHovered) color.copy(alpha = 1f) else color
+                radius = if (isHovered) 128f else 0f
+            }
     )
 }

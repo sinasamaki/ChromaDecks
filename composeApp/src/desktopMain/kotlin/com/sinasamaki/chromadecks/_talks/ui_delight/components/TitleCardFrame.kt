@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -52,12 +53,15 @@ import com.sinasamaki.chromadecks._003_ChromaDial.slides.CaratDisplay
 import com.sinasamaki.chromadecks._003_ChromaDial.slides.InfluenceCircle
 import com.sinasamaki.chromadecks.ui.modifiers.layer
 import com.sinasamaki.chromadecks.ui.theme.Black
+import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Neutral200
 import com.sinasamaki.chromadecks.ui.theme.Orange400
 import com.sinasamaki.chromadecks.ui.theme.Orange500
 import com.sinasamaki.chromadecks.ui.theme.Pink50
 import com.sinasamaki.chromadecks.ui.theme.Pink500
+import com.sinasamaki.chromadecks.ui.theme.Purple300
 import com.sinasamaki.chromadecks.ui.theme.Purple400
+import com.sinasamaki.chromadecks.ui.theme.Purple500
 import com.sinasamaki.chromadecks.ui.theme.Transparent
 import com.sinasamaki.chromadecks.ui.theme.White
 import com.sinasamaki.chromadecks.ui.theme.Zinc50
@@ -143,7 +147,7 @@ fun TitleCardFrame(
                                 drawLine(
 //                                    color = borderColor,
                                     brush = Brush.linearGradient(
-                                        colors = listOf(Orange400, Purple400, Pink500)
+                                        colors = listOf(Lime500, Purple500, Purple300)
                                     ),
                                     start = Offset(x = line.startXFraction * size.width, y = 0f),
                                     end = Offset(x = 0f, y = line.endYFraction * size.height),
@@ -156,7 +160,7 @@ fun TitleCardFrame(
                         width = 2.dp,
 //                        color = borderColor,
                         brush = Brush.linearGradient(
-                            colors = listOf(Orange400, Purple400, Pink500)
+                            colors = listOf(Lime500, Purple500, Purple300)
                         ),
                         shape = RectangleShape
                     )
@@ -165,7 +169,7 @@ fun TitleCardFrame(
                     ) {
 //                        color = borderColor
                         brush = Brush.linearGradient(
-                            colors = listOf(Orange400, Purple400, Pink500)
+                            colors = listOf(Lime500, Purple500, Purple300)
                         )
                         radius = 120f
                         alpha = .2f
@@ -196,7 +200,7 @@ fun TitleCardFrame(
         CaratDisplay(
             modifier = Modifier
                 .fillMaxSize(),
-            colors = listOf(Orange400, Purple400, Orange500),
+            colors = listOf(Lime500, Purple500, Purple300),
             circles = {
                 listOf(
                     InfluenceCircle(
@@ -268,6 +272,7 @@ fun TitleCardFrame(
             MaxText(
                 text = title,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .offset(
                         y = androidx.compose.ui.unit.lerp(60.dp, 0.dp, titleReveal.value)
                     )
@@ -311,17 +316,18 @@ fun TitleCardFrame(
                         colors = listOf(Zinc50, backgroundColor),
                         startY = lerp(-1000f, 900f, titleReveal.value),
                         endY = lerp(0f, 2900f, titleReveal.value),
-                    )
+                    ),
+                    textAlign = TextAlign.Center,
                 ),
             )
-            Text(
-                description,
-                modifier = Modifier.fillMaxWidth(.5f)
-                    .align(Alignment.CenterHorizontally),
-                maxLines = 10,
-                overflow = TextOverflow.Ellipsis,
-                color = Zinc50.copy(alpha = .2f)
-            )
+//            Text(
+//                description,
+//                modifier = Modifier.fillMaxWidth(.5f)
+//                    .align(Alignment.CenterHorizontally),
+//                maxLines = 10,
+//                overflow = TextOverflow.Ellipsis,
+//                color = Zinc50.copy(alpha = .2f)
+//            )
         }
     }
 

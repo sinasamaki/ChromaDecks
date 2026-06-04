@@ -12,17 +12,23 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.singleWindowApplication
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.AboutMeSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.AccessibilitySemanticsSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.AccessibilityTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.AnimatedListItemSlide
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.AnimationsUsageSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.AnimationsTitleCard
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.ArchiveSwipeSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.CaratDisplaySlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.CodeHighlightSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.CubeCodeSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.CustomSwipeGestureSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.CustomTapGestureSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.DeleteDragSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.GesturesTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.HapticFeedbackSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.HapticFeedbackTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.FinishedElementSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.IntroductionSlide
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.KotlinConfIntroSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.MDevCampIntroSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.VoteSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.LayoutFundamentalsSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.LayoutFundamentalsTitleCard
@@ -32,9 +38,11 @@ import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierAppliedSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierClickableSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifiersTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.MyAnimationsSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.PillAnimationSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ThankYouTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.TitleSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.WhySlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.WhyTitleCard
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
 import com.sinasamaki.chromadecks.ui.slideanimations.blurIn
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeIn
@@ -43,6 +51,10 @@ import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.scaleIn
 import com.sinasamaki.chromadecks.ui.theme.ChromaContainer
 import com.sinasamaki.chromadecks.ui.theme.CodeColors
+import com.sinasamaki.chromadecks.ui.theme.Lime200
+import com.sinasamaki.chromadecks.ui.theme.Lime400
+import com.sinasamaki.chromadecks.ui.theme.Lime500
+import com.sinasamaki.chromadecks.ui.theme.Lime600
 import com.sinasamaki.chromadecks.ui.theme.Orange300
 import com.sinasamaki.chromadecks.ui.theme.Orange400
 import com.sinasamaki.chromadecks.ui.theme.Orange500
@@ -71,11 +83,11 @@ fun UIDelightPresentation() {
     ChromaContainer(
         aspectRatio = 16f / 9f,
         codeColors = CodeColors(
-            keyword = Purple300,
-            string = Orange300,
-            number = Pink300,
+            keyword = Lime500,
+            string = Lime600,
+            number = Lime400,
             function = Purple400,
-            param = Orange400,
+            param = Lime200,
             comment = Slate500,
         ),
     ) {
@@ -94,7 +106,7 @@ fun UIDelightPresentation() {
 //                        ListItemSlide(),
 //                        TitleSlide(),
 
-                        KotlinConfIntroSlide(),
+                        MDevCampIntroSlide(),
 //                        IntroductionSlide(),
                         AboutMeSlide(),
 //                        MyAnimationsSlide(),
@@ -114,13 +126,26 @@ fun UIDelightPresentation() {
 
                         AnimationsTitleCard(),
                         AnimatedListItemSlide(),
-                        AnimationsUsageSlide(),
+                        ArchiveSwipeSlide(),
+                        DeleteDragSlide(),
+
+                        AccessibilityTitleCard(),
+                        AccessibilitySemanticsSlide(),
 
                         HapticFeedbackTitleCard(),
                         HapticFeedbackSlide(),
 
-                        VoteSlide(),
-//                        ThankYouTitleCard(),
+                        WhyTitleCard(),
+
+                        PillAnimationSlide(),
+
+                        CaratDisplaySlide(),
+                        CubeCodeSlide(),
+                        FinishedElementSlide(),
+                        CodeHighlightSlide(),
+
+//                        VoteSlide(),
+                        ThankYouTitleCard(),
                     )
                 },
                 scrollAnimationSpec = spring(

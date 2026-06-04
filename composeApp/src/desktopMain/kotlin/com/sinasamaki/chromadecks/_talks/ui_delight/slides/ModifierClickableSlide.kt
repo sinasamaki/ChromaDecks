@@ -20,29 +20,35 @@ class ModifierClickableSlide : ListSlideAdvanced<ModifierClickableSlideState>() 
         Column {
             ListItemDisplay(
                 modifier = Modifier.weight(1f),
-                code = """
+                tabs = listOf(
+                    "TooSmall.kt" to """
                     .padding(16.dp)
                     .clickable { selected = !selected },
                 """.trimIndent()
+                )
             ) {
                 SmallClickArea()
             }
             ListItemDisplay(
                 modifier = Modifier.weight(1f),
-                code = """
+                tabs = listOf(
+                    "TooLarge.kt" to """
                         .clickable { selected = !selected }
                         .padding(4.dp)
                 """.trimIndent()
+                )
             ) {
                 BigClickArea()
             }
             ListItemDisplay(
                 modifier = Modifier.weight(1f),
-                code = """
+                tabs = listOf(
+                    "JustRight.kt" to """
                     .clip(RoundedCornerShape(24.dp))
                     .clickable { selected = !selected }
                     .padding(16.dp),
                 """.trimIndent()
+                )
             ) {
                 JustRightClickArea()
             }
