@@ -28,22 +28,36 @@ class CustomSwipeGestureSlide: ListSlideAdvanced<CustomSwipeGestureSlideState>()
                         }
                     }
                     
+                    SwipeToDismissBox(
+                        state = state,
+                        background = {
+                        Box(
+                            modifier = Modifier
+                                .dropShadow(
+                                    shape = RoundedCornerShape(24.dp)
+                                ) {
+                                    this.color = color
+                                    radius = 40f
+                                    alpha = if (willTrigger) .2f else 0f
+                                }
+                                .innerShadow(
+                                    shape = RoundedCornerShape(24.dp)
+                                ) {
+                                    this.color = color
+                                    radius = 40f
+                                    alpha = if (willTrigger) 1f else .2f
+                                }
+                                ) {
+                                    DeleteAction()
+                                    ArchiveAction()
+                                }
+                        }
+                    ) {
+                        ListItem()    
+                    }
                     ...
                     
-                    .dropShadow(
-                        shape = RoundedCornerShape(24.dp)
-                    ) {
-                        this.color = color
-                        radius = 40f
-                        alpha = if (willTrigger) .2f else 0f
-                    }
-                    .innerShadow(
-                        shape = RoundedCornerShape(24.dp)
-                    ) {
-                        this.color = color
-                        radius = 40f
-                        alpha = if (willTrigger) 1f else .2f
-                    }
+                    
                 """.trimIndent()
             )
         ) {

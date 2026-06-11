@@ -23,25 +23,19 @@ import com.sinasamaki.chromadecks._talks.ui_delight.slides.CubeCodeSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.CustomSwipeGestureSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.CustomTapGestureSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.DeleteDragSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.FinishedElementSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.GesturesTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.HapticFeedbackSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.HapticFeedbackTitleCard
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.FinishedElementSlide
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.IntroductionSlide
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.MDevCampIntroSlide
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.VoteSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.LayoutFundamentalsSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.LayoutFundamentalsTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ListItemLayoutSlide
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.ListItemSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.MDevCampIntroSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierAppliedSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierClickableSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifiersTitleCard
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.MyAnimationsSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.PillAnimationSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ThankYouTitleCard
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.TitleSlide
-import com.sinasamaki.chromadecks._talks.ui_delight.slides.WhySlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.WhyTitleCard
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
 import com.sinasamaki.chromadecks.ui.slideanimations.blurIn
@@ -55,16 +49,9 @@ import com.sinasamaki.chromadecks.ui.theme.Lime200
 import com.sinasamaki.chromadecks.ui.theme.Lime400
 import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Lime600
-import com.sinasamaki.chromadecks.ui.theme.Orange300
-import com.sinasamaki.chromadecks.ui.theme.Orange400
-import com.sinasamaki.chromadecks.ui.theme.Orange500
-import com.sinasamaki.chromadecks.ui.theme.Pink300
-import com.sinasamaki.chromadecks.ui.theme.Pink500
-import com.sinasamaki.chromadecks.ui.theme.Purple300
 import com.sinasamaki.chromadecks.ui.theme.Purple400
-import com.sinasamaki.chromadecks.ui.theme.Purple500
-import com.sinasamaki.chromadecks.ui.theme.Slate500
 import com.sinasamaki.chromadecks.ui.theme.Slate50
+import com.sinasamaki.chromadecks.ui.theme.Slate500
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
 
 fun main() {
