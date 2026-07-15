@@ -59,6 +59,8 @@ fun SlidesPresenter2(
         stiffness = Spring.StiffnessVeryLow,
         dampingRatio = Spring.DampingRatioLowBouncy
     ),
+    background: @Composable () -> Unit = {},
+    onCurrentIndexChange: (Int) -> Unit = {},
     animator: @Composable (
         @Composable () -> Unit
     ) -> Unit = { content -> content() }
@@ -76,6 +78,7 @@ fun SlidesPresenter2(
     var currentSlideIndex by rememberSaveable { mutableStateOf(0) }
     LaunchedEffect(Unit) {
         snapshotFlow { currentSlideIndex }.collect {
+            onCurrentIndexChange(it)
             scope.launch {
                 listState.animateTo2(
                     index = currentSlideIndex + 1,
@@ -112,6 +115,9 @@ fun SlidesPresenter2(
                 size = with(density) { DpSize(it.width.toDp(), it.height.toDp()) }
             }
     ) {
+        // Sits behind every slide in the view hierarchy rather than living
+        // inside any one slide. Caller reacts to the index via onCurrentIndexChange.
+        background()
         val multiplier = remember { 1.0f }
         if (size != DpSize.Zero) {
             LazyColumn(

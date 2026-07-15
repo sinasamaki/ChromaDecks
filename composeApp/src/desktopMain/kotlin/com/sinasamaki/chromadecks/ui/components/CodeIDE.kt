@@ -144,7 +144,7 @@ fun CodeIDE(
                 modifier = Modifier
                     .padding(2.dp)
                     .background(
-                        color = Zinc950,
+                        color = Zinc950.copy(alpha = .7f),
                         shape = RoundedCornerShape(22.dp),
                     )
                     .padding(16.dp),

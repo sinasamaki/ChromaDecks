@@ -27,6 +27,8 @@ import com.sinasamaki.chromadecks._talks.ui_delight.slides.FinishedElementSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.GesturesTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.HapticFeedbackSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.HapticFeedbackTitleCard
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.IntroductionSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.KotlinConfIntroSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.LayoutFundamentalsSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.LayoutFundamentalsTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ListItemLayoutSlide
@@ -36,6 +38,8 @@ import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierClickableSlid
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifiersTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.PillAnimationSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ThankYouTitleCard
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.TitleSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.VoteSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.WhyTitleCard
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
 import com.sinasamaki.chromadecks.ui.slideanimations.blurIn
@@ -92,9 +96,9 @@ fun UIDelightPresentation() {
 //
 //                        ListItemSlide(),
 //                        TitleSlide(),
-
+                        KotlinConfIntroSlide(),
                         MDevCampIntroSlide(),
-//                        IntroductionSlide(),
+                        IntroductionSlide(),
                         AboutMeSlide(),
 //                        MyAnimationsSlide(),
 //                        WhySlide(),
@@ -131,7 +135,7 @@ fun UIDelightPresentation() {
                         FinishedElementSlide(),
                         CodeHighlightSlide(),
 
-//                        VoteSlide(),
+                        VoteSlide(),
                         ThankYouTitleCard(),
                     )
                 },

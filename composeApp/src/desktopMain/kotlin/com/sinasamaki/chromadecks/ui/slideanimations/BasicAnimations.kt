@@ -103,47 +103,50 @@ fun Modifier.scaleOut(
     }
 }
 
+// initial is a fraction of the element's own size: 1f = one full width/height,
+// so translations scale with the slide instead of being fixed pixel amounts.
+
 @Composable
 fun Modifier.translateInX(
     startAt: Float = 0f,
-    initial: Float = 100f,
+    initial: Float = 1f,
 ): Modifier {
     val progress = LocalSlideProgress.current.progress
     return this.graphicsLayer {
-        translationX = lerp(initial, 0f, enterFraction(progress, startAt))
+        translationX = lerp(initial, 0f, enterFraction(progress, startAt)) * size.width
     }
 }
 
 @Composable
 fun Modifier.translateOutX(
     startAt: Float = 0f,
-    initial: Float = 100f,
+    initial: Float = 1f,
 ): Modifier {
     val progress = LocalSlideProgress.current.progress
     return this.graphicsLayer {
-        translationX = lerp(initial, 0f, exitFraction(progress, startAt))
+        translationX = lerp(initial, 0f, exitFraction(progress, startAt)) * size.width
     }
 }
 
 @Composable
 fun Modifier.translateInY(
     startAt: Float = 0f,
-    initial: Float = 100f,
+    initial: Float = 1f,
 ): Modifier {
     val progress = LocalSlideProgress.current.progress
     return this.graphicsLayer {
-        translationY = lerp(initial, 0f, enterFraction(progress, startAt))
+        translationY = lerp(initial, 0f, enterFraction(progress, startAt)) * size.height
     }
 }
 
 @Composable
 fun Modifier.translateOutY(
     startAt: Float = 0f,
-    initial: Float = 100f,
+    initial: Float = 1f,
 ): Modifier {
     val progress = LocalSlideProgress.current.progress
     return this.graphicsLayer {
-        translationY = lerp(initial, 0f, exitFraction(progress, startAt))
+        translationY = lerp(initial, 0f, exitFraction(progress, startAt)) * size.height
     }
 }
 
