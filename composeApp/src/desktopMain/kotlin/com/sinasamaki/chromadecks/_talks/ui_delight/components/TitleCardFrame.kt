@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import chromadecks.composeapp.generated.resources.Res
 import chromadecks.composeapp.generated.resources.RobotoFlex
-import com.sinasamaki.chromadecks._003_ChromaDial.slides.CaratDisplay
-import com.sinasamaki.chromadecks._003_ChromaDial.slides.InfluenceCircle
+import com.sinasamaki.chromadecks.ui.components.CaratDisplay
+import com.sinasamaki.chromadecks.ui.components.InfluenceCircle
 import com.sinasamaki.chromadecks.ui.modifiers.layer
 import com.sinasamaki.chromadecks.ui.theme.Black
 import com.sinasamaki.chromadecks.ui.theme.Lime500

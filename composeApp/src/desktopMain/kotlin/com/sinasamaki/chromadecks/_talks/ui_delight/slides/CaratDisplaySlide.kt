@@ -12,8 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.util.lerp
-import com.sinasamaki.chromadecks._003_ChromaDial.slides.CaratDisplay
-import com.sinasamaki.chromadecks._003_ChromaDial.slides.InfluenceCircle
+import com.sinasamaki.chromadecks.ui.components.CaratDisplay
+import com.sinasamaki.chromadecks.ui.components.InfluenceCircle
 import com.sinasamaki.chromadecks._talks.ui_delight.components.ListItemDisplay
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.theme.Lime500
