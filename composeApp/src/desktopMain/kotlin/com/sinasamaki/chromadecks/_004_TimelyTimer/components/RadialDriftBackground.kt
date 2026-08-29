@@ -24,10 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import kotlin.math.PI
@@ -273,7 +274,7 @@ fun RadialDriftBackground(
                         val a = rotationRad * shape.parallax
                         val pos = center + rotateVec(baseVec + wander, cos(a), sin(a))
                         drawCircle(
-                            color = shape.color.copy(alpha = .4f),
+                            color = shape.color.copy(alpha = .3f),
                             radius = shape.size,
                             center = pos,
                         )
@@ -291,22 +292,21 @@ fun RadialDriftBackground(
                         val frac = (shape.distFrac + outward * shape.speed).mod(1f)
                         val dist = frac * maxDist
                         val pos = center + dir * dist
-                        val longHalf = shape.size / 2f
-                        val shortHalf = longHalf * 0.4f
-                        drawLine(
-                            color = shape.color,
-                            start = pos - dir * longHalf,
-                            end = pos + dir * longHalf,
-                            strokeWidth = shape.stroke * 0.5f,
-                            cap = StrokeCap.Round,
-                        )
-                        drawLine(
-                            color = shape.color,
-                            start = pos - dir * shortHalf,
-                            end = pos + dir * shortHalf,
-                            strokeWidth = shape.stroke * 1.8f,
-                            cap = StrokeCap.Round,
-                        )
+                        val length = shape.size
+                        val thickness = shape.stroke * 1.8f
+                        rotate(
+                            degrees = angle * 180f / PI.toFloat(),
+                            pivot = pos,
+                        ) {
+                            drawOval(
+                                color = shape.color,
+                                topLeft = Offset(
+                                    x = pos.x - length / 2f,
+                                    y = pos.y - thickness / 2f,
+                                ),
+                                size = Size(length, thickness),
+                            )
+                        }
                     }
                 }
             }
