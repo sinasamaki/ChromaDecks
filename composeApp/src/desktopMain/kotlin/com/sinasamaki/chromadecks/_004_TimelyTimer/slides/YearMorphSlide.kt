@@ -17,6 +17,7 @@ import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.components.LocalSlideState
 import com.sinasamaki.chromadecks.ui.theme.Black
 import com.sinasamaki.chromadecks.ui.theme.Orange
+import com.sinasamaki.chromadecks.ui.theme.Red
 import com.sinasamaki.chromadecks.ui.theme.Teal
 import com.sinasamaki.chromadecks.ui.theme.Zinc200
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
@@ -57,7 +58,7 @@ internal class YearMorphSlide : ListSlideAdvanced<YearMorphState>() {
                     TimelyNumber(
                         digit = digit,
                         height = digitHeight,
-                        color = Teal.v500,
+                        color = Orange.v500,
                         strokeWidth = 20.dp
                     )
                 }

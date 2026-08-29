@@ -40,9 +40,6 @@ import com.sinasamaki.chromadecks.ui.theme.Blue400
 import com.sinasamaki.chromadecks.ui.theme.Red400
 import com.sinasamaki.chromadecks.ui.theme.Swatch
 
-private const val TAB_TRACK = 0
-private const val TAB_ARCS = 1
-
 internal data class MultiArcState(
     val targetDegree: Float,
     val showArcRow: Boolean,
@@ -50,9 +47,7 @@ internal data class MultiArcState(
     val styleStage: Boolean,
     val stacked: Boolean,
     val multiRing: Boolean,
-    val tab: Int,
-    val trackCode: String,
-    val arcsCode: String,
+    val code: String,
 )
 
 internal class MultiArcSlide : ListSlideAdvanced<MultiArcState>() {
@@ -65,27 +60,18 @@ internal class MultiArcSlide : ListSlideAdvanced<MultiArcState>() {
             styleStage = false,
             stacked = true,
             multiRing = false,
-            tab = TAB_TRACK,
-            trackCode = TRACK_SINGLE_ARC_CODE,
-            arcsCode = ARCS_ROW_CODE,
+            code = ARCS_EMPTY_CODE,
         )
 
     override val stateMutations: List<MultiArcState.() -> MultiArcState>
         get() = listOf(
             { copy(targetDegree = 3.75f * 360f) },
-            { copy(showArcRow = true, tab = TAB_ARCS) },
+            { copy(showArcRow = true, code = ARCS_ROW_CODE) },
             { copy(stacked = false) },
-            { copy(radiusStage = true, arcsCode = ARCS_RADIUS_CODE) },
-            { copy(styleStage = true, arcsCode = ARCS_STYLE_CODE) },
+            { copy(radiusStage = true, code = ARCS_RADIUS_CODE) },
+            { copy(styleStage = true, code = ARCS_STYLE_CODE) },
             { copy(stacked = true) },
-            {
-                copy(
-                    showArcRow = false,
-                    multiRing = true,
-                    tab = TAB_TRACK,
-                    trackCode = TRACK_FINAL_CODE,
-                )
-            },
+            { copy(showArcRow = false, multiRing = true) },
         )
 
     @Composable
@@ -160,11 +146,8 @@ internal class MultiArcSlide : ListSlideAdvanced<MultiArcState>() {
             ) {
                 CodeIDE(
                     modifier = Modifier.fillMaxWidth(),
-                    tabs = listOf(
-                        "TimelyDial.kt" to state.trackCode,
-                        "StackedArcs.kt" to state.arcsCode,
-                    ),
-                    selectedTab = state.tab,
+                    tabs = listOf("StackedArcs.kt" to state.code),
+                    selectedTab = 0,
                     onTabSelect = {},
                 )
             }
@@ -196,7 +179,7 @@ private fun MultiArcRow(
         contentAlignment = Alignment.Center,
     ) {
         Canvas(Modifier.fillMaxSize()) {
-            val baseRadius = size.height / 2f
+            val baseRadius = size.height / 2f - 6.dp.toPx()
             val ringPadding = RING_PADDING_STEP.toPx()
             val rProgress = radiusProgress.value
             val sProgress = styleProgress.value
@@ -230,32 +213,11 @@ private fun MultiArcRow(
     }
 }
 
-private fun trackCode(body: String) = """
-    track = { dialState ->
-      Box(Modifier.fillMaxSize().drawBehind {
-${body.prependIndent("        ")}
-      })
+private val ARCS_EMPTY_CODE = """
+    fun DrawScope.drawStackedArcs(degree: Float) {
+
     }
 """.trimIndent()
-
-private val TRACK_SINGLE_ARC_CODE = trackCode(
-    """
-    drawArc(
-      color = swatch.v50,
-      startAngle = 0f,
-      sweepAngle = dialState.degree.coerceIn(0f, 360f),
-      radius = center.x - 24.dp.toPx(),
-    )
-    """.trimIndent()
-)
-
-private val TRACK_FINAL_CODE = trackCode(
-    """
-    drawTickRing(dialState)
-    drawNumbers(dialState)
-    drawStackedArcs(dialState.degree)
-    """.trimIndent()
-)
 
 private fun stackedArcsCode(body: String) = """
     fun DrawScope.drawStackedArcs(degree: Float) {
@@ -275,7 +237,7 @@ private val ARCS_ROW_CODE = stackedArcsCode(
       color = swatch.v100,
       startAngle = 0f,
       sweepAngle = sweep,
-      radius = center.x - 24.dp.toPx(),
+      radius = center.x - 30.dp.toPx(),
     )
     """.trimIndent()
 )
@@ -290,7 +252,7 @@ private val ARCS_RADIUS_CODE = stackedArcsCode(
       color = swatch.v100,
       startAngle = 0f,
       sweepAngle = sweep,
-      radius = center.x - 24.dp.toPx() - padding,
+      radius = center.x - 30.dp.toPx() - padding,
     )
     """.trimIndent()
 )
@@ -306,7 +268,7 @@ private val ARCS_STYLE_CODE = stackedArcsCode(
       color = swatch.v100.copy(alpha = 1f - .15f * above),
       startAngle = 0f,
       sweepAngle = sweep,
-      radius = center.x - 24.dp.toPx() - padding,
+      radius = center.x - 30.dp.toPx() - padding,
       strokeWidth = lerp(1.dp, 3.dp, recency),
     )
     """.trimIndent()

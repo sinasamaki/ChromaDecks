@@ -67,19 +67,19 @@ fun MultiArcDial(
         thumb = {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .padding(10.dp)
-                    .border(width = 2.dp, color = swatch.v100, shape = CircleShape)
-                    .padding(3.dp)
+                    .size(60.dp)
+                    .padding(12.5f.dp)
+                    .border(width = 2.5f.dp, color = swatch.v100, shape = CircleShape)
+                    .padding(3.75f.dp)
                     .background(color = swatch.v100, shape = CircleShape)
                     .drawBehind {
                         for (i in 0..1) {
                             for (j in 0..3) {
                                 drawCircle(
                                     color = swatch.v500,
-                                    radius = 1.5f.dp.toPx(),
-                                    center = (center - Offset(x = 6f.dp.toPx(), y = 2.dp.toPx())) +
-                                            Offset(x = j * 4.dp.toPx(), y = i * 4.dp.toPx()),
+                                    radius = 1.875f.dp.toPx(),
+                                    center = (center - Offset(x = 7.5f.dp.toPx(), y = 2.5f.dp.toPx())) +
+                                            Offset(x = j * 5.dp.toPx(), y = i * 5.dp.toPx()),
                                 )
                             }
                         }
@@ -100,7 +100,7 @@ fun MultiArcDial(
                                 color = swatch.v50,
                                 startAngle = 0f,
                                 sweepAngle = dialState.degree.coerceIn(0f, 360f),
-                                radius = center.x - 24.dp.toPx(),
+                                radius = center.x - 30.dp.toPx(),
                                 strokeWidth = 3.dp,
                             )
                         }
@@ -139,7 +139,7 @@ private fun DrawScope.drawMultiArcNumber(index: Int, measurer: TextMeasurer, cur
     val targetDegree = (index + 1) * 90f
     val distance = (((currentDegree - targetDegree) + 180f).mod(360f) - 180f).absoluteValue
     val push = (1f - distance / 15f).coerceIn(0f, 1f)
-    val radiusFraction = lerp(.38f, .34f, push)
+    val radiusFraction = lerp(.385f, .345f, push)
 
     drawEveryInterval(
         startDegrees = targetDegree,
@@ -153,7 +153,7 @@ private fun DrawScope.drawMultiArcNumber(index: Int, measurer: TextMeasurer, cur
             text = "${(index + 1) * 15}",
             style = TextStyle(
                 color = Zinc50,
-                fontSize = 24.sp,
+                fontSize = 18.sp,
                 shadow = Shadow(color = Black.copy(alpha = .4f), blurRadius = 10f),
             ),
         )
@@ -193,7 +193,7 @@ private fun DrawScope.drawStackedArcs(
             color = swatch.v100.copy(alpha = lerpStep(1f, -.15f, z)),
             startAngle = 0f,
             sweepAngle = degree,
-            radius = center.x - 24.dp.toPx() - padding,
+            radius = center.x - 30.dp.toPx() - padding,
             strokeWidth = stroke,
         )
     }

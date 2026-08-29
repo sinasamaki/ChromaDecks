@@ -120,11 +120,15 @@ private val RING_CODE = ringCode(
 private val RANGE_CODE = ringCode(
     """
     val delta = data.intervalDegree - dialState.degree
-    val x = 1f - (delta.absoluteValue / 18f).coerceIn(0f, 1f)
+    val x = 1f - (delta.absoluteValue / 18f)
+        .coerceIn(0f, 1f)
     val height = lerp(10.dp.toPx(), 40.dp.toPx(), x)
 
     drawLine(
-      color = if (data.inActiveRange) swatch.v50 else swatch.v100,
+      color = if (data.inActiveRange)
+        swatch.v50
+      else
+        swatch.v100,
       start = Offset(0f, 12.dp.toPx()),
       end = Offset(0f, 12.dp.toPx() - height),
       strokeWidth = 2.dp.toPx(),

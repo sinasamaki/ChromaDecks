@@ -148,7 +148,7 @@ fun ExplodedTimelyDial(
                 modifier = Modifier.fillMaxSize(),
                 thumb = { state ->
                     liveDialState.value = state
-                    Box(Modifier.size(48.dp))
+                    Box(Modifier.size(60.dp))
                 },
                 track = {},
             )
@@ -214,7 +214,7 @@ private fun RingsLayer(swatch: Swatch, degreeState: State<Float>, dialState: Sta
                         color = swatch.v100.copy(alpha = lerpStep(1f, -.15f, z)),
                         startAngle = 0f,
                         sweepAngle = sweep,
-                        radius = center.x - 24.dp.toPx() - padding,
+                        radius = center.x - 30.dp.toPx() - padding,
                         strokeWidth = stroke,
                     )
                 }
@@ -246,23 +246,23 @@ private fun BoxScope.FakeThumb(swatch: Swatch, dialState: State<DialState?>) {
                 transformOrigin = TransformOrigin(0.5f, 0.5f)
                 alpha = if (thumbSize > 0f) 1f else 0f
             }
-            .size(48.dp)
-            .padding(10.dp)
-            .border(width = 2.dp, color = swatch.v100, shape = CircleShape)
-            .padding(3.dp)
+            .size(60.dp)
+            .padding(12.5f.dp)
+            .border(width = 2.5f.dp, color = swatch.v100, shape = CircleShape)
+            .padding(3.75f.dp)
             .background(color = swatch.v100, shape = CircleShape)
             .drawBehind {
                 for (i in 0..1) {
                     for (j in 0..3) {
                         drawCircle(
                             color = swatch.v500,
-                            radius = (1.5f).dp.toPx(),
+                            radius = (1.875f).dp.toPx(),
                             center = (center - Offset(
-                                x = (6f).dp.toPx(),
-                                y = 2.dp.toPx(),
+                                x = (7.5f).dp.toPx(),
+                                y = 2.5f.dp.toPx(),
                             )) + Offset(
-                                x = j * 4.dp.toPx(),
-                                y = i * 4.dp.toPx(),
+                                x = j * 5.dp.toPx(),
+                                y = i * 5.dp.toPx(),
                             )
                         )
                     }
@@ -301,7 +301,7 @@ private fun DrawScope.drawMinute(
         delta < 15f -> 1f - (delta / 15f)
         else -> 0f
     }
-    val radiusMult = lerp(.38f, .34f, push)
+    val radiusMult = lerp(.385f, .345f, push)
 
     drawEveryInterval(
         startDegrees = targetDegree,
@@ -315,7 +315,7 @@ private fun DrawScope.drawMinute(
             text = "${(index + 1) * 15}",
             style = TextStyle(
                 color = Zinc50,
-                fontSize = 24.sp,
+                fontSize = 18.sp,
                 shadow = Shadow(
                     color = Black.copy(alpha = .4f),
                     blurRadius = 10f,
@@ -387,6 +387,6 @@ private fun lerpStep(start: Float, interval: Float, fraction: Float) = start + (
 private val DECORATION_FULL_AT = 48.dp
 private val DecorationShape = RoundedCornerShape(0.dp)
 
-private const val SNAPSHOT_DEGREE = 920f
+private const val SNAPSHOT_DEGREE = 0f
 
 private const val DEGREES_PER_SECOND = 120f

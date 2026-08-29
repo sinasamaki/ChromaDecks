@@ -186,15 +186,15 @@ fun TimelyDial(
             )
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .padding(10.dp)
+                    .size(60.dp)
+                    .padding(12.5f.dp)
                     .scale(thumbScale)
                     .border(
-                        width = 2.dp,
+                        width = 2.5f.dp,
                         color = swatch.v100,
                         shape = CircleShape
                     )
-                    .padding(3.dp)
+                    .padding(3.75f.dp)
                     .background(
                         color = swatch.v100,
                         shape = CircleShape,
@@ -204,13 +204,13 @@ fun TimelyDial(
                             for (j in 0..3) {
                                 drawCircle(
                                     color = swatch.v500,
-                                    radius = (1.5f).dp.toPx(),
+                                    radius = (1.875f).dp.toPx(),
                                     center = (center - Offset(
-                                        x = (6f).dp.toPx(),
-                                        y = 2.dp.toPx(),
+                                        x = (7.5f).dp.toPx(),
+                                        y = 2.5f.dp.toPx(),
                                     )) + Offset(
-                                        x = j * 4.dp.toPx(),
-                                        y = i * 4.dp.toPx(),
+                                        x = j * 5.dp.toPx(),
+                                        y = i * 5.dp.toPx(),
                                     )
                                 )
                             }
@@ -307,7 +307,7 @@ fun TimelyDial(
                                 ),
                                 startAngle = 0f,
                                 sweepAngle = degree,
-                                radius = center.x - 24.dp.toPx() - padding,
+                                radius = center.x - 30.dp.toPx() - padding,
                                 strokeWidth = stroke
                             )
                         }
@@ -481,7 +481,7 @@ private fun DrawScope.drawMinute(
     val secPush = 1f - (secDelta.absoluteValue / 18f).coerceIn(0f..1f)
 
     val push = lerp(thumbPush, secPush, secInfluence)
-    val radiusMult = lerp(.38f, .34f, push)
+    val radiusMult = lerp(.385f, .345f, push)
 
     drawEveryInterval(
         startDegrees = targetDegree,
@@ -495,7 +495,7 @@ private fun DrawScope.drawMinute(
             text = "${(index + 1) * 15}",
             style = TextStyle(
                 color = Zinc50,
-                fontSize = 24.sp,
+                fontSize = 18.sp,
                 shadow = Shadow(
                     color = Black.copy(alpha = .4f),
                     blurRadius = 10f,

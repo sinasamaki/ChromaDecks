@@ -20,10 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -35,10 +37,12 @@ import com.sinasamaki.chroma.dial.Dial
 import com.sinasamaki.chroma.dial.IntervalOrientation
 import com.sinasamaki.chroma.dial.drawArc
 import com.sinasamaki.chroma.dial.drawEveryInterval
+import com.sinasamaki.chromadecks.extensions.toPx
 import com.sinasamaki.chromadecks.ui.theme.Black
 import com.sinasamaki.chromadecks.ui.theme.Swatch
 import com.sinasamaki.chromadecks.ui.theme.Transparent
 import com.sinasamaki.chromadecks.ui.theme.Zinc50
+import com.sinasamaki.kotlinconf.logo.strokeWidth
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
@@ -98,19 +102,22 @@ fun RingLinesDial(
             thumb = {
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .padding(10.dp)
-                        .border(width = 2.dp, color = swatch.v100, shape = CircleShape)
-                        .padding(3.dp)
+                        .size(60.dp)
+                        .padding(12.5f.dp)
+                        .border(width = 2.5f.dp, color = swatch.v100, shape = CircleShape)
+                        .padding(3.75f.dp)
                         .background(color = swatch.v100, shape = CircleShape)
                         .drawBehind {
                             for (i in 0..1) {
                                 for (j in 0..3) {
                                     drawCircle(
                                         color = swatch.v500,
-                                        radius = 1.5f.dp.toPx(),
-                                        center = (center - Offset(x = 6f.dp.toPx(), y = 2.dp.toPx())) +
-                                                Offset(x = j * 4.dp.toPx(), y = i * 4.dp.toPx()),
+                                        radius = 1.875f.dp.toPx(),
+                                        center = (center - Offset(
+                                            x = 7.5f.dp.toPx(),
+                                            y = 2.5f.dp.toPx()
+                                        )) +
+                                                Offset(x = j * 5.dp.toPx(), y = i * 5.dp.toPx()),
                                     )
                                 }
                             }
@@ -122,16 +129,29 @@ fun RingLinesDial(
                     Modifier
                         .fillMaxSize()
                         .drawBehind {
-                            val radius = size.width / 2f - 24.dp.toPx()
-                            drawArc(color = swatch.v100.copy(alpha = .3f), startAngle = 0f, sweepAngle = 360f, radius = radius)
-                            drawArc(color = swatch.v50, startAngle = 0f, sweepAngle = dialState.degree, radius = radius)
-
-                            if (ringReveal > 0f) {
-                                drawTickRing(dialState.degree, ringReveal, stretchReveal, swatch)
-                            }
 
                             if (rangeReveal > 0f) {
                                 drawCenterWedge(dialState.degree, rangeReveal, swatch)
+                            }
+
+                            val radius = size.width / 2f - 30.dp.toPx()
+                            drawArc(
+                                color = swatch.v100.copy(alpha = .3f),
+                                startAngle = 0f,
+                                sweepAngle = 360f,
+                                radius = radius,
+                                strokeWidth = 3.dp
+                            )
+                            drawArc(
+                                color = swatch.v50,
+                                startAngle = 0f,
+                                sweepAngle = dialState.degree,
+                                radius = radius,
+                                strokeWidth = 3.dp
+                            )
+
+                            if (ringReveal > 0f) {
+                                drawTickRing(dialState.degree, ringReveal, stretchReveal, swatch)
                             }
 
                             repeat(4) { index ->
@@ -157,7 +177,7 @@ private fun DrawScope.drawCenterWedge(
     swatch: Swatch,
 ) {
     val halfWidth = lerp(0f, 18f, reveal)
-    val ringRadius = size.width / 2f - 24.dp.toPx()
+    val ringRadius = size.width / 2f - 30.dp.toPx() //+ (1.5f/2).dp.toPx()
 
     fun pointAt(degree: Float): Offset {
         val rad = (degree - 90f) * (PI.toFloat() / 180f)
@@ -167,21 +187,43 @@ private fun DrawScope.drawCenterWedge(
     val left = pointAt(currentDegree - halfWidth)
     val right = pointAt(currentDegree + halfWidth)
 
+    val path = Path().apply {
+        moveTo(center.x, center.y)
+        arcTo(
+            rect = Rect(center = center, radius = ringRadius),
+            startAngleDegrees = currentDegree - halfWidth - 90f,
+            sweepAngleDegrees = halfWidth * 2f,
+            forceMoveTo = false,
+        )
+        close()
+    }
     drawPath(
-        path = Path().apply {
-            moveTo(center.x, center.y)
-            lineTo(left.x, left.y)
-            lineTo(right.x, right.y)
-            close()
-        },
+        path = path,
         brush = Brush.radialGradient(
-            colors = listOf(swatch.v100.copy(alpha = .25f * reveal), Transparent),
+            colors = listOf(
+                Transparent,
+                Transparent,
+                swatch.v100.copy(alpha = .4f * reveal),
+            ),
             center = center,
             radius = ringRadius,
         ),
     )
-    drawLine(color = swatch.v100.copy(alpha = .9f * reveal), start = center, end = left, strokeWidth = 1.5.dp.toPx())
-    drawLine(color = swatch.v100.copy(alpha = .9f * reveal), start = center, end = right, strokeWidth = 1.5.dp.toPx())
+    drawPath(
+        path = path,
+        style = Stroke(
+            width = 1f.dp.toPx()
+        ),
+        brush = Brush.radialGradient(
+            colors = listOf(
+                Transparent,
+                swatch.v50.copy(alpha = .1f * reveal),
+                swatch.v50.copy(alpha = 1f * reveal),
+            ),
+            center = center,
+            radius = ringRadius,
+        ),
+    )
 }
 
 /** A ring of ticks swept in by [ringReveal]; once [stretchReveal] > 0 they stretch by proximity. */
@@ -227,7 +269,7 @@ private fun DrawScope.drawRingLinesNumber(
     val targetDegree = (index + 1) * 90f
     val distance = (currentDegree - targetDegree).absoluteValue
     val push = (1f - distance / 15f).coerceIn(0f, 1f)
-    val radiusFraction = lerp(.38f, .34f, push)
+    val radiusFraction = lerp(.385f, .345f, push)
 
     drawEveryInterval(
         startDegrees = targetDegree,
@@ -241,7 +283,7 @@ private fun DrawScope.drawRingLinesNumber(
             text = "${(index + 1) * 15}",
             style = TextStyle(
                 color = Zinc50,
-                fontSize = 24.sp,
+                fontSize = 18.sp,
                 shadow = Shadow(color = Black.copy(alpha = .4f), blurRadius = 10f),
             ),
         )

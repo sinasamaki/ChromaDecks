@@ -198,7 +198,7 @@ private fun SetUpDial(
                 Modifier
                     .fillMaxSize()
                     .drawBehind {
-                        val radius = size.width / 2f - 24.dp.toPx()
+                        val radius = size.width / 2f - 30.dp.toPx()
                         drawArc(
                             color = swatch.v100.copy(alpha = .3f),
                             startAngle = 0f,
@@ -232,15 +232,15 @@ private fun SetUpThumb(
     thumbScale: Float,
 ) {
     var modifier = Modifier
-        .size(48.dp)
+        .size(60.dp)
         .scale(thumbScale)
 
     if (thumbStage >= 1) {
-        modifier = modifier.padding(10.dp)
+        modifier = modifier.padding(12.5f.dp)
         modifier = if (thumbStage >= 2) {
             modifier
-                .border(width = 2.dp, color = swatch.v100, shape = CircleShape)
-                .padding(3.dp)
+                .border(width = 2.5f.dp, color = swatch.v100, shape = CircleShape)
+                .padding(3.75f.dp)
                 .background(color = swatch.v100, shape = CircleShape)
         } else {
             modifier.background(color = swatch.v100, shape = CircleShape)
@@ -260,8 +260,8 @@ private fun SetUpThumb(
                     Box(
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .offset(x = (-6).dp + (j * 4).dp, y = (-2).dp + (i * 4).dp)
-                            .size(3.dp)
+                            .offset(x = (-7.5f).dp + (j * 5).dp, y = (-2.5f).dp + (i * 5).dp)
+                            .size(3.75f.dp)
                             .scale(dotScale)
                             .background(color = swatch.v500, shape = CircleShape),
                     )
@@ -299,8 +299,9 @@ private fun thumbCode(thumbStage: Int) = when {
     thumb = {
       Box(
         Modifier
-          .size(48.dp)
-          .padding(10.dp)
+          .size(60.dp)
+          .padding(12.5.dp)
+          .border(2.5.dp, swatch.v100, CircleShape)
           .background(swatch.v100, CircleShape)
       )
     }
@@ -310,10 +311,10 @@ private fun thumbCode(thumbStage: Int) = when {
     thumb = {
       Box(
         Modifier
-          .size(48.dp)
-          .padding(10.dp)
-          .border(2.dp, swatch.v100, CircleShape)
-          .padding(3.dp)
+          .size(60.dp)
+          .padding(12.5.dp)
+          .border(2.5.dp, swatch.v100, CircleShape)
+          .padding(3.75.dp)
           .background(swatch.v100, CircleShape)
       )
     }
@@ -323,17 +324,18 @@ private fun thumbCode(thumbStage: Int) = when {
     thumb = {
       Box(
         Modifier
-          .size(48.dp)
-          .padding(10.dp)
-          .border(2.dp, swatch.v100, CircleShape)
-          .padding(3.dp)
+          .size(60.dp)
+          .padding(12.5.dp)
+          .border(2.5.dp, swatch.v100, CircleShape)
+          .padding(3.75.dp)
           .background(swatch.v100, CircleShape)
           .drawBehind {
+            // Umm no, these are eight
             for (i in 0..1) {
               for (j in 0..3) {
                 drawCircle(
                   color = swatch.v500,
-                  radius = 1.5.dp.toPx(),
+                  radius = 1.875.dp.toPx(),
                   center = gripDotCenter(i, j),
                 )
               }
@@ -353,12 +355,11 @@ private val ARC_CODE = """
             drawArc(
               color = swatch.v100,
               startAngle = 0f,
-              sweepAngle = 360f,
+              sweepAngle = dialState.degree,
               radius = size.width / 2f,
             )
 
             drawTime()
-
             drawPlayPauseButton()
           }
       )

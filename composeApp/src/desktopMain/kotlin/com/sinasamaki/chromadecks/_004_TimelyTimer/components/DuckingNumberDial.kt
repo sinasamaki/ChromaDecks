@@ -57,7 +57,7 @@ enum class NumberDuckMode {
 private const val NUMBER_INTERVAL = 90f
 private const val NUMBER_COUNT = 4
 
-private const val NUMBER_RADIUS_FRACTION = .38f
+private const val NUMBER_RADIUS_FRACTION = .385f
 private const val DUCK_DISTANCE_FRACTION = .04f
 
 /**
@@ -103,14 +103,14 @@ fun DuckingNumberDial(
         thumb = {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .padding(10.dp)
+                    .size(60.dp)
+                    .padding(12.5f.dp)
                     .border(
-                        width = 2.dp,
+                        width = 2.5f.dp,
                         color = swatch.v100,
                         shape = CircleShape,
                     )
-                    .padding(3.dp)
+                    .padding(3.75f.dp)
                     .background(
                         color = swatch.v100,
                         shape = CircleShape,
@@ -120,13 +120,13 @@ fun DuckingNumberDial(
                             for (j in 0..3) {
                                 drawCircle(
                                     color = swatch.v500,
-                                    radius = (1.5f).dp.toPx(),
+                                    radius = (1.875f).dp.toPx(),
                                     center = (center - Offset(
-                                        x = (6f).dp.toPx(),
-                                        y = 2.dp.toPx(),
+                                        x = (7.5f).dp.toPx(),
+                                        y = 2.5f.dp.toPx(),
                                     )) + Offset(
-                                        x = j * 4.dp.toPx(),
-                                        y = i * 4.dp.toPx(),
+                                        x = j * 5.dp.toPx(),
+                                        y = i * 5.dp.toPx(),
                                     )
                                 )
                             }
@@ -214,7 +214,7 @@ private fun DrawScope.drawDuckingNumbers(
             text = "${data.index * 15}",
             style = TextStyle(
                 color = Zinc50.copy(alpha = labelAlpha),
-                fontSize = 24.sp,
+                fontSize = 18.sp,
                 shadow = Shadow(
                     color = Black.copy(alpha = .4f * labelAlpha),
                     blurRadius = 10f,
@@ -236,7 +236,7 @@ private fun DrawScope.drawTrackArc(
     currentDegree: Float,
     swatch: Swatch,
 ) {
-    val radius = size.width / 2f - 24.dp.toPx()
+    val radius = size.width / 2f - 30.dp.toPx()
     drawArc(
         color = swatch.v100.copy(alpha = .3f),
         startAngle = 0f,

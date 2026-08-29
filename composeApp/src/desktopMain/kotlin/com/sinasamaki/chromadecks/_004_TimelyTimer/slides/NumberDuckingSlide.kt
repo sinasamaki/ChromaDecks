@@ -131,7 +131,7 @@ private val ZOOMED_PIVOT = Offset(.9f, .5f)
 private val INTERVAL_CODE = """
     drawEveryInterval(
       interval = 90f,
-      radius = size.width * .38f,
+      radius = size.width * .385f,
       orientation = IntervalOrientation.PositionOnly,
     ) { data ->
 
@@ -141,23 +141,23 @@ private val INTERVAL_CODE = """
 private val LABELS_CODE = """
     drawEveryInterval(
       interval = 90f,
-      radius = size.width * .38f,
+      radius = size.width * .385f,
       orientation = IntervalOrientation.PositionOnly,
     ) { data ->
       if (data.index == 0) return@drawEveryInterval
-
-      drawText("${'$'}{data.index * 15}")
+      drawText(
+        text = "${'$'}{data.index * 15}",
+      )
     }
 """.trimIndent()
 
 private fun duckingCode(push: String) = """
     drawEveryInterval(
       interval = 90f,
-      radius = size.width * .38f,
+      radius = size.width * .385f,
       orientation = IntervalOrientation.PositionOnly,
     ) { data ->
       if (data.index == 0) return@drawEveryInterval
-
 ${push.prependIndent("      ")}
       val inward = (center - data.position) / radius
 

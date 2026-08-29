@@ -145,17 +145,22 @@ private fun stackedArcsCode(preamble: String, depth: String) = """
     fun DrawScope.drawStackedArcs(degree: Float) {
       val rings = (degree / 360f).toInt()
 ${preamble.prependIndent("      ")}
+
       for (i in 0..rings) {
 ${depth.prependIndent("        ")}
-        val sweep = (degree - i * 360f).coerceAtMost(360f)
+        val sweep = (degree - i * 360f)
+            .coerceAtMost(360f)
         val padding = 12.dp.toPx() * above
-        val recency = ((360f - sweep) / 30f).coerceIn(0f, 1f)
+        val recency = ((360f - sweep) / 30f)
+            .coerceIn(0f, 1f)
 
         drawArc(
-          color = swatch.v100.copy(alpha = 1f - .15f * above),
+          color = swatch.v100.copy(
+            alpha = 1f - .15f * above
+          ),
           startAngle = 0f,
           sweepAngle = sweep,
-          radius = center.x - 24.dp.toPx() - padding,
+          radius = center.x - 30.dp.toPx() - padding,
           strokeWidth = lerp(1.dp, 3.dp, recency),
         )
       }
