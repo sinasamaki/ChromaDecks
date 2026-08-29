@@ -83,7 +83,10 @@ fun CodeIDE(
     ) {
         val tabListState = rememberLazyListState()
         LaunchedEffect(selectedTab) {
-            tabListState.animateScrollToItem(selectedTab)
+            tabListState.animateScrollToItem(
+                index = selectedTab,
+                scrollOffset = -100,
+            )
         }
         LazyRow(
             state = tabListState,
@@ -95,7 +98,7 @@ fun CodeIDE(
             ),
             contentPadding = PaddingValues(
                 start = 8.dp,
-                end = 8.dp,
+                end = 800.dp,
                 top = 8.dp,
                 bottom = 8.dp,
             ),
@@ -107,10 +110,33 @@ fun CodeIDE(
                 Text(
                     text = fileName,
                     style = style,
-                    color = if (isSelected) Slate50 else Slate400.copy(alpha = .2f),
+                    color = if (isSelected) Slate50 else Slate50.copy(alpha = .1f),
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(if (isSelected) Zinc200.copy(alpha = .2f) else Transparent)
+                        .border(
+                            color = if (isSelected)
+                                Zinc200.copy(alpha = .2f)
+                            else
+                                Zinc200.copy(alpha = .05f),
+                            width = 1.dp,
+                            shape = CircleShape,
+                        )
+                        .background(
+                            if (isSelected)
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Zinc200.copy(alpha = .1f),
+                                        Zinc200.copy(alpha = .2f),
+                                    )
+                                )
+                            else
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Zinc200.copy(alpha = 0f),
+                                        Zinc200.copy(alpha = .05f),
+                                    )
+                                )
+                        )
                         .clickable { onTabSelect(index) }
                         .padding(horizontal = 12.dp, vertical = 6.dp),
                 )

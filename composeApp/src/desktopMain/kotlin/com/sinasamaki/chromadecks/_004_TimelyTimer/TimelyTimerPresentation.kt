@@ -6,18 +6,27 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import com.sinasamaki.chromadecks._004_TimelyTimer.components.RadialDriftBackground
 import com.sinasamaki.chromadecks._004_TimelyTimer.slides.BackgroundExplorationSlide
-import com.sinasamaki.chromadecks._004_TimelyTimer.slides.SimpleDialSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.ExplodedDialSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.MultiArcSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.MultiArcTransitionSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.NumberDuckingSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.RingLinesSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.SetUpSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.TimelyTitleSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.YearMorphSlide
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeIn
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
@@ -29,11 +38,12 @@ import com.sinasamaki.chromadecks.ui.theme.CodeColors
 import com.sinasamaki.chromadecks.ui.theme.Green
 import com.sinasamaki.chromadecks.ui.theme.Orange
 import com.sinasamaki.chromadecks.ui.theme.Purple
+import com.sinasamaki.chromadecks.ui.theme.Red
 import com.sinasamaki.chromadecks.ui.theme.Slate50
 import com.sinasamaki.chromadecks.ui.theme.Swatch
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
+import com.sinasamaki.chromadecks.ui.theme.minus
 import com.sinasamaki.chromadecks.ui.theme.plus
-
 
 fun main() = application {
     Window(
@@ -48,8 +58,8 @@ fun main() = application {
     )
 }
 
-fun timelySwatch(index: Int): Swatch = Green + index
-
+@Stable
+fun timelySwatch(index: Int): Swatch = Red - (index*3)
 
 @Composable
 fun TimelyTimerPresentation() {
@@ -81,17 +91,24 @@ fun TimelyTimerPresentation() {
                 modifier = Modifier,
                 slides = remember {
                     listOf(
-                        SimpleDialSlide(),
+                        YearMorphSlide(),
                         BackgroundExplorationSlide(),
+                        ExplodedDialSlide(),
+                        TimelyTitleSlide(),
+                        SetUpSlide(),
+                        NumberDuckingSlide(),
+                        RingLinesSlide(),
+                        MultiArcSlide(),
+                        MultiArcTransitionSlide(),
                     )
                 },
                 onCurrentIndexChange = { currentIndex = it },
                 background = {
                     RadialDriftBackground(
-                        modifier = Modifier.fillMaxSize(),
-                        centerColor = swatch.v600,
-                        midColor = (swatch + 1).v400,
-                        edgeColor = (swatch + 2).v200,
+                        modifier = Modifier.fillMaxSize().alpha(1f),
+                        centerColor = swatch.v400,
+                        midColor = (swatch + 2).v400,
+                        edgeColor = (swatch + 4).v200,
                         index = currentIndex,
                     )
                 },

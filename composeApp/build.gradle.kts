@@ -42,7 +42,7 @@ kotlin {
 
         }
         desktopMain.dependencies {
-            implementation("com.sinasamaki:chroma-dial:1.0.0-Alpha10")
+            implementation("com.sinasamaki:chroma-dial:1.0.0-Alpha11")
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation("io.github.petertrr:kotlin-multiplatform-diff-jvm:0.7.0")

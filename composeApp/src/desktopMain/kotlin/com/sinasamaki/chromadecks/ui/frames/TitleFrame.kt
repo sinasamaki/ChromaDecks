@@ -263,7 +263,8 @@ fun TechLogos(modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(Res.drawable.img),
         contentDescription = null,
-        modifier = modifier.blendMode(BlendMode.Lighten),
+        modifier = modifier
+//            .blendMode(BlendMode.Lighten),
     )
 }
 
