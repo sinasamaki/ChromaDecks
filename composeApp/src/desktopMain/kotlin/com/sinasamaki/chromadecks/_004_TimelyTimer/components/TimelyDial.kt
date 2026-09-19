@@ -1,7 +1,10 @@
 package com.sinasamaki.chromadecks._004_TimelyTimer.components
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,18 +12,23 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material3.Text
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
@@ -29,7 +37,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -38,47 +45,53 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.addOutline
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.sinasamaki.chroma.dial.Dial
+import com.sinasamaki.chroma.dial.IntervalOrientation
 import com.sinasamaki.chroma.dial.drawArc
 import com.sinasamaki.chroma.dial.drawEveryInterval
 import com.sinasamaki.chromadecks.ui.modifiers.layer
 import com.sinasamaki.chromadecks.ui.theme.Black
+import com.sinasamaki.chromadecks.ui.theme.Red500
 import com.sinasamaki.chromadecks.ui.theme.Swatch
-import com.sinasamaki.chromadecks.ui.theme.Zinc300
-import com.sinasamaki.chromadecks.ui.theme.Zinc400
 import com.sinasamaki.chromadecks.ui.theme.Zinc50
-import com.sinasamaki.chromadecks.ui.theme.Zinc500
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
-import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
-class Timer {
+class Timer(private val scope: CoroutineScope) {
 
-    // Kept as a fraction so the dial can move smoothly between whole-second ticks.
+    private var settleJob: Job? = null
+
     var remainingSeconds by mutableStateOf(0f)
 
     var isRunning by mutableStateOf(false)
         private set
 
-    val totalSeconds: Int get() = ceil(remainingSeconds).toInt()
+    var isDragging by mutableStateOf(false)
+        private set
+
+    val totalSeconds: Int
+        get() = if (isDragging) (remainingSeconds / 60f).roundToInt() * 60
+        else ceil(remainingSeconds).toInt()
     val hours: Int get() = totalSeconds / 3600
     val minutes: Int get() = (totalSeconds % 3600) / 60
     val seconds: Int get() = totalSeconds % 60
@@ -97,8 +110,6 @@ class Timer {
         remainingSeconds = 0f
     }
 
-    // Counts down against the frame clock so the dial glides continuously;
-    // subtracting real elapsed time per frame stays accurate if frames drop.
     suspend fun runCountdown() {
         var lastFrame = 0L
         while (isRunning && remainingSeconds > 0f) {
@@ -114,14 +125,37 @@ class Timer {
     }
 
     fun onDegreeChange(degree: Float) {
-        // Only fires from user drags — grabbing the dial while running scrubs it.
+        settleJob?.cancel()
         if (isRunning) pause()
-        remainingSeconds = (degree / 6f).coerceAtLeast(0f)
+        isDragging = true
+        remainingSeconds = (degree * 10f).coerceAtLeast(0f)
     }
 
-    // 6° == 1 second, so a full 360° turn == 60s.
+    fun onDegreeChangeFinished() {
+        settleJob = scope.launch { settleToNearestMinute() }
+    }
+
+    private suspend fun settleToNearestMinute() {
+        val start = remainingSeconds
+        val target = (start / 60f).roundToInt().toFloat().times(60f).coerceAtLeast(0f)
+        if (start == target) {
+            isDragging = false
+            return
+        }
+        Animatable(start).animateTo(
+            targetValue = target,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessMediumLow,
+            ),
+        ) {
+            remainingSeconds = value
+        }
+        isDragging = false
+    }
+
     val degrees: Float
-        get() = remainingSeconds * 6f
+        get() = remainingSeconds * .1f
 }
 
 @Composable
@@ -130,7 +164,8 @@ fun TimelyDial(
     swatch: Swatch,
 ) {
 
-    val timer = remember { Timer() }
+    val scope = rememberCoroutineScope()
+    val timer = remember { Timer(scope) }
 
     LaunchedEffect(timer.isRunning) {
         if (timer.isRunning) timer.runCountdown()
@@ -139,27 +174,27 @@ fun TimelyDial(
     Dial(
         degree = timer.degrees,
         onDegreeChange = timer::onDegreeChange,
+        onDegreeChangeFinished = timer::onDegreeChangeFinished,
         sweepDegrees = 99 * 360f,
         enabled = !timer.isRunning,
         modifier = modifier
             .size(400.dp),
         thumb = {
-            // Shrink the thumb away while the timer runs.
             val thumbScale by animateFloatAsState(
                 targetValue = if (timer.isRunning) 0f else 1f,
                 label = "thumbScale",
             )
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .padding(10.dp)
+                    .size(60.dp)
+                    .padding(12.5f.dp)
                     .scale(thumbScale)
                     .border(
-                        width = 2.dp,
+                        width = 2.5f.dp,
                         color = swatch.v100,
                         shape = CircleShape
                     )
-                    .padding(3.dp)
+                    .padding(3.75f.dp)
                     .background(
                         color = swatch.v100,
                         shape = CircleShape,
@@ -169,13 +204,13 @@ fun TimelyDial(
                             for (j in 0..3) {
                                 drawCircle(
                                     color = swatch.v500,
-                                    radius = (1.5f).dp.toPx(),
+                                    radius = (1.875f).dp.toPx(),
                                     center = (center - Offset(
-                                        x = (6f).dp.toPx(),
-                                        y = 2.dp.toPx(),
+                                        x = (7.5f).dp.toPx(),
+                                        y = 2.5f.dp.toPx(),
                                     )) + Offset(
-                                        x = j * 4.dp.toPx(),
-                                        y = i * 4.dp.toPx(),
+                                        x = j * 5.dp.toPx(),
+                                        y = i * 5.dp.toPx(),
                                     )
                                 )
                             }
@@ -185,71 +220,57 @@ fun TimelyDial(
         },
         track = { dialState ->
             val measurer = rememberTextMeasurer()
-            // Inward millisecond stretch: fades in while running, out when stopped.
-            val msInfluence by animateFloatAsState(
+            val secInfluence by animateFloatAsState(
                 targetValue = if (timer.isRunning) 1f else 0f,
-                label = "msInfluence",
+                label = "secInfluence",
             )
             Box(
                 Modifier
                     .fillMaxSize()
                     .drawBehind {
-                        // Sub-second fraction on the full circle: sweeps once per second.
-                        val msDegree = (dialState.degree / 6f).mod(1f) * 360f
+                        val secDegree = (dialState.degree / 6f).mod(1f) * 360f
                         drawEveryInterval(
                             startDegrees = 0f,
                             sweepDegrees = 360f,
-                            interval = 5f,
+                            interval = 6f,
                             radius = size.width / 2f,
-                            currentDegree = dialState.degree % 360f
+                            currentDegree = dialState.degree % 360f,
+                            orientation = IntervalOrientation.PositionAndRotate,
                         ) { data ->
-                            rotate(
-                                degrees = data.rotationAngle,
-                                pivot = data.position
-                            ) {
-                                translate(
-                                    left = data.position.x,
-                                    top = data.position.y,
-                                ) {
-                                    // Shortest angular distance so the 0/360 seam stays continuous.
-                                    val delta =
-                                        ((data.intervalDegree - dialState.overshootDegrees) - dialState.absoluteDegree + 180f)
-                                            .mod(360f) - 180f
-                                    val x =
-                                        1f - (delta.absoluteValue / 18f).coerceIn(0f..1f)
-                                    val height = lerp(10.dp.toPx(), 40.dp.toPx(), x)
-                                    drawLine(
-                                        color = if (data.inActiveRange) swatch.v50 else swatch.v100.copy(
-                                            alpha = .6f
-                                        ),
-                                        start = Offset(0f, 12.dp.toPx() - lerp(0f, 8.dp.toPx(), x)),
-                                        end = Offset(0f, 12.dp.toPx() - height),
-                                        strokeWidth = 2.dp.toPx(),
-                                    )
+                            val delta =
+                                ((data.intervalDegree - dialState.overshootDegrees) - dialState.absoluteDegree + 180f)
+                                    .mod(360f) - 180f
+                            val x =
+                                1f - (delta.absoluteValue / 18f).coerceIn(0f..1f)
+                            val height = lerp(10.dp.toPx(), 40.dp.toPx(), x)
+                            drawLine(
+                                color = if (data.inActiveRange) swatch.v50 else swatch.v100.copy(
+                                    alpha = .6f
+                                ),
+                                start = Offset(0f, 12.dp.toPx() - lerp(0f, 8.dp.toPx(), x)),
+                                end = Offset(0f, 12.dp.toPx() - height),
+                                strokeWidth = 2.dp.toPx(),
+                            )
 
-                                    // Inward stretch tracking the milliseconds position.
-                                    val msDelta =
-                                        (data.intervalDegree - msDegree + 180f)
-                                            .mod(360f) - 180f
-                                    val msX =
-                                        1f - (msDelta.absoluteValue / 18f).coerceIn(0f..1f)
-                                    val inwardHeight =
-                                        lerp(0f, 40.dp.toPx(), msX) * msInfluence
-                                    drawLine(
-                                        color = if (data.inActiveRange) swatch.v50 else swatch.v100.copy(
-                                            alpha = .6f
-                                        ),
-                                        // Share the outward line's start so the segments stay joined.
-                                        start = Offset(0f, 12.dp.toPx() - lerp(0f, 8.dp.toPx(), x)),
-                                        end = Offset(0f, 12.dp.toPx() + inwardHeight),
-                                        strokeWidth = 2.dp.toPx(),
-                                    )
-                                }
-                            }
+                            val secDelta =
+                                (data.intervalDegree - secDegree + 180f)
+                                    .mod(360f) - 180f
+                            val secX =
+                                1f - (secDelta.absoluteValue / 18f).coerceIn(0f..1f)
+                            val inwardHeight =
+                                lerp(0f, 40.dp.toPx(), secX) * secInfluence
+                            drawLine(
+                                color = if (data.inActiveRange) swatch.v50 else swatch.v100.copy(
+                                    alpha = .6f
+                                ),
+                                start = Offset(0f, 12.dp.toPx() - lerp(0f, 8.dp.toPx(), x)),
+                                end = Offset(0f, 12.dp.toPx() + inwardHeight),
+                                strokeWidth = 2.dp.toPx(),
+                            )
                         }
 
                         repeat(4) {
-                            drawMinute(it, measurer, dialState.degree, msInfluence, msDegree)
+                            drawMinute(it, measurer, dialState.degree, secInfluence, secDegree)
                         }
 
                         val rings = (dialState.degree / 360f).toInt()
@@ -261,7 +282,6 @@ fun TimelyDial(
                                 ((dialState.degree % 360f).coerceAtLeast(360f - range) - 360f).absoluteValue / range
                             )
                             val z = (rings - i + 1) - y
-
 
                             val degree = (dialState.degree - (i * 360f)).coerceAtMost(360f)
                             val x = when {
@@ -287,87 +307,111 @@ fun TimelyDial(
                                 ),
                                 startAngle = 0f,
                                 sweepAngle = degree,
-                                radius = center.x - 24.dp.toPx() - padding,
+                                radius = center.x - 30.dp.toPx() - padding,
                                 strokeWidth = stroke
                             )
                         }
                     }
             ) {
-
-                // Nothing to start once time has run out (or none is set yet).
-                if (timer.totalSeconds > 0) {
-                    val centerShape by remember {
-                        derivedStateOf {
-                            if (timer.isRunning) PauseShape else PlayTriangle
-                        }
-                    }
-                    val interaction = remember { MutableInteractionSource() }
-                    val isHovered by interaction.collectIsHoveredAsState()
-                    val isPressed by interaction.collectIsPressedAsState()
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxSize(.35f)
-                            .clickable(
-                                interactionSource = interaction,
-                                indication = null,
-                            ) {
-                                if (timer.isRunning) timer.pause() else timer.start()
-                            }
-                            .drawWithContent {
-                                layer(
-                                    size.toRect().inflate(size.width)
-                                ) {
-                                    this@drawWithContent.drawContent()
-                                    val density = Density(density)
-                                    drawPath(
-                                        path = Path().apply {
-                                            addOutline(
-                                                centerShape.createOutline(
-                                                    size,
-                                                    layoutDirection,
-                                                    density
-                                                )
-                                            )
-                                        },
-                                        color = Black,
-                                        blendMode = BlendMode.DstOut
-                                    )
-                                }
-                            }
-                            .dropShadow(shape = centerShape) {
-                                radius = when {
-                                    isPressed -> 40f
-                                    isHovered -> 70f
-                                    else -> 40f
-                                }
-                                spread = 15f
-                                color = when {
-                                    isPressed -> swatch.v100
-                                    else -> swatch.v200.copy(alpha = .9f)
-                                }
-                            }
-                    )
-                }
-
-                // Minutes:seconds readout, centered over the button.
-                val minutes = timer.totalSeconds / 60
-                val seconds = timer.totalSeconds % 60
-                TimelyTime(
-                    left = minutes,
-                    right = seconds,
-                    modifier = Modifier.align(Alignment.Center),
-                    color = swatch.v50,
-                    fontSize = 56.sp,
-                    strokeWidth = 3.dp,
-                )
-
+                TimelyPlaybackControls(timer = timer, swatch = swatch)
             }
         },
     )
 }
 
-private object PlayTriangle : Shape {
+/**
+ * The play/pause button and hours:minutes:seconds readout centred over any dial driven by
+ * [timer]. Shared by [TimelyDial] and the demo dials in the later slides so they all end up
+ * with the same functional playback controls once the timer is introduced.
+ */
+@Composable
+fun BoxScope.TimelyPlaybackControls(
+    timer: Timer,
+    swatch: Swatch,
+    showButton: Boolean = timer.totalSeconds > 0,
+    showTime: Boolean = true,
+) {
+    if (showButton) {
+        val centerShape by remember {
+            derivedStateOf {
+                if (timer.isRunning) PauseShape else PlayTriangle
+            }
+        }
+        val interaction = remember { MutableInteractionSource() }
+        val isHovered by interaction.collectIsHoveredAsState()
+        val isPressed by interaction.collectIsPressedAsState()
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .fillMaxSize(.35f)
+                .clickable(
+                    interactionSource = interaction,
+                    indication = null,
+                ) {
+                    if (timer.isRunning) timer.pause() else timer.start()
+                }
+                .drawWithContent {
+                    layer(
+                        size.toRect().inflate(size.width)
+                    ) {
+                        this@drawWithContent.drawContent()
+                        val density = Density(density)
+                        drawPath(
+                            path = Path().apply {
+                                addOutline(
+                                    centerShape.createOutline(
+                                        size,
+                                        layoutDirection,
+                                        density
+                                    )
+                                )
+                            },
+                            color = Black,
+                            blendMode = BlendMode.DstOut
+                        )
+                    }
+                }
+                .dropShadow(shape = centerShape) {
+                    radius = when {
+                        isPressed -> 40f
+                        isHovered -> 70f
+                        else -> 40f
+                    }
+                    spread = 15f
+                    color = when {
+                        isPressed -> swatch.v100
+                        else -> swatch.v200.copy(alpha = .9f)
+                    }
+                }
+        )
+    }
+
+    if (showTime) Row(
+        modifier = Modifier
+            .offset(x = (-16).dp)
+            .align(Alignment.Center),
+    ) {
+        Text(
+            text = if (timer.hours > 0) "${timer.hours}h" else "",
+            modifier = Modifier
+                .defaultMinSize(minWidth = 32.dp),
+            color = swatch.v50,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.ExtraLight,
+            textAlign = TextAlign.Start,
+            maxLines = 1,
+        )
+        TimelyTime(
+            left = timer.minutes,
+            right = timer.seconds,
+            color = swatch.v50,
+            fontSize = 56.sp,
+            strokeWidth = 3.dp,
+        )
+    }
+}
+
+internal object PlayTriangle : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
@@ -387,7 +431,7 @@ private object PlayTriangle : Shape {
 
 }
 
-private object PauseShape : Shape {
+internal object PauseShape : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
@@ -412,15 +456,14 @@ private object PauseShape : Shape {
 
 }
 
-
 private fun lerpStep(start: Float, interval: Float, fraction: Float) = start + (interval * fraction)
 
 private fun DrawScope.drawMinute(
     index: Int,
     measurer: TextMeasurer,
     absoluteDegree: Float,
-    msInfluence: Float,
-    msDegree: Float,
+    secInfluence: Float,
+    secDegree: Float,
 ) {
     val targetDegree = (index + 1) * 90f
 
@@ -429,48 +472,42 @@ private fun DrawScope.drawMinute(
         ((absoluteDegree % 360f) - (targetDegree % 360f)).absoluteValue,
     )
 
-    // How far the thumb pulls this number inward as it sweeps over it.
     val thumbPush = when {
         delta < 15f -> 1f - (delta / 15f)
         else -> 0f
     }
 
-    // While running the thumb is hidden, so the milliseconds sweep pulls instead.
-    val msDelta = ((targetDegree % 360f) - msDegree + 180f).mod(360f) - 180f
-    val msPush = 1f - (msDelta.absoluteValue / 18f).coerceIn(0f..1f)
+    val secDelta = ((targetDegree % 360f) - secDegree + 180f).mod(360f) - 180f
+    val secPush = 1f - (secDelta.absoluteValue / 18f).coerceIn(0f..1f)
 
-    val push = lerp(thumbPush, msPush, msInfluence)
-    val radiusMult = lerp(.38f, .34f, push)
+    val push = lerp(thumbPush, secPush, secInfluence)
+    val radiusMult = lerp(.385f, .345f, push)
 
     drawEveryInterval(
         startDegrees = targetDegree,
         sweepDegrees = 1f,
         interval = 1f,
-        radius = size.width * radiusMult
+        radius = size.width * radiusMult,
+        orientation = IntervalOrientation.PositionOnly,
     ) { data ->
         if (data.index == 0) return@drawEveryInterval
-        translate(
-            left = data.position.x,
-            top = data.position.y,
-        ) {
-            val result = measurer.measure(
-                text = "${(index + 1) * 15}",
-                style = TextStyle(
-                    color = Zinc50,
-                    fontSize = 24.sp,
-                    shadow = Shadow(
-                        color = Black.copy(alpha = .4f),
-                        blurRadius = 10f,
-                    )
+        val result = measurer.measure(
+            text = "${(index + 1) * 15}",
+            style = TextStyle(
+                color = Zinc50,
+                fontSize = 18.sp,
+                shadow = Shadow(
+                    color = Black.copy(alpha = .4f),
+                    blurRadius = 10f,
                 )
             )
-            drawText(
-                textLayoutResult = result,
-                topLeft = Offset(
-                    -result.size.width / 2f,
-                    -result.size.height / 2f,
-                )
+        )
+        drawText(
+            textLayoutResult = result,
+            topLeft = Offset(
+                -result.size.width / 2f,
+                -result.size.height / 2f,
             )
-        }
+        )
     }
 }
