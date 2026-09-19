@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sinasamaki.chroma.dial.Dial
+import com.sinasamaki.chroma.dial.IntervalOrientation
 import com.sinasamaki.chroma.dial.TubeShape
 import com.sinasamaki.chroma.dial.drawEveryInterval
 import com.sinasamaki.chromadecks.ui.theme.Neutral300
@@ -159,11 +160,12 @@ fun MonthDurationPicker() {
                                     sweepDegrees = 330f,
                                     radius = ringRadius,
                                     interval = 30f,
-                                ) { data ->
+                                    orientation = IntervalOrientation.PositionOnly,
+                                ) {
                                     drawCircle(
                                         color = Neutral500,
                                         radius = 3.dp.toPx(),
-                                        center = data.position,
+                                        center = Offset.Zero,
                                     )
                                 }
                             },

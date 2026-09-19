@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -72,19 +71,14 @@ fun CameraModeDial() {
                                 interval = 3f,
                                 radius = it.radius,
                             ) { data ->
-                                rotate(
-                                    data.rotationAngle,
-                                    pivot = data.position
-                                ) {
-                                    drawLine(
-                                        color = White,
-                                        start = data.position,
-                                        end = data.position + Offset(
-                                            0f,
-                                            if (data.rotationAngle in (-91f)..(-89f)) 30f else 10f
-                                        )
+                                drawLine(
+                                    color = White,
+                                    start = Offset.Zero,
+                                    end = Offset(
+                                        0f,
+                                        if (data.rotationAngle in (-91f)..(-89f)) 30f else 10f
                                     )
-                                }
+                                )
                             }
                         }
                 )

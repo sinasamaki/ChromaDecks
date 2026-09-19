@@ -37,6 +37,7 @@ import com.sinasamaki.chromadecks.ui.theme.Indigo200
 import com.sinasamaki.chromadecks.ui.theme.Purple500
 import com.sinasamaki.chromadecks.ui.theme.Rose700
 import com.sinasamaki.chromadecks.ui.theme.Slate50
+import com.sinasamaki.chromadecks.ui.theme.Yellow500
 import com.sinasamaki.chromadecks.ui.theme.Zinc950
 import kotlin.math.roundToInt
 
@@ -106,23 +107,23 @@ internal class LowResolutionSlide : ListSlide<LowResolutionSlideState>() {
                         listOf(
                             listOf(
                                 Offset(0f, 0f) to Rose700,
-                                Offset(.33f, 0f) to Rose700,
-                                Offset(.66f, 0f) to Rose700,
+                                Offset(.4f, 0f) to Rose700,
+                                Offset(.67f, 0f) to Rose700,
                                 Offset(1f, 0f) to Rose700,
                             ),
 
                             listOf(
-                                Offset(0f, .33f) to Purple500,
-                                Offset(.33f, .33f - pointTranslate.value) to Purple500,
-                                Offset(.66f, .33f + pointTranslate.value) to Purple500,
-                                Offset(1f, .33f) to Purple500,
+                                Offset(0f, .33f) to Yellow500,
+                                Offset(.3f, .15f - pointTranslate.value) to Yellow500,
+                                Offset(.6f, .4f + pointTranslate.value) to Yellow500,
+                                Offset(1f, .3f) to Yellow500,
                             ),
 
                             listOf(
-                                Offset(0f, .66f) to Blue400,
-                                Offset(.33f, .66f - pointTranslate.value) to Blue400,
-                                Offset(.66f, .66f + pointTranslate.value) to Blue400,
-                                Offset(1f, .66f) to Blue400,
+                                Offset(0f, .55f) to Blue400,
+                                Offset(.33f, .69f - pointTranslate.value) to Blue400,
+                                Offset(.63f, .67f + pointTranslate.value) to Blue400,
+                                Offset(1f, .7f) to Blue400,
                             ),
 
                             listOf(
@@ -144,7 +145,7 @@ internal class LowResolutionSlide : ListSlide<LowResolutionSlideState>() {
                 )
 
                 val gradientAlpha by animateFloatAsState(
-                    targetValue = if (state.showGradient) 1f else .2f,
+                    targetValue = if (state.showGradient) 1f else .5f,
                 )
 
                 Box(

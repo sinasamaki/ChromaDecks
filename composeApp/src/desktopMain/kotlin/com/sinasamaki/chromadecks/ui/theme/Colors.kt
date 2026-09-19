@@ -750,6 +750,9 @@ private val desaturatedRing: List<Swatch> = listOf(
     Slate, Gray, Zinc, Neutral, Stone, Taupe, Mauve, Mist, Olive
 )
 
+/** How many swatches a full trip around the chromatic ring takes — `Red + chromaticRingSize == Red`. */
+val chromaticRingSize: Int = chromaticRing.size
+
 /**
  * Returns the swatch [n] steps forward (positive) or backward (negative) in its hue ring.
  * Wraps around at the ring boundaries.

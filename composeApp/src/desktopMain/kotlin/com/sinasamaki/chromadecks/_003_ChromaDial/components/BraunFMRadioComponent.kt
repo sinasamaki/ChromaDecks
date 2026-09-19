@@ -201,18 +201,16 @@ fun BraunFMRadio(modifier: Modifier = Modifier) {
                                     interval = 22.5f,
                                     radius = r,
                                 ) { data ->
-                                    rotate(data.rotationAngle, pivot = data.position) {
-                                        val text = fmFrequencies.getOrElse(data.index) { 0 }
-                                        val layout = textMeasurer.measure("$text", labelStyle)
-                                        drawText(
-                                            textLayoutResult = layout,
-                                            color = if (text < 25 && text != 0) Lime500 else Zinc200,
-                                            topLeft = Offset(
-                                                data.position.x - layout.size.width / 2f,
-                                                data.position.y - layout.size.height / 2f,
-                                            ),
-                                        )
-                                    }
+                                    val text = fmFrequencies.getOrElse(data.index) { 0 }
+                                    val layout = textMeasurer.measure("$text", labelStyle)
+                                    drawText(
+                                        textLayoutResult = layout,
+                                        color = if (text < 25 && text != 0) Lime500 else Zinc200,
+                                        topLeft = Offset(
+                                            -layout.size.width / 2f,
+                                            -layout.size.height / 2f,
+                                        ),
+                                    )
                                 }
                             }
                         }

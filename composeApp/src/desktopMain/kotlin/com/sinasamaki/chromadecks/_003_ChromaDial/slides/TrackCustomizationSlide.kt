@@ -19,7 +19,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontFamily
@@ -109,24 +108,14 @@ drawEveryInterval(
     center = this.center,
     startDegrees = dialState.startDegrees,
     sweepDegrees = dialState.degree + dialState.overshootDegrees,
-) { data ->
-    rotate(
-        degrees = data.rotationAngle,
-        pivot = data.position,
-    ) {
-        translate(
-            left = data.position.x,
-            top = data.position.y,
-        ) {
-            drawLine(
-                color = Zinc950,
-                start = Offset(0f, 0f),
-                end = Offset(0f, 8.dp.toPx()),
-                strokeWidth = 4.dp.toPx(),
-                cap = StrokeCap.Round,
-            )
-        }
-    }
+) {
+    drawLine(
+        color = Zinc950,
+        start = Offset(0f, 0f),
+        end = Offset(0f, 8.dp.toPx()),
+        strokeWidth = 4.dp.toPx(),
+        cap = StrokeCap.Round,
+    )
 }""".trimIndent()
 
         val tabs = buildList {
@@ -184,24 +173,14 @@ drawEveryInterval(
                                             startDegrees = dialState.startDegrees,
                                             sweepDegrees = dialState.degree + dialState.overshootDegrees,
                                             interval = 3f,
-                                        ) { data ->
-                                            rotate(
-                                                degrees = data.rotationAngle,
-                                                pivot = data.position,
-                                            ) {
-                                                translate(
-                                                    left = data.position.x,
-                                                    top = data.position.y,
-                                                ) {
-                                                    drawLine(
-                                                        color = Zinc950,
-                                                        start = Offset(0f, 0f),
-                                                        end = Offset(0f, 8.dp.toPx()),
-                                                        strokeWidth = 4.dp.toPx(),
-                                                        cap = StrokeCap.Round,
-                                                    )
-                                                }
-                                            }
+                                        ) {
+                                            drawLine(
+                                                color = Zinc950,
+                                                start = Offset(0f, 0f),
+                                                end = Offset(0f, 8.dp.toPx()),
+                                                strokeWidth = 4.dp.toPx(),
+                                                cap = StrokeCap.Round,
+                                            )
                                         }
 
 
@@ -213,38 +192,33 @@ drawEveryInterval(
                                             sweepDegrees = dialState.degreeRange.endInclusive - dialState.degreeRange.start,
                                         ) { data ->
                                             rotate(
-                                                degrees = data.rotationAngle + dialState.overshootDegrees,
-                                                pivot = data.position,
+                                                degrees = dialState.overshootDegrees,
+                                                pivot = Offset.Zero,
                                             ) {
-                                                translate(
-                                                    left = data.position.x,
-                                                    top = data.position.y,
-                                                ) {
-                                                    if (data.index % 5 == 0) {
-                                                        drawText(
-                                                            textMeasurer = measure,
-                                                            text = "${data.intervalDegree.toInt()}",
-                                                            style = TextStyle(
-                                                                color = Lime400,
-                                                                textAlign = TextAlign.Center,
-                                                                fontFamily = FontFamily.Monospace,
-                                                                fontSize = 18.sp
-                                                            ),
-                                                            size = Size(18.sp.toPx() * 3, 100f),
-                                                            topLeft = Offset(
-                                                                -50f,
-                                                                -18.sp.toPx() / 2,
-                                                            )
+                                                if (data.index % 5 == 0) {
+                                                    drawText(
+                                                        textMeasurer = measure,
+                                                        text = "${data.intervalDegree.toInt()}",
+                                                        style = TextStyle(
+                                                            color = Lime400,
+                                                            textAlign = TextAlign.Center,
+                                                            fontFamily = FontFamily.Monospace,
+                                                            fontSize = 18.sp
+                                                        ),
+                                                        size = Size(18.sp.toPx() * 3, 100f),
+                                                        topLeft = Offset(
+                                                            -50f,
+                                                            -18.sp.toPx() / 2,
                                                         )
-                                                    } else {
-                                                        drawLine(
-                                                            color = if (data.inActiveRange) Lime400 else Neutral400,
-                                                            start = Offset(0f, 0f),
-                                                            end = Offset(0f, 2.dp.toPx()),
-                                                            strokeWidth = 2.dp.toPx(),
-                                                            cap = StrokeCap.Round,
-                                                        )
-                                                    }
+                                                    )
+                                                } else {
+                                                    drawLine(
+                                                        color = if (data.inActiveRange) Lime400 else Neutral400,
+                                                        start = Offset(0f, 0f),
+                                                        end = Offset(0f, 2.dp.toPx()),
+                                                        strokeWidth = 2.dp.toPx(),
+                                                        cap = StrokeCap.Round,
+                                                    )
                                                 }
                                             }
                                         }

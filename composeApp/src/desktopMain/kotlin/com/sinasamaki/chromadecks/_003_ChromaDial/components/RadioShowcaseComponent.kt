@@ -43,8 +43,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -111,23 +109,13 @@ fun RadioShowcase(modifier: Modifier = Modifier) {
                                 interval = 10f,
                                 radius = size.width * .52f
                             ) {
-                                rotate(
-                                    degrees = it.rotationAngle,
-                                    pivot = it.position,
-                                ) {
-                                    translate(
-                                        left = it.position.x,
-                                        top = it.position.y,
-                                    ) {
-                                        drawLine(
-                                            color = Neutral800,
-                                            start = Offset(0f, 10f),
-                                            end = Offset(0f, 40f),
-                                            strokeWidth = 22f,
-                                            cap = StrokeCap.Round,
-                                        )
-                                    }
-                                }
+                                drawLine(
+                                    color = Neutral800,
+                                    start = Offset(0f, 10f),
+                                    end = Offset(0f, 40f),
+                                    strokeWidth = 22f,
+                                    cap = StrokeCap.Round,
+                                )
                             }
 
                             drawEveryInterval(
@@ -136,23 +124,13 @@ fun RadioShowcase(modifier: Modifier = Modifier) {
                                 interval = 10f,
                                 radius = size.width / 2f
                             ) {
-                                rotate(
-                                    degrees = it.rotationAngle,
-                                    pivot = it.position,
-                                ) {
-                                    translate(
-                                        left = it.position.x,
-                                        top = it.position.y,
-                                    ) {
-                                        drawLine(
-                                            color = accentColor,
-                                            start = Offset(0f, 10f),
-                                            end = Offset(0f, 40f),
-                                            strokeWidth = 6f,
-                                            cap = StrokeCap.Round,
-                                        )
-                                    }
-                                }
+                                drawLine(
+                                    color = accentColor,
+                                    start = Offset(0f, 10f),
+                                    end = Offset(0f, 40f),
+                                    strokeWidth = 6f,
+                                    cap = StrokeCap.Round,
+                                )
                             }
                         }
                 )

@@ -216,7 +216,7 @@ class PathInterpolationSlide : ListSlide<PathInterpolationSlideState>() {
                 }
 
                 val gradientAlpha by animateFloatAsState(
-                    targetValue = if (state.showLine) .2f else 1f,
+                    targetValue = 1f,//if (state.showLine) .2f else 1f,
                     animationSpec = tween(500)
                 )
 
