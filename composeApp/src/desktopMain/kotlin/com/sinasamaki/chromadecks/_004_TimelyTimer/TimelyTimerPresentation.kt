@@ -25,6 +25,7 @@ import com.sinasamaki.chromadecks._004_TimelyTimer.slides.MultiArcTransitionSlid
 import com.sinasamaki.chromadecks._004_TimelyTimer.slides.NumberDuckingSlide
 import com.sinasamaki.chromadecks._004_TimelyTimer.slides.RingLinesSlide
 import com.sinasamaki.chromadecks._004_TimelyTimer.slides.SetUpSlide
+import com.sinasamaki.chromadecks._004_TimelyTimer.slides.TimelyGallerySlide
 import com.sinasamaki.chromadecks._004_TimelyTimer.slides.TimelyTitleSlide
 import com.sinasamaki.chromadecks._004_TimelyTimer.slides.YearMorphSlide
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
@@ -100,6 +101,7 @@ fun TimelyTimerPresentation() {
                         RingLinesSlide(),
                         MultiArcSlide(),
                         MultiArcTransitionSlide(),
+                        TimelyGallerySlide(),
                     )
                 },
                 onCurrentIndexChange = { currentIndex = it },

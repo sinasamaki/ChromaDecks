@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,13 +43,17 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeCap.Companion
 import androidx.compose.ui.graphics.addOutline
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -56,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -162,6 +168,7 @@ class Timer(private val scope: CoroutineScope) {
 fun TimelyDial(
     modifier: Modifier = Modifier,
     swatch: Swatch,
+    onDegree: (Float) -> Unit = {},
 ) {
 
     val scope = rememberCoroutineScope()
@@ -170,6 +177,8 @@ fun TimelyDial(
     LaunchedEffect(timer.isRunning) {
         if (timer.isRunning) timer.runCountdown()
     }
+
+    SideEffect { onDegree(timer.degrees) }
 
     Dial(
         degree = timer.degrees,
@@ -229,87 +238,107 @@ fun TimelyDial(
                     .fillMaxSize()
                     .drawBehind {
                         val secDegree = (dialState.degree / 6f).mod(1f) * 360f
-                        drawEveryInterval(
-                            startDegrees = 0f,
-                            sweepDegrees = 360f,
-                            interval = 6f,
-                            radius = size.width / 2f,
-                            currentDegree = dialState.degree % 360f,
-                            orientation = IntervalOrientation.PositionAndRotate,
-                        ) { data ->
-                            val delta =
-                                ((data.intervalDegree - dialState.overshootDegrees) - dialState.absoluteDegree + 180f)
-                                    .mod(360f) - 180f
-                            val x =
-                                1f - (delta.absoluteValue / 18f).coerceIn(0f..1f)
-                            val height = lerp(10.dp.toPx(), 40.dp.toPx(), x)
-                            drawLine(
-                                color = if (data.inActiveRange) swatch.v50 else swatch.v100.copy(
-                                    alpha = .6f
-                                ),
-                                start = Offset(0f, 12.dp.toPx() - lerp(0f, 8.dp.toPx(), x)),
-                                end = Offset(0f, 12.dp.toPx() - height),
-                                strokeWidth = 2.dp.toPx(),
-                            )
+                        layer(
+                            bounds = size.toRect().inflate(size.width)
+                        ) {
+                            drawEveryInterval(
+                                startDegrees = 0f,
+                                sweepDegrees = 360f,
+                                interval = 6f,
+                                radius = size.width / 2f,
+                                currentDegree = dialState.degree % 360f,
+                                orientation = IntervalOrientation.PositionAndRotate,
+                            ) { data ->
+                                val delta =
+                                    ((data.intervalDegree - dialState.overshootDegrees) - dialState.absoluteDegree + 180f)
+                                        .mod(360f) - 180f
+                                val x =
+                                    1f - (delta.absoluteValue / 18f).coerceIn(0f..1f)
+                                // Every 15th 6° interval lands on a quarter (0/90/180/270) — give
+                                // those lines a little extra reach so the quarters read at a glance.
+                                val quarterExtra =
+                                    if (data.index % 15 == 0) 6.dp.toPx() else 0f
+                                val height = lerp(10.dp.toPx(), 40.dp.toPx(), x) + quarterExtra
+                                drawLine(
+                                    color = if (data.inActiveRange) swatch.v50 else swatch.v100.copy(
+                                        alpha = .2f
+                                    ),
+                                    start = Offset(0f, 12.dp.toPx() - lerp(0f, 8.dp.toPx(), x)),
+                                    end = Offset(0f, 12.dp.toPx() - height),
+                                    strokeWidth = 2.dp.toPx(),
+                                )
 
-                            val secDelta =
-                                (data.intervalDegree - secDegree + 180f)
-                                    .mod(360f) - 180f
-                            val secX =
-                                1f - (secDelta.absoluteValue / 18f).coerceIn(0f..1f)
-                            val inwardHeight =
-                                lerp(0f, 40.dp.toPx(), secX) * secInfluence
-                            drawLine(
-                                color = if (data.inActiveRange) swatch.v50 else swatch.v100.copy(
-                                    alpha = .6f
-                                ),
-                                start = Offset(0f, 12.dp.toPx() - lerp(0f, 8.dp.toPx(), x)),
-                                end = Offset(0f, 12.dp.toPx() + inwardHeight),
-                                strokeWidth = 2.dp.toPx(),
-                            )
+                                val secDelta =
+                                    (data.intervalDegree - secDegree + 180f)
+                                        .mod(360f) - 180f
+                                val secX =
+                                    1f - (secDelta.absoluteValue / 18f).coerceIn(0f..1f)
+                                val inwardHeight =
+                                    lerp(0f, 40.dp.toPx(), secX) * secInfluence
+                                drawLine(
+                                    color = if (data.inActiveRange) swatch.v50 else swatch.v100.copy(
+                                        alpha = .2f
+                                    ),
+                                    start = Offset(0f, 12.dp.toPx() - lerp(0f, 8.dp.toPx(), x)),
+                                    end = Offset(0f, 12.dp.toPx() + inwardHeight),
+                                    strokeWidth = 2.dp.toPx(),
+                                )
+                            }
+
+                            val rings = (dialState.degree / 360f).toInt()
+
+                            for (i in 0..rings) {
+
+                                val range = 15
+                                val y = FastOutSlowInEasing.transform(
+                                    ((dialState.degree % 360f).coerceAtLeast(360f - range) - 360f).absoluteValue / range
+                                )
+                                val z = (rings - i + 1) - y
+
+                                val degree = (dialState.degree - (i * 360f)).coerceAtMost(360f)
+                                val x = when {
+                                    degree >= 360f -> 0f
+                                    else -> ((360f - degree) / 30f).coerceIn(0f..1f)
+                                }
+
+                                val padding = lerpStep(
+                                    0.dp.toPx(),
+                                    12.dp.toPx(),
+                                    z
+                                )
+
+                                val stroke = androidx.compose.ui.unit.lerp(
+                                    1.dp,
+                                    3.dp,
+                                    x
+                                )
+
+                                if (i == rings) {
+                                    drawArc(
+                                        color = swatch.v100,
+                                        startAngle = 0f,
+                                        sweepAngle = degree,
+                                        radius = center.x - 30.dp.toPx() - padding,
+                                        strokeWidth = 8.dp,
+                                        blendMode = BlendMode.DstOut,
+                                    )
+                                }
+
+                                drawArc(
+                                    color = swatch.v100.copy(
+                                        alpha = lerpStep(1f, -.15f, z)
+                                    ),
+                                    startAngle = 0f,
+                                    sweepAngle = degree,
+                                    radius = center.x - 30.dp.toPx() - padding,
+                                    strokeWidth = stroke
+                                )
+                            }
                         }
+
 
                         repeat(4) {
                             drawMinute(it, measurer, dialState.degree, secInfluence, secDegree)
-                        }
-
-                        val rings = (dialState.degree / 360f).toInt()
-
-                        for (i in 0..rings) {
-
-                            val range = 15
-                            val y = FastOutSlowInEasing.transform(
-                                ((dialState.degree % 360f).coerceAtLeast(360f - range) - 360f).absoluteValue / range
-                            )
-                            val z = (rings - i + 1) - y
-
-                            val degree = (dialState.degree - (i * 360f)).coerceAtMost(360f)
-                            val x = when {
-                                degree >= 360f -> 0f
-                                else -> ((360f - degree) / 30f).coerceIn(0f..1f)
-                            }
-
-                            val padding = lerpStep(
-                                0.dp.toPx(),
-                                12.dp.toPx(),
-                                z
-                            )
-
-                            val stroke = androidx.compose.ui.unit.lerp(
-                                1.dp,
-                                3.dp,
-                                x
-                            )
-
-                            drawArc(
-                                color = swatch.v100.copy(
-                                    alpha = lerpStep(1f, -.15f, z)
-                                ),
-                                startAngle = 0f,
-                                sweepAngle = degree,
-                                radius = center.x - 30.dp.toPx() - padding,
-                                strokeWidth = stroke
-                            )
                         }
                     }
             ) {
@@ -510,4 +539,28 @@ private fun DrawScope.drawMinute(
             )
         )
     }
+}
+
+
+private fun DrawScope.drawArc(
+    color: Color,
+    startAngle: Float,
+    sweepAngle: Float,
+    radius: Float,
+    center: Offset = this.center,
+    strokeWidth: Dp = 8.dp,
+    strokeCap: StrokeCap = StrokeCap.Round,
+    blendMode: BlendMode = BlendMode.SrcOver
+) {
+    val strokePx = strokeWidth.toPx()
+    drawArc(
+        color = color,
+        startAngle = startAngle - 90f,
+        sweepAngle = sweepAngle,
+        useCenter = false,
+        topLeft = Offset(center.x - radius, center.y - radius),
+        size = Size(radius * 2f, radius * 2f),
+        style = Stroke(width = strokePx, cap = strokeCap),
+        blendMode = blendMode,
+    )
 }

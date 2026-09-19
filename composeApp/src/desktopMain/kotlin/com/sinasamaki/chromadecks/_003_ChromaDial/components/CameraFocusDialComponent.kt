@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sinasamaki.chroma.dial.Dial
+import com.sinasamaki.chroma.dial.IntervalOrientation
 import com.sinasamaki.chroma.dial.DialLayout
 import com.sinasamaki.chroma.dial.RadiusMode
 import com.sinasamaki.chroma.dial.drawArc
@@ -189,7 +190,8 @@ private fun CameraNeedleDial(
                             sweepDegrees = 180f * if (clockwise) 1f else -1f,
                             interval = 4f,
                             radius = r,
-                            center = center
+                            center = center,
+                            orientation = IntervalOrientation.None,
                         ) { data ->
                             val isMajor = data.index % 5 == 0
                             val lineCenter = center - Offset(0f, this.center.y - 4.dp.toPx())

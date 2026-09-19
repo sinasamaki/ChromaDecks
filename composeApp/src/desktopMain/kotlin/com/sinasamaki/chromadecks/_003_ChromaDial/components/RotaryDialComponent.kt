@@ -36,6 +36,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sinasamaki.chroma.dial.Dial
+import com.sinasamaki.chroma.dial.IntervalOrientation
 import com.sinasamaki.chroma.dial.drawEveryInterval
 import com.sinasamaki.chromadecks.ui.theme.Black
 import com.sinasamaki.chromadecks.ui.theme.Lime300
@@ -147,23 +148,24 @@ fun RotaryDial(modifier: Modifier = Modifier) {
                                 sweepDegrees = 270f,
                                 interval = 30f,
                                 radius = r - holeRadius - 10.dp.toPx(),
+                                orientation = IntervalOrientation.PositionOnly,
                             ) { data ->
-                                drawCircle(Black, radius = holeRadius, center = data.position)
+                                drawCircle(Black, radius = holeRadius, center = Offset.Zero)
                                 drawCircle(
                                     color = Lime500.copy(alpha = .5f),
                                     radius = holeRadius,
-                                    center = data.position,
+                                    center = Offset.Zero,
                                     style = Stroke(width = 1.5f),
                                 )
 
-                                rotate(-totalRotation, pivot = data.position) {
+                                rotate(-totalRotation, pivot = Offset.Zero) {
                                     val text = rotaryNumbers.getOrElse(data.index) { "" }
                                     val layout = textMeasurer.measure(text, numberStyle)
                                     drawText(
                                         textLayoutResult = layout,
                                         topLeft = Offset(
-                                            data.position.x - layout.size.width / 2f,
-                                            data.position.y - layout.size.height / 2f,
+                                            -layout.size.width / 2f,
+                                            -layout.size.height / 2f,
                                         ),
                                     )
                                 }
