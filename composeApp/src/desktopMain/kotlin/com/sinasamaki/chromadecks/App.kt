@@ -1,5 +1,6 @@
 import androidx.compose.runtime.Composable
 import com.sinasamaki.chromadecks._003_ChromaDial.ChromaDialPresentation
+import com.sinasamaki.chromadecks._005_RibbonModifier.RibbonModifierPresentation
 import com.sinasamaki.chromadecks._004_TimelyTimer.TimelyTimerPresentation
 import com.sinasamaki.chromadecks._talks.ui_delight.UIDelightPresentation
 import com.sinasamaki.chromadecks.ui.theme.ChromaContainer
@@ -14,6 +15,7 @@ fun App() {
 //        PathAnimationPresentation()
 //        ChromaDialPresentation()
 //        UIDelightPresentation()
-        TimelyTimerPresentation()
+//        TimelyTimerPresentation()
+        RibbonModifierPresentation()
 //    }
 }
