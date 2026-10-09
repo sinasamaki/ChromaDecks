@@ -6,24 +6,29 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun ChromaContainer(
     codeColors: CodeColors = CodeColors(),
+    colors: ColorScheme = darkColorScheme(),
     aspectRatio: Float = 4 / 3f,
+    letterbox: Color = Black,
     content: @Composable () -> Unit,
 ) {
-    ChromaTheme(codeColors = codeColors) {
+    ChromaTheme(colors = colors, codeColors = codeColors) {
         Box(
             Modifier
                 .fillMaxSize()
-                .background(Black),
+                .background(letterbox),
             contentAlignment = Alignment.Center,
         ) {
             Surface(

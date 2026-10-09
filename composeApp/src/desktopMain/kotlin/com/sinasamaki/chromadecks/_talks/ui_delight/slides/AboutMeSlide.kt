@@ -3,13 +3,12 @@ package com.sinasamaki.chromadecks._talks.ui_delight.slides
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,17 +28,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import chromadecks.composeapp.generated.resources.Res
+import chromadecks.composeapp.generated.resources.imglyPic
+import chromadecks.composeapp.generated.resources.sinasamaki
 import coil3.compose.AsyncImage
 import com.sinasamaki.chromadecks._002_PathAnimations.slides.BlurredAnimatedChange
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.frames.blendMode
+import com.sinasamaki.chromadecks.ui.theme.Black
+import com.sinasamaki.chromadecks.ui.theme.Cyan500
 import com.sinasamaki.chromadecks.ui.theme.Zinc300
 import com.sinasamaki.chromadecks.ui.theme.Zinc50
-import com.sinasamaki.chromadecks.ui.theme.Zinc800
 import com.sinasamaki.chromadecks.ui.theme.Zinc950
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
 
 data class AboutMeSlideState(
-    val img: String = "",
+    val img: DrawableResource? = null,
     val profile: String = "leshan.jpeg",
     val name: String = "Ian Leshan",
     val color: Color = Zinc300,
@@ -53,10 +57,10 @@ class AboutMeSlide : ListSlideAdvanced<AboutMeSlideState>() {
     override val stateMutations: List<AboutMeSlideState.() -> AboutMeSlideState>
         get() = listOf(
             {
-                copy(img = "imglyPic.png")
+                copy(img = Res.drawable.imglyPic)
             },
             {
-                copy(img = "sinasamaki.png", profile = "myheart.png", name = "sinasamaki", color = Zinc950)
+                copy(img = Res.drawable.sinasamaki, profile = "myheart.png", name = "sinasamaki", color = Zinc950)
             }
         )
 
@@ -106,14 +110,17 @@ class AboutMeSlide : ListSlideAdvanced<AboutMeSlideState>() {
                 modifier = Modifier
                     .weight(1f, false)
             ) { img ->
-                if (img.isNotBlank()) {
-                    AsyncImage(
-                        model = Res.getUri("drawable/${img}"),
+                img?.let { img ->
+                    Image(
+//                        model = Res.getUri("drawable/${img}"),
+//                        model = img,
+                        painter = painterResource(img),
                         contentDescription = null,
+                        contentScale = ContentScale.Inside,
                         modifier = Modifier
-                            .fillMaxHeight(.7f)
-//                        .align(Alignment.Center)
                             .clip(RoundedCornerShape(24.dp))
+//                            .fillMaxHeight(.7f)
+//                        .align(Alignment.Center)
                     )
                 }
             }

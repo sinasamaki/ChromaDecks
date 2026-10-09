@@ -32,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chromadecks.ui.theme.Black
@@ -62,6 +63,12 @@ fun CodeIDE(
     enableAnimations: Boolean = true,
     fadeAnimations: Boolean = true,
     darkMode: Boolean = true,
+    textColor: Color = if (darkMode) Color.White else Color.Black,
+    tabTextColor: Color = Slate50,
+    chromeColor: Color = Zinc200,
+    frameColor: Color = Zinc500,
+    panelColor: Color = Zinc700,
+    codeBackground: Color = Zinc950,
 ) {
     Column(
         modifier = modifier
@@ -70,14 +77,14 @@ fun CodeIDE(
 //                color = Zinc500.copy(alpha = .3f),
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Zinc500.copy(alpha = .3f),
-                        Zinc500.copy(alpha = .05f),
+                        frameColor.copy(alpha = .3f),
+                        frameColor.copy(alpha = .05f),
                     )
                 ),
                 shape = RoundedCornerShape(24.dp)
             )
             .background(
-                Zinc700.copy(alpha = .3f),
+                panelColor.copy(alpha = .3f),
                 shape = RoundedCornerShape(24.dp),
             ),
     ) {
@@ -110,14 +117,14 @@ fun CodeIDE(
                 Text(
                     text = fileName,
                     style = style,
-                    color = if (isSelected) Slate50 else Slate50.copy(alpha = .1f),
+                    color = if (isSelected) tabTextColor else tabTextColor.copy(alpha = .1f),
                     modifier = Modifier
                         .clip(CircleShape)
                         .border(
                             color = if (isSelected)
-                                Zinc200.copy(alpha = .2f)
+                                chromeColor.copy(alpha = .2f)
                             else
-                                Zinc200.copy(alpha = .05f),
+                                chromeColor.copy(alpha = .05f),
                             width = 1.dp,
                             shape = CircleShape,
                         )
@@ -125,15 +132,15 @@ fun CodeIDE(
                             if (isSelected)
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        Zinc200.copy(alpha = .1f),
-                                        Zinc200.copy(alpha = .2f),
+                                        chromeColor.copy(alpha = .1f),
+                                        chromeColor.copy(alpha = .2f),
                                     )
                                 )
                             else
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        Zinc200.copy(alpha = 0f),
-                                        Zinc200.copy(alpha = .05f),
+                                        chromeColor.copy(alpha = 0f),
+                                        chromeColor.copy(alpha = .05f),
                                     )
                                 )
                         )
@@ -170,7 +177,7 @@ fun CodeIDE(
                 modifier = Modifier
                     .padding(2.dp)
                     .background(
-                        color = Zinc950.copy(alpha = .7f),
+                        color = codeBackground.copy(alpha = .7f),
                         shape = RoundedCornerShape(22.dp),
                     )
                     .padding(16.dp),
@@ -181,6 +188,7 @@ fun CodeIDE(
                 enableAnimations = enableAnimations,
                 fadeAnimations = fadeAnimations,
                 darkMode = darkMode,
+                textColor = textColor,
             )
         }
     }

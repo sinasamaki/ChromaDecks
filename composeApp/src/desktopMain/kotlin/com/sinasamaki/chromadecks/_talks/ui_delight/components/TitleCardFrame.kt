@@ -53,6 +53,8 @@ import com.sinasamaki.chromadecks.ui.components.CaratDisplay
 import com.sinasamaki.chromadecks.ui.components.InfluenceCircle
 import com.sinasamaki.chromadecks.ui.modifiers.layer
 import com.sinasamaki.chromadecks.ui.theme.Black
+import com.sinasamaki.chromadecks.ui.theme.Blue300
+import com.sinasamaki.chromadecks.ui.theme.Blue500
 import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Neutral200
 import com.sinasamaki.chromadecks.ui.theme.Orange400
@@ -147,7 +149,7 @@ fun TitleCardFrame(
                                 drawLine(
 //                                    color = borderColor,
                                     brush = Brush.linearGradient(
-                                        colors = listOf(Lime500, Purple500, Purple300)
+                                        colors = listOf(Lime500, Blue500, Blue300)
                                     ),
                                     start = Offset(x = line.startXFraction * size.width, y = 0f),
                                     end = Offset(x = 0f, y = line.endYFraction * size.height),
@@ -160,7 +162,7 @@ fun TitleCardFrame(
                         width = 2.dp,
 //                        color = borderColor,
                         brush = Brush.linearGradient(
-                            colors = listOf(Lime500, Purple500, Purple300)
+                            colors = listOf(Lime500, Blue500, Blue300)
                         ),
                         shape = RectangleShape
                     )
@@ -200,7 +202,7 @@ fun TitleCardFrame(
         CaratDisplay(
             modifier = Modifier
                 .fillMaxSize(),
-            colors = listOf(Lime500, Purple500, Purple300),
+            colors = listOf(Lime500, Blue500, Blue300),
             circles = {
                 listOf(
                     InfluenceCircle(

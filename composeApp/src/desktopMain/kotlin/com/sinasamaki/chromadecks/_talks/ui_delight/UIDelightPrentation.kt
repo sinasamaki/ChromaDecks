@@ -23,6 +23,9 @@ import com.sinasamaki.chromadecks._talks.ui_delight.slides.CubeCodeSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.CustomSwipeGestureSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.CustomTapGestureSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.DeleteDragSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.DroidconIntroSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.DroidconLogoCodeSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.DroidconLogoSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.FinishedElementSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.GesturesTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.HapticFeedbackSlide
@@ -37,6 +40,8 @@ import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierAppliedSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifierClickableSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ModifiersTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.PillAnimationSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.SinasamakiPromoSlide
+import com.sinasamaki.chromadecks._talks.ui_delight.slides.SubAtomicCTASlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.ThankYouTitleCard
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.TitleSlide
 import com.sinasamaki.chromadecks._talks.ui_delight.slides.VoteSlide
@@ -47,6 +52,8 @@ import com.sinasamaki.chromadecks.ui.slideanimations.fadeIn
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
 import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.scaleIn
+import com.sinasamaki.chromadecks.ui.theme.Blue300
+import com.sinasamaki.chromadecks.ui.theme.Blue400
 import com.sinasamaki.chromadecks.ui.theme.ChromaContainer
 import com.sinasamaki.chromadecks.ui.theme.CodeColors
 import com.sinasamaki.chromadecks.ui.theme.Lime200
@@ -57,6 +64,7 @@ import com.sinasamaki.chromadecks.ui.theme.Purple400
 import com.sinasamaki.chromadecks.ui.theme.Slate50
 import com.sinasamaki.chromadecks.ui.theme.Slate500
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
+import com.sinasamaki.chromadecks.ui.theme.Zinc950
 
 fun main() {
     singleWindowApplication(
@@ -76,8 +84,8 @@ fun UIDelightPresentation() {
         codeColors = CodeColors(
             keyword = Lime500,
             string = Lime600,
-            number = Lime400,
-            function = Purple400,
+            number = Blue300,
+            function = Blue400,
             param = Lime200,
             comment = Slate500,
         ),
@@ -96,9 +104,10 @@ fun UIDelightPresentation() {
 //
 //                        ListItemSlide(),
 //                        TitleSlide(),
-                        KotlinConfIntroSlide(),
-                        MDevCampIntroSlide(),
-                        IntroductionSlide(),
+                        DroidconIntroSlide(),
+//                        KotlinConfIntroSlide(),
+//                        MDevCampIntroSlide(),
+//                        IntroductionSlide(),
                         AboutMeSlide(),
 //                        MyAnimationsSlide(),
 //                        WhySlide(),
@@ -128,14 +137,18 @@ fun UIDelightPresentation() {
 
                         WhyTitleCard(),
 
-                        PillAnimationSlide(),
-
-                        CaratDisplaySlide(),
-                        CubeCodeSlide(),
+//                        PillAnimationSlide(),
                         FinishedElementSlide(),
                         CodeHighlightSlide(),
 
-                        VoteSlide(),
+                        CaratDisplaySlide(),
+                        CubeCodeSlide(),
+                        DroidconLogoSlide(),
+                        DroidconLogoCodeSlide(),
+
+//                        VoteSlide(),
+                        SinasamakiPromoSlide(),
+                        SubAtomicCTASlide(),
                         ThankYouTitleCard(),
                     )
                 },
@@ -146,7 +159,7 @@ fun UIDelightPresentation() {
                     Box(
                         Modifier
                             .parallax(
-                                factor = .8f
+                                factor = .99f
                             )
                             .fadeIn(
                                 initial = 0f,
@@ -158,10 +171,10 @@ fun UIDelightPresentation() {
                             )
                             .blurIn(initial = 100f)
                             .scaleIn(
-                                initial = .75f
+                                initial = 1.35f
                             )
                             .background(
-                                color = Zinc900
+                                color = Zinc950
                             )
                     ) {
                         content()

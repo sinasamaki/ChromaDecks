@@ -16,6 +16,8 @@ import com.sinasamaki.chromadecks.ui.components.CaratDisplay
 import com.sinasamaki.chromadecks.ui.components.InfluenceCircle
 import com.sinasamaki.chromadecks._talks.ui_delight.components.ListItemDisplay
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
+import com.sinasamaki.chromadecks.ui.theme.Blue300
+import com.sinasamaki.chromadecks.ui.theme.Blue500
 import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Purple300
 import com.sinasamaki.chromadecks.ui.theme.Purple500
@@ -57,7 +59,7 @@ class CaratDisplaySlide : ListSlideAdvanced<CaratDisplaySlideState>() {
             )
             CaratDisplay(
                 modifier = Modifier.fillMaxSize(),
-                colors = listOf(Lime500, Purple500, Purple300),
+                colors = listOf(Lime500, Blue500, Blue300),
                 circles = { size ->
                     listOf(
                         InfluenceCircle(

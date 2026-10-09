@@ -86,7 +86,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 
-const val title = "mDevCamp 2026"
+const val title = "DroidCon Berlin 2026"
 const val subtitle = "Dear sinasamaki ..."
 const val time = "09:41"
 

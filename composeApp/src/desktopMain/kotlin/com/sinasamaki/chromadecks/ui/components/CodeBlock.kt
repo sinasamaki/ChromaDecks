@@ -47,7 +47,11 @@ fun CodeBlock(
     enableAnimations: Boolean = true,
     fadeAnimations: Boolean = true,
     darkMode: Boolean = true,
+    bouncy: Boolean = true,
+    textColor: Color = if (darkMode) Color.White else Color.Black,
 ) {
+    val settle = if (bouncy) Spring.DampingRatioLowBouncy else Spring.DampingRatioNoBouncy
+
 
     val states = remember { mutableStateListOf<LineState>() }
 
@@ -86,7 +90,7 @@ fun CodeBlock(
                     it.animateContentSize(
                         animationSpec = spring(
                             stiffness = Spring.StiffnessMediumLow,
-                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            dampingRatio = settle,
                         )
                     )
                 } else {
@@ -127,7 +131,7 @@ fun CodeBlock(
             }
             Text(
                 text = highlightLine(line.text, darkMode),
-                color = if (darkMode) Color.White else Color.Black,
+                color = textColor,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)
@@ -164,7 +168,7 @@ fun CodeBlock(
                                 fadeOutSpec = if (fadeAnimations) spring(stiffness = Spring.StiffnessHigh) else snap(),
                                 placementSpec = spring(
                                     stiffness = Spring.StiffnessMediumLow,
-                                    dampingRatio = Spring.DampingRatioLowBouncy
+                                    dampingRatio = settle
                                 )
                             )
                         } else {
