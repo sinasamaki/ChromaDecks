@@ -26,6 +26,8 @@ import com.sinasamaki.chromadecks._talks.ui_delight.components.Cube
 import com.sinasamaki.chromadecks._talks.ui_delight.components.ListItemDisplay
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.theme.Black
+import com.sinasamaki.chromadecks.ui.theme.Blue300
+import com.sinasamaki.chromadecks.ui.theme.Blue500
 import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Purple300
 import com.sinasamaki.chromadecks.ui.theme.Purple500
@@ -108,7 +110,7 @@ class CubeCodeSlide : ListSlideAdvanced<CubeCodeSlideState>() {
                                 rotate(degrees = 90f * line.quadrant) {
                                     drawLine(
                                         brush = Brush.linearGradient(
-                                            colors = listOf(Lime500, Purple500, Purple300)
+                                            colors = listOf(Lime500, Blue500, Blue300)
                                         ),
                                         start = Offset(x = line.startXFraction * size.width, y = 0f),
                                         end = Offset(x = 0f, y = line.endYFraction * size.height),
@@ -120,13 +122,13 @@ class CubeCodeSlide : ListSlideAdvanced<CubeCodeSlideState>() {
                         .border(
                             width = 2.dp,
                             brush = Brush.linearGradient(
-                                colors = listOf(Lime500, Purple500, Purple300)
+                                colors = listOf(Lime500, Blue500, Blue300)
                             ),
                             shape = RectangleShape,
                         )
                         .innerShadow(shape = RectangleShape) {
                             brush = Brush.linearGradient(
-                                colors = listOf(Lime500, Purple500, Purple300)
+                                colors = listOf(Lime500, Blue500, Blue300)
                             )
                             radius = 120f
                             alpha = .2f

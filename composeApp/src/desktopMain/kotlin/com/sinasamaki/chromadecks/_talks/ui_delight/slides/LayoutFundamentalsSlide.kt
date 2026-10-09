@@ -63,19 +63,19 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        color = Purple400
+                        color = layoutColor
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        color = Purple400.copy(alpha = .5f)
+                        color = layoutColor.copy(alpha = .5f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        color = Purple400.copy(alpha = .25f)
+                        color = layoutColor.copy(alpha = .25f)
                     )
                 }
 
@@ -87,19 +87,19 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f),
-                        color = Purple400.copy(alpha = 1f)
+                        color = layoutColor.copy(alpha = 1f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f),
-                        color = Purple400.copy(alpha = .5f)
+                        color = layoutColor.copy(alpha = .5f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f),
-                        color = Purple400.copy(alpha = .25f)
+                        color = layoutColor.copy(alpha = .25f)
                     )
                 }
 
@@ -112,17 +112,17 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
                     Item(
                         modifier = Modifier
                             .fillMaxSize(1f),
-                        color = Purple400.copy(alpha = 1f)
+                        color = layoutColor.copy(alpha = 1f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxSize(.666f),
-                        color = Purple400.copy(alpha = .5f)
+                        color = layoutColor.copy(alpha = .5f)
                     )
                     Item(
                         modifier = Modifier
                             .fillMaxSize(.333f),
-                        color = Purple400.copy(alpha = .25f)
+                        color = layoutColor.copy(alpha = .25f)
                     )
                 }
 
@@ -178,6 +178,8 @@ class LayoutFundamentalsSlide : ListSlideAdvanced<LayoutFundamentalsSlideState>(
         }
     }
 }
+
+private val layoutColor = Green500
 
 
 @Composable

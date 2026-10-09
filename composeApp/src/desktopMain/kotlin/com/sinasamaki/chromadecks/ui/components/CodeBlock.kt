@@ -48,6 +48,7 @@ fun CodeBlock(
     fadeAnimations: Boolean = true,
     darkMode: Boolean = true,
     bouncy: Boolean = true,
+    textColor: Color = if (darkMode) Color.White else Color.Black,
 ) {
     val settle = if (bouncy) Spring.DampingRatioLowBouncy else Spring.DampingRatioNoBouncy
 
@@ -130,7 +131,7 @@ fun CodeBlock(
             }
             Text(
                 text = highlightLine(line.text, darkMode),
-                color = if (darkMode) Color.White else Color.Black,
+                color = textColor,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 2.dp)

@@ -98,7 +98,11 @@ fun TitleFrame(
     hint: String,
     bookNumber: Int,
     animationProgress: Float = 1f,
-    contentColor: Color = LocalContentColor.current
+    contentColor: Color = LocalContentColor.current,
+    /** Applied to the title text alone, for decorating it without touching the rest. */
+    titleModifier: Modifier = Modifier,
+    /** The line between the title and the byline. */
+    showDivider: Boolean = true,
 ) {
     CompositionLocalProvider(
         LocalContentColor provides contentColor
@@ -112,6 +116,8 @@ fun TitleFrame(
                 modifier = Modifier.align(Alignment.Center),
                 title = title,
                 animationProgress = animationProgress,
+                titleModifier = titleModifier,
+                showDivider = showDivider,
             )
 
             VersionTag(
@@ -144,6 +150,8 @@ private fun Title(
     modifier: Modifier = Modifier,
     title: String,
     animationProgress: Float,
+    titleModifier: Modifier = Modifier,
+    showDivider: Boolean = true,
 ) {
     val density = LocalDensity.current
     var width by remember { mutableStateOf(0.dp) }
@@ -154,13 +162,15 @@ private fun Title(
         AccordionText(
             text = title,
             animationProgress = animationProgress,
+            modifier = titleModifier,
         )
 
         Box(
             Modifier
                 .padding(top = 24.dp, bottom = 16.dp)
                 .width(width)
-                .height(2.dp)
+                // Hidden rather than removed, so the byline keeps its place.
+                .height(if (showDivider) 2.dp else 0.dp)
                 .graphicsLayer {
                     scaleX = LinearOutSlowInEasing.transform(
                         dividerRange.progress(animationProgress)
