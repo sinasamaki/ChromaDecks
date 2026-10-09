@@ -13,17 +13,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sinasamaki.chromadecks._005_RibbonModifier.SPECTRUM
+import com.sinasamaki.chromadecks._005_RibbonModifier.RIBBON_COLORS
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.HabitRow
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.ribbon
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
+import com.sinasamaki.chromadecks.ui.slideanimations.blurOut
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
 import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.scaleOut
 
 internal data class RibbonHeroState(val wrapped: Boolean)
 
-/** Opens on the finished effect: this is the thing we are about to build. */
 internal class RibbonHeroSlide : ListSlideAdvanced<RibbonHeroState>() {
 
     override val initialState get() = RibbonHeroState(wrapped = true)
@@ -36,7 +36,7 @@ internal class RibbonHeroSlide : ListSlideAdvanced<RibbonHeroState>() {
 
     override val animator: (@Composable (@Composable () -> Unit) -> Unit)?
         get() = { content ->
-            Box(Modifier.parallax(1f).scaleOut(initial = .85f).fadeOut()) { content() }
+            Box(Modifier.parallax(1f).scaleOut(initial = .85f).blurOut().fadeOut()) { content() }
         }
 
     @Composable
@@ -53,10 +53,10 @@ internal class RibbonHeroSlide : ListSlideAdvanced<RibbonHeroState>() {
         ) {
             HabitRow(
                 modifier = Modifier
-                    .width(540.dp)
-                    .height(132.dp)
+                    .width(580.dp)
+                    .height(144.dp)
                     .ribbon(
-                        colors = SPECTRUM,
+                        colors = RIBBON_COLORS,
                         stroke = 22.dp,
                         loops = 4,
                         progress = { progress },

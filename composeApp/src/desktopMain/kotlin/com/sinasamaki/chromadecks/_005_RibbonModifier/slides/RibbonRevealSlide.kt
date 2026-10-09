@@ -15,43 +15,50 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sinasamaki.chromadecks._005_RibbonModifier.SPECTRUM
+import com.sinasamaki.chromadecks._005_RibbonModifier.RIBBON_COLORS
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.CodePanel
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.HabitRow
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.ribbon
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
+import com.sinasamaki.chromadecks.ui.slideanimations.blurOut
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
 import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.translateInX
 
-internal data class RevealState(
+internal data class RibbonRevealState(
     val progress: Float,
+    val sequential: Boolean,
+    val millis: Int,
     val code: String,
 )
 
-/** The dash that grows: one slice of progress per segment, laid end to end. */
-internal class RevealSlide : ListSlideAdvanced<RevealState>() {
+private const val TOGETHER_MILLIS = 900
 
-    override val initialState: RevealState
-        get() = RevealState(progress = .35f, code = DASH_CODE)
+private const val SEQUENTIAL_MILLIS = 4200
 
-    override val stateMutations: List<RevealState.() -> RevealState>
+internal class RibbonRevealSlide : ListSlideAdvanced<RibbonRevealState>() {
+
+    override val initialState: RibbonRevealState
+        get() = RibbonRevealState(progress = 0f, sequential = false, millis = TOGETHER_MILLIS, code = DASH_CODE)
+
+    override val stateMutations: List<RibbonRevealState.() -> RibbonRevealState>
         get() = listOf(
-            { copy(progress = 1f, code = SLICE_CODE) },
-            { copy(progress = 0f) },
             { copy(progress = 1f) },
+            { copy(progress = 0f) },
+            { copy(progress = 1f, sequential = true, millis = SEQUENTIAL_MILLIS, code = SLICE_CODE) },
+            { copy(progress = 0f) },
         )
 
     override val animator: (@Composable (@Composable () -> Unit) -> Unit)?
         get() = { content ->
-            Box(Modifier.parallax(1f).translateInX().fadeOut()) { content() }
+            Box(Modifier.parallax(1f).translateInX().blurOut().fadeOut()) { content() }
         }
 
     @Composable
-    override fun content(state: RevealState) {
+    override fun content(state: RibbonRevealState) {
         val progress by animateFloatAsState(
             targetValue = state.progress,
-            animationSpec = tween(durationMillis = 2400, easing = FastOutSlowInEasing),
+            animationSpec = tween(durationMillis = state.millis, easing = FastOutSlowInEasing),
             label = "reveal-progress",
         )
 
@@ -71,13 +78,14 @@ internal class RevealSlide : ListSlideAdvanced<RevealState>() {
             ) {
                 HabitRow(
                     modifier = Modifier
-                        .width(400.dp)
-                        .height(112.dp)
+                        .width(440.dp)
+                        .height(124.dp)
                         .ribbon(
-                            colors = SPECTRUM,
+                            colors = RIBBON_COLORS,
                             stroke = 20.dp,
                             loops = 4,
                             progress = { progress },
+                            sequential = state.sequential,
                         ),
                 )
             }
@@ -86,7 +94,7 @@ internal class RevealSlide : ListSlideAdvanced<RevealState>() {
 }
 
 private val DASH_CODE = """
-val reveal = segment.length * local
+val reveal = segment.length * progress
 val hide = segment.length
 
 pathEffect = PathEffect.dashPathEffect(

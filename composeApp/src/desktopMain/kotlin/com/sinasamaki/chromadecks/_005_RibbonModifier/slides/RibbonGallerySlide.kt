@@ -22,11 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sinasamaki.chromadecks._005_RibbonModifier.COOL
 import com.sinasamaki.chromadecks._005_RibbonModifier.DUSK
-import com.sinasamaki.chromadecks._005_RibbonModifier.SPECTRUM
+import com.sinasamaki.chromadecks._005_RibbonModifier.RIBBON_COLORS
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.HabitRow
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.ribbon
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
+import com.sinasamaki.chromadecks.ui.slideanimations.blurOut
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeIn
+import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
 import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.theme.Zinc500
 import com.sinasamaki.chromadecks.ui.theme.Zinc900
@@ -39,7 +41,7 @@ private data class GalleryRow(
 )
 
 private val ROWS = listOf(
-    GalleryRow("Morning run", SPECTRUM, loops = 4, delay = 0),
+    GalleryRow("Morning run", RIBBON_COLORS, loops = 4, delay = 0),
     GalleryRow("Read 10 pages", COOL, loops = 3, delay = 400),
     GalleryRow("Drink water", DUSK, loops = 5, delay = 800),
 )
@@ -63,7 +65,7 @@ internal class RibbonGallerySlide : ListSlideAdvanced<RibbonGalleryState>() {
 
     override val animator: (@Composable (@Composable () -> Unit) -> Unit)?
         get() = { content ->
-            Box(Modifier.parallax(1f).fadeIn()) { content() }
+            Box(Modifier.parallax(1f).fadeIn().blurOut().fadeOut()) { content() }
         }
 
     @Composable
@@ -93,8 +95,8 @@ internal class RibbonGallerySlide : ListSlideAdvanced<RibbonGalleryState>() {
                 HabitRow(
                     label = row.label,
                     modifier = Modifier
-                        .width(460.dp)
-                        .height(112.dp)
+                        .width(500.dp)
+                        .height(124.dp)
                         .ribbon(
                             colors = row.colors,
                             stroke = 18.dp,

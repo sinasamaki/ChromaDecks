@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.CodePanel
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.RibbonDiagram
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
+import com.sinasamaki.chromadecks.ui.slideanimations.blurOut
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
 import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.translateInX
@@ -29,51 +30,44 @@ import com.sinasamaki.chromadecks.ui.slideanimations.translateInX
 private const val LOOPS = 3f
 
 internal data class CubicPathState(
-    /** The circle sits still until this is set, so the slide can be landed on before it runs. */
     val running: Boolean,
-    /** 0 leaves hard corners between the sample points, 1 curves them into the helix. */
     val handleScale: Float,
-    val showHandles: Boolean,
     val code: String,
 )
 
-/**
- * Beat two: the circle drops a point every quarter turn, those points join up hard-cornered,
- * and then their control handles grow out into the real curve.
- */
 internal class CubicPathSlide : ListSlideAdvanced<CubicPathState>() {
 
     override val initialState: CubicPathState
         get() = CubicPathState(
             running = false,
             handleScale = 0f,
-            showHandles = false,
             code = POINTS_CODE,
         )
 
     override val stateMutations: List<CubicPathState.() -> CubicPathState>
         get() = listOf(
             { copy(running = true) },
-            { copy(handleScale = 1f, showHandles = true, code = CUBIC_CODE) },
+            { copy(handleScale = 1f, code = CUBIC_CODE) },
         )
 
     override val animator: (@Composable (@Composable () -> Unit) -> Unit)?
         get() = { content ->
-            Box(Modifier.parallax(1f).translateInX().fadeOut()) { content() }
+            Box(Modifier.parallax(1f).translateInX().blurOut().fadeOut()) { content() }
         }
 
     @Composable
     override fun content(state: CubicPathState) {
-        // Held at the start until the slide is advanced, then the points land one at a time as
-        // the circle reaches them.
         val sweep = remember { Animatable(0f) }
         LaunchedEffect(state.running) {
-            if (state.running) sweep.animateTo(360f * LOOPS, tween(durationMillis = 3600))
+            sweep.animateTo(
+                targetValue = if (state.running) 360f * LOOPS else 0f,
+                animationSpec = tween(durationMillis = 3600),
+            )
         }
 
         val handleScale by animateFloatAsState(
             targetValue = state.handleScale,
-            animationSpec = spring(stiffness = Spring.StiffnessVeryLow),
+            animationSpec = spring(stiffness = Spring.StiffnessVeryLow, visibilityThreshold = .0001f),
             label = "handleScale",
         )
         Row(
@@ -93,7 +87,7 @@ internal class CubicPathSlide : ListSlideAdvanced<CubicPathState>() {
                     handleScale = handleScale,
                     showRadius = false,
                     showSamples = true,
-                    showHandles = state.showHandles,
+                    showHandles = handleScale > .01f,
                     trailToSamples = true,
                 )
             }
@@ -107,21 +101,27 @@ internal class CubicPathSlide : ListSlideAdvanced<CubicPathState>() {
 }
 
 private val POINTS_CODE = """
-var degrees = first
-while (degrees < last) {
-    points += helixPoint(degrees)
-    degrees += 90f
+var angle = first
+while (angle < last) {
+    points += pointAt(angle)
+    angle += 90f
 }
 """.trimIndent()
 
 private val CUBIC_CODE = """
-val path = Path()
-path.moveTo(helixPoint(first))
+val start = pointAt(first)
+path.moveTo(start.x, start.y)
 
-var degrees = first
-while (degrees < last) {
-    val next = degrees + 90f
-    path.helixCubicTo(degrees, next)
-    degrees = next
+var angle = first
+while (angle < last) {
+    val next = angle + 90f
+    val end = pointAt(next)
+    val (c1, c2) = handles(angle, next)
+    path.cubicTo(
+        c1.x, c1.y,
+        c2.x, c2.y,
+        end.x, end.y,
+    )
+    angle = next
 }
 """.trimIndent()

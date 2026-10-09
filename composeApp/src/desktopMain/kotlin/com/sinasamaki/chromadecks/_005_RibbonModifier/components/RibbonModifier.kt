@@ -29,37 +29,22 @@ import kotlin.math.min
 import kotlin.math.sin
 import kotlin.math.tan
 
-/** A half turn of the helix — the chunk that is either in front of the content, or behind it. */
 internal const val HALF_TURN = 180f
 
-/** The largest arc a single cubic can approximate without visible error. */
 internal const val QUARTER_TURN = 90f
 
-/** The sweep starts and ends at the bottom of the loop, so both tips tuck under the content. */
 internal const val START_ANGLE = -90f
 
-/**
- * Wraps a ribbon around the content: a helix drawn as one path per half turn, the odd ones
- * on top of the content and the even ones underneath.
- *
- * [colors] is walked along the length of the whole ribbon, so each half turn gets a vertical
- * gradient that picks up exactly where the previous one left off.
- *
- * @param progress how much of the ribbon is drawn, 0..1 across every turn.
- * @param width multiplier on [stroke]. A lambda, like [progress], so animating either one
- *   redraws without rebuilding the geometry.
- */
 fun Modifier.ribbon(
     colors: List<Color>,
     stroke: Dp = 4.dp,
     loops: Int = 7,
     progress: () -> Float,
     width: () -> Float = { 1f },
-    brush: ((index: Int) -> Brush)? = null,
+    sequential: Boolean = true,
+    brush: ((index: Int, segment: RibbonSegment) -> Brush)? = null,
 ): Modifier = drawWithCache {
     val strokePx = stroke.toPx()
-    // drawWithCache rebuilds this only when the size or these parameters change; the lambdas
-    // above keep it alive while the ribbon animates.
     val segments = ribbonSegments(
         size = size,
         strokePx = strokePx,
@@ -72,29 +57,36 @@ fun Modifier.ribbon(
         val widthPx = strokePx * width()
         segments.forEachIndexed { index, segment ->
             if (!segment.inFront) {
-                drawRibbonSegment(segment, progressValue, widthPx, brush?.invoke(index) ?: segment.brush)
+                drawRibbonSegment(
+                    segment = segment,
+                    progress = progressValue,
+                    widthPx = widthPx,
+                    brush = brush?.invoke(index, segment) ?: segment.brush,
+                    sequential = sequential,
+                )
             }
         }
         drawContent()
         segments.forEachIndexed { index, segment ->
             if (segment.inFront) {
-                drawRibbonSegment(segment, progressValue, widthPx, brush?.invoke(index) ?: segment.brush)
+                drawRibbonSegment(
+                    segment = segment,
+                    progress = progressValue,
+                    widthPx = widthPx,
+                    brush = brush?.invoke(index, segment) ?: segment.brush,
+                    sequential = sequential,
+                )
             }
         }
     }
 }
 
-/**
- * The same ribbon drawn in one pass, entirely on top of the content — the stage the deck shows
- * before splitting the path up, where the effect still reads as a spiral laid over the button
- * rather than wound around it.
- */
 internal fun Modifier.flatRibbon(
     colors: List<Color>,
     stroke: Dp = 4.dp,
     loops: Int = 7,
     progress: () -> Float,
-    brush: ((index: Int) -> Brush)? = null,
+    brush: ((index: Int, segment: RibbonSegment) -> Brush)? = null,
 ): Modifier = drawWithCache {
     val strokePx = stroke.toPx()
     val segments = ribbonSegments(size, strokePx, loops - .5f, colors)
@@ -103,54 +95,39 @@ internal fun Modifier.flatRibbon(
         val progressValue = progress()
         drawContent()
         segments.forEachIndexed { index, segment ->
-            drawRibbonSegment(segment, progressValue, strokePx, brush?.invoke(index) ?: segment.brush)
+            drawRibbonSegment(segment, progressValue, strokePx, brush?.invoke(index, segment) ?: segment.brush)
         }
     }
 }
 
-/**
- * The layering taken one pass at a time, so a slide can land on the same three lines the code
- * does: the half turns behind, then the content, then the half turns in front.
- *
- * @param stage 0 draws only what goes behind, 1 adds the content, 2 adds what comes in front.
- */
 internal fun Modifier.stagedRibbon(
     colors: List<Color>,
     stroke: Dp = 4.dp,
     loops: Int = 7,
-    stage: Int,
-    progress: () -> Float,
+    content: Boolean,
+    behindProgress: () -> Float,
+    frontProgress: () -> Float,
 ): Modifier = drawWithCache {
     val strokePx = stroke.toPx()
     val segments = ribbonSegments(size, strokePx, loops - .5f, colors)
 
     onDrawWithContent {
-        val progressValue = progress()
-        segments.forEach { if (!it.inFront) drawRibbonSegment(it, progressValue, strokePx) }
-        if (stage >= 1) drawContent()
-        if (stage >= 2) {
-            segments.forEach { if (it.inFront) drawRibbonSegment(it, progressValue, strokePx) }
-        }
+        val behind = behindProgress()
+        segments.forEach { if (!it.inFront) drawRibbonSegment(it, behind, strokePx) }
+        if (content) drawContent()
+        val front = frontProgress()
+        segments.forEach { if (it.inFront) drawRibbonSegment(it, front, strokePx) }
     }
 }
 
-/**
- * The helix the ribbon is drawn along: a circle of [radius] whose center slides from the left
- * edge of [size] to the right edge while the angle sweeps [loops] times around.
- *
- * Everything on a slide — the modifier, the construction diagram, the exploded view — measures
- * itself against this one object, so none of them can drift apart.
- */
 internal class RibbonCurve(
     val size: Size,
     val strokePx: Float,
-    /** Whole turns wanted, already halved down by the caller (see [Modifier.ribbon]). */
     val loops: Float,
 ) {
     val start = Offset(0f, size.height * .5f)
     val end = Offset(size.width, size.height * .5f)
 
-    /** Big enough to clear the top and bottom edges of whatever is being wrapped. */
     val radius = (size.height * .5f) + strokePx
 
     val first = min(START_ANGLE, (360f * loops) - START_ANGLE)
@@ -159,12 +136,10 @@ internal class RibbonCurve(
 
     val isEmpty = size.isEmpty() || sweep <= 0f || radius <= 0f
 
-    /** Where the circle's center sits when the sweep has reached [degrees]. */
     fun centerAt(degrees: Float): Offset = lerp(start, end, (degrees - first) / sweep)
 
-    fun pointAt(degrees: Float): Offset = helixPoint(degrees, radius, ::centerAt)
+    fun pointAt(degrees: Float): Offset = ribbonPoint(degrees, radius, ::centerAt)
 
-    /** The angles the path is cut at: every half turn, where it crosses the top and bottom. */
     val halfTurnBounds: List<Float> by lazy {
         val count = ceil(sweep / HALF_TURN).toInt()
         List(count + 1) { min(first + (it * HALF_TURN), last) }
@@ -172,7 +147,7 @@ internal class RibbonCurve(
 
     val halfTurnCount: Int get() = halfTurnBounds.size - 1
 
-    fun halfTurnPath(index: Int): Path = helixPath(
+    fun halfTurnPath(index: Int): Path = ribbonPath(
         fromDegrees = halfTurnBounds[index],
         toDegrees = halfTurnBounds[index + 1],
         radius = radius,
@@ -180,15 +155,13 @@ internal class RibbonCurve(
     )
 }
 
-/** One path per half turn, in draw order — even indices go behind the content, odd in front. */
 internal fun ribbonHalfTurnPaths(size: Size, strokePx: Float, loops: Float): List<Path> {
     val curve = RibbonCurve(size, strokePx, loops)
     if (curve.isEmpty) return emptyList()
     return List(curve.halfTurnCount) { curve.halfTurnPath(it) }
 }
 
-/** Points along the helix every [step] degrees, for the construction diagram. */
-internal fun helixSamples(
+internal fun ribbonSamples(
     size: Size,
     strokePx: Float,
     loops: Float,
@@ -200,12 +173,13 @@ internal fun helixSamples(
     return List(count + 1) { curve.pointAt(curve.first + (it * step)) }
 }
 
-internal class RibbonSegment(
+class RibbonSegment internal constructor(
     val path: Path,
     val length: Float,
-    /** Where this segment starts and ends along the whole ribbon, 0..1. */
     val from: Float,
     val to: Float,
+    val startY: Float,
+    val endY: Float,
     val brush: Brush,
     val inFront: Boolean,
 )
@@ -232,8 +206,6 @@ internal fun ribbonSegments(
         travelled += lengths[index]
         val to = travelled / total
 
-        // Vertical gradient running the way this segment runs, so the colour it ends on is the
-        // colour its neighbour starts from.
         val startY = curve.pointAt(curve.halfTurnBounds[index]).y
         val endY = curve.pointAt(curve.halfTurnBounds[index + 1]).y
 
@@ -242,10 +214,33 @@ internal fun ribbonSegments(
             length = lengths[index],
             from = from,
             to = to,
+            startY = startY,
+            endY = endY,
             brush = colors.verticalGradient(from = from, to = to, startY = startY, endY = endY),
             inFront = index % 2 == 1,
         )
     }
+}
+
+internal fun ribbonProgressAt(
+    curve: RibbonCurve,
+    segments: List<RibbonSegment>,
+    degrees: Float,
+): Float {
+    if (curve.isEmpty || segments.isEmpty()) return 0f
+    if (degrees >= curve.last) return 1f
+    val clamped = degrees.coerceIn(curve.first, curve.last)
+    val bounds = curve.halfTurnBounds
+    val index = (0 until curve.halfTurnCount)
+        .firstOrNull { clamped < bounds[it + 1] }
+        ?: (curve.halfTurnCount - 1)
+    val segment = segments[index]
+
+    val partial = PathMeasure().apply {
+        setPath(ribbonPath(bounds[index], clamped, curve.radius, curve::centerAt), false)
+    }.length
+    val local = if (segment.length > 0f) (partial / segment.length).coerceIn(0f, 1f) else 1f
+    return lerp(segment.from, segment.to, local)
 }
 
 internal fun DrawScope.drawRibbonSegment(
@@ -253,12 +248,22 @@ internal fun DrawScope.drawRibbonSegment(
     progress: Float,
     widthPx: Float,
     brush: Brush = segment.brush,
+    sequential: Boolean = true,
+    tail: Float = 0f,
 ) {
-    // Each segment owns a slice of the overall progress, and they are laid out end to end by
-    // length — so the reveal reads as one continuous stroke crossing segment boundaries.
-    val local = ((progress - segment.from) / (segment.to - segment.from)).coerceIn(0f, 1f)
-    if (local <= 0f || widthPx <= 0f) return
+    val slice = { value: Float ->
+        if (sequential) {
+            ((value - segment.from) / (segment.to - segment.from)).coerceIn(0f, 1f)
+        } else {
+            value.coerceIn(0f, 1f)
+        }
+    }
+    val local = slice(progress)
+    val localTail = slice(tail)
+    if (local <= localTail || widthPx <= 0f) return
 
+    val drawn = segment.length * (local - localTail)
+    val skipped = segment.length * localTail
     drawPath(
         path = segment.path,
         brush = brush,
@@ -266,16 +271,19 @@ internal fun DrawScope.drawRibbonSegment(
             width = widthPx,
             cap = StrokeCap.Round,
             join = StrokeJoin.Round,
-            pathEffect = if (local >= 1f) null else PathEffect.dashPathEffect(
-                // One dash on, then a gap long enough to swallow the rest of the segment.
-                intervals = floatArrayOf(segment.length * local, segment.length),
-            ),
+            pathEffect = when {
+                local >= 1f && localTail <= 0f -> null
+                localTail <= 0f -> PathEffect.dashPathEffect(floatArrayOf(drawn, segment.length))
+                else -> PathEffect.dashPathEffect(
+                    intervals = floatArrayOf(drawn, segment.length),
+                    phase = drawn + segment.length - skipped,
+                )
+            },
         ),
     )
 }
 
-/** Builds one stretch of the helix out of quarter-turn cubics. */
-internal fun helixPath(
+internal fun ribbonPath(
     fromDegrees: Float,
     toDegrees: Float,
     radius: Float,
@@ -285,9 +293,9 @@ internal fun helixPath(
     val quarters = ceil((toDegrees - fromDegrees) / QUARTER_TURN).toInt().coerceAtLeast(1)
     val step = (toDegrees - fromDegrees) / quarters
 
-    helixPoint(fromDegrees, radius, centerAt).let { moveTo(it.x, it.y) }
+    ribbonPoint(fromDegrees, radius, centerAt).let { moveTo(it.x, it.y) }
     repeat(quarters) { index ->
-        val points = helixCubicPoints(
+        val points = ribbonCubicPoints(
             fromDegrees = fromDegrees + (index * step),
             toDegrees = fromDegrees + ((index + 1) * step),
             radius = radius,
@@ -298,40 +306,27 @@ internal fun helixPath(
     }
 }
 
-/**
- * The four control points of the cubic that approximates one quarter turn: start, two handles,
- * end. Exposed so the teaching diagram can draw the handles it is built from.
- */
-internal fun helixCubicPoints(
+internal fun ribbonCubicPoints(
     fromDegrees: Float,
     toDegrees: Float,
     radius: Float,
     centerAt: (degrees: Float) -> Offset,
-    /** 0 collapses the handles onto the anchors, leaving straight lines and hard corners. */
     handleScale: Float = 1f,
 ): List<Offset> {
     val a0 = -fromDegrees.toRadians()
     val a1 = -toDegrees.toRadians()
 
-    // The classic circular-arc approximation: handles of 4/3·tan(sweep/4) leave the arc within
-    // a fraction of a pixel of a real circle for sweeps this size.
     val handle = (4f / 3f) * tan((a1 - a0) / 4f) * radius
     val p0 = Offset(cos(a0), sin(a0)) * radius
     val p3 = Offset(cos(a1), sin(a1)) * radius
     val h0 = Offset(-sin(a0), cos(a0)) * handle
     val h3 = Offset(-sin(a1), cos(a1)) * handle
 
-    // A cubic reproduces a straight line exactly when its controls sample that line at
-    // 0, ⅓, ⅔ and 1 — so the travelling origin rides along for free, no extra segments needed.
     val origin = { fraction: Float -> centerAt(lerp(fromDegrees, toDegrees, fraction)) }
 
     val anchor0 = p0 + origin(0f)
     val anchor3 = p3 + origin(1f)
 
-    // Each handle is scaled along its own offset from the anchor, which is the curve's tangent
-    // there — the circle's tangent plus the third of the drift the control point carries. So a
-    // shrinking handle slides down the tangent onto the anchor instead of drifting off it, and
-    // a scale of 0 leaves a straight line between anchors.
     val handle0 = (p0 + h0 + origin(1f / 3f)) - anchor0
     val handle3 = (p3 - h3 + origin(2f / 3f)) - anchor3
 
@@ -343,7 +338,7 @@ internal fun helixCubicPoints(
     )
 }
 
-internal fun helixPoint(
+internal fun ribbonPoint(
     degrees: Float,
     radius: Float,
     centerAt: (degrees: Float) -> Offset,
@@ -352,11 +347,6 @@ internal fun helixPoint(
     return Offset(cos(angle), sin(angle)) * radius + centerAt(degrees)
 }
 
-/**
- * The slice of [this] between [from] and [to], as a gradient from [startY] to [endY]. Colours
- * from the list that fall inside the slice become stops of their own, so a longer segment steps
- * through them instead of skipping to the end.
- */
 internal fun List<Color>.verticalGradient(
     from: Float,
     to: Float,
@@ -364,19 +354,22 @@ internal fun List<Color>.verticalGradient(
     endY: Float,
 ): Brush {
     if (abs(endY - startY) < 1f) return SolidColor(sampleAt((from + to) * .5f))
+    val stops = gradientStops(from, to)
+    return Brush.verticalGradient(colorStops = stops.toTypedArray(), startY = startY, endY = endY)
+}
 
+internal fun List<Color>.gradientStops(from: Float, to: Float): List<Pair<Float, Color>> {
     val steps = size
-    val stops = buildList<Pair<Float, Color>> {
+    return buildList {
         add(0f to sampleAt(from))
         for (index in 1 until steps - 1) {
             val position = index / (steps - 1f)
             if (position > from && position < to) {
-                add(((position - from) / (to - from)) to this@verticalGradient[index])
+                add(((position - from) / (to - from)) to this@gradientStops[index])
             }
         }
         add(1f to sampleAt(to))
     }
-    return Brush.verticalGradient(colorStops = stops.toTypedArray(), startY = startY, endY = endY)
 }
 
 internal fun List<Color>.sampleAt(fraction: Float): Color {

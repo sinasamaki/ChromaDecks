@@ -24,9 +24,9 @@ import com.sinasamaki.chromadecks._005_RibbonModifier.slides.CubicPathSlide
 import com.sinasamaki.chromadecks._005_RibbonModifier.slides.ExplodedLayersSlide
 import com.sinasamaki.chromadecks._005_RibbonModifier.slides.GradientSlide
 import com.sinasamaki.chromadecks._005_RibbonModifier.slides.LayerCodeSlide
-import com.sinasamaki.chromadecks._005_RibbonModifier.slides.RevealSlide
 import com.sinasamaki.chromadecks._005_RibbonModifier.slides.RibbonGallerySlide
 import com.sinasamaki.chromadecks._005_RibbonModifier.slides.RibbonHeroSlide
+import com.sinasamaki.chromadecks._005_RibbonModifier.slides.RibbonRevealSlide
 import com.sinasamaki.chromadecks._005_RibbonModifier.slides.RibbonTitleSlide
 import com.sinasamaki.chromadecks.ui.components.SlidesPresenter2
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeIn
@@ -34,9 +34,20 @@ import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
 import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.translateInX
 import com.sinasamaki.chromadecks.ui.slideanimations.translateOutX
+import com.sinasamaki.chromadecks.ui.theme.Amber400
+import com.sinasamaki.chromadecks.ui.theme.Blue600
 import com.sinasamaki.chromadecks.ui.theme.ChromaContainer
+import com.sinasamaki.chromadecks.ui.theme.Cyan500
+import com.sinasamaki.chromadecks.ui.theme.Fuchsia500
+import com.sinasamaki.chromadecks.ui.theme.Fuchsia600
+import com.sinasamaki.chromadecks.ui.theme.Fuchsia900
+import com.sinasamaki.chromadecks.ui.theme.Indigo900
+import com.sinasamaki.chromadecks.ui.theme.Orange400
+import com.sinasamaki.chromadecks.ui.theme.Pink600
 import com.sinasamaki.chromadecks.ui.theme.Rose500
+import com.sinasamaki.chromadecks.ui.theme.Sky500
 import com.sinasamaki.chromadecks.ui.theme.Violet500
+import com.sinasamaki.chromadecks.ui.theme.Violet900
 import com.sinasamaki.chromadecks.ui.theme.White
 import com.sinasamaki.chromadecks.ui.theme.Zinc200
 import com.sinasamaki.chromadecks.ui.theme.Zinc50
@@ -54,6 +65,19 @@ fun main() = application {
         },
     )
 }
+
+internal val RIBBON_COLORS = listOf(
+    Cyan500,
+    Sky500,
+    Blue600,
+    Indigo900,
+    Violet900,
+    Fuchsia900,
+    Pink600,
+    Rose500,
+    Orange400,
+    Amber400,
+)
 
 @Composable
 fun RibbonModifierPresentation() {
@@ -76,14 +100,14 @@ fun RibbonModifierPresentation() {
                 ),
                 slides = remember {
                     listOf(
-                        RibbonHeroSlide(),
+//                        RibbonHeroSlide(),
                         RibbonTitleSlide(),
                         CirclePathSlide(),
                         CubicPathSlide(),
                         ExplodedLayersSlide(),
                         LayerCodeSlide(),
                         GradientSlide(),
-                        RevealSlide(),
+                        RibbonRevealSlide(),
                         RibbonGallerySlide(),
                     )
                 },

@@ -14,7 +14,6 @@ import com.sinasamaki.chromadecks.ui.components.CodeBlock
 import com.sinasamaki.chromadecks.ui.theme.White
 import com.sinasamaki.chromadecks.ui.theme.Zinc200
 
-/** A light-mode sheet for on-slide code. The deck runs light, so the code does too. */
 @Composable
 fun CodePanel(
     code: String,

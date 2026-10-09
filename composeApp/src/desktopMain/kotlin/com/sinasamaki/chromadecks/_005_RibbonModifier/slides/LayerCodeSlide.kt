@@ -1,8 +1,8 @@
 package com.sinasamaki.chromadecks._005_RibbonModifier.slides
 
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,39 +20,47 @@ import com.sinasamaki.chromadecks._005_RibbonModifier.components.CodePanel
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.HabitRow
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.stagedRibbon
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
+import com.sinasamaki.chromadecks.ui.slideanimations.blurOut
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
 import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.translateInX
 
 internal data class LayerCodeState(
     val code: String,
-    /** Which draw passes have run: 0 behind only, 1 adds the content, 2 adds the front. */
-    val stage: Int,
+    val behind: Boolean,
+    val content: Boolean,
+    val front: Boolean,
 )
 
-/** The modifier itself: drawWithCache, and the two passes either side of drawContent. */
 internal class LayerCodeSlide : ListSlideAdvanced<LayerCodeState>() {
 
     override val initialState: LayerCodeState
-        get() = LayerCodeState(code = BEHIND_CODE, stage = 0)
+        get() = LayerCodeState(code = EMPTY_CODE, behind = false, content = false, front = false)
 
     override val stateMutations: List<LayerCodeState.() -> LayerCodeState>
         get() = listOf(
-            { copy(code = CONTENT_CODE, stage = 1) },
-            { copy(code = SANDWICH_CODE, stage = 2) },
+            { copy(code = SEGMENTS_CODE) },
+            { copy(code = BEHIND_CODE, behind = true) },
+            { copy(code = CONTENT_CODE, content = true) },
+            { copy(code = SANDWICH_CODE, front = true) },
         )
 
     override val animator: (@Composable (@Composable () -> Unit) -> Unit)?
         get() = { content ->
-            Box(Modifier.parallax(1f).translateInX().fadeOut()) { content() }
+            Box(Modifier.parallax(1f).translateInX().blurOut().fadeOut()) { content() }
         }
 
     @Composable
     override fun content(state: LayerCodeState) {
-        val progress by animateFloatAsState(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 2000, easing = FastOutSlowInEasing),
-            label = "layer-progress",
+        val behindProgress by animateFloatAsState(
+            targetValue = if (state.behind) 1f else 0f,
+            animationSpec = spring(stiffness = Spring.StiffnessVeryLow, visibilityThreshold = .0001f),
+            label = "layer-behind",
+        )
+        val frontProgress by animateFloatAsState(
+            targetValue = if (state.front) 1f else 0f,
+            animationSpec = spring(stiffness = Spring.StiffnessVeryLow, visibilityThreshold = .0001f),
+            label = "layer-front",
         )
 
         Row(
@@ -71,20 +79,40 @@ internal class LayerCodeSlide : ListSlideAdvanced<LayerCodeState>() {
             ) {
                 HabitRow(
                     modifier = Modifier
-                        .width(360.dp)
-                        .height(104.dp)
+                        .width(400.dp)
+                        .height(116.dp)
                         .stagedRibbon(
                             colors = FLAT,
                             stroke = 18.dp,
                             loops = 3,
-                            stage = state.stage,
-                            progress = { progress },
+                            content = state.content,
+                            behindProgress = { behindProgress },
+                            frontProgress = { frontProgress },
                         ),
                 )
             }
         }
     }
 }
+
+private val EMPTY_CODE = """
+Modifier.drawWithCache {
+
+    onDrawWithContent {
+
+    }
+}
+""".trimIndent()
+
+private val SEGMENTS_CODE = """
+Modifier.drawWithCache {
+    val segments = ribbonSegments(size)
+
+    onDrawWithContent {
+
+    }
+}
+""".trimIndent()
 
 private val BEHIND_CODE = """
 Modifier.drawWithCache {
@@ -96,6 +124,7 @@ Modifier.drawWithCache {
                 drawSegment(it)
             }
         }
+
     }
 }
 """.trimIndent()
@@ -111,6 +140,7 @@ Modifier.drawWithCache {
             }
         }
         drawContent()
+
     }
 }
 """.trimIndent()

@@ -1,5 +1,6 @@
 package com.sinasamaki.chromadecks._005_RibbonModifier.slides
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -23,7 +24,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.sinasamaki.chromadecks._005_RibbonModifier.SPECTRUM
+import com.sinasamaki.chromadecks._005_RibbonModifier.FLAT
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.HabitRow
 import com.sinasamaki.chromadecks._005_RibbonModifier.components.RibbonExploded
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
@@ -31,12 +32,19 @@ import com.sinasamaki.chromadecks.ui.slideanimations.blurOut
 import com.sinasamaki.chromadecks.ui.slideanimations.fadeOut
 import com.sinasamaki.chromadecks.ui.slideanimations.parallax
 import com.sinasamaki.chromadecks.ui.slideanimations.translateInX
-import com.sinasamaki.chromadecks.ui.theme.Indigo500
-import com.sinasamaki.chromadecks.ui.theme.Rose500
+import com.sinasamaki.chromadecks.ui.theme.Lime500
+import com.sinasamaki.chromadecks.ui.theme.Sky500
 import com.sinasamaki.chromadecks.ui.theme.Zinc500
 
+private val ABOVE = Lime500
+private val BELOW = Sky500
+
+private const val THIN = .12f
+
 internal data class ExplodedLayersState(
-    /** False is the single-pass ribbon: everything drawn over the row, like a spiral on top. */
+    val trace: Float,
+    val construction: Float,
+    val widthScale: Float,
     val sandwiched: Boolean,
     val rotationX: Float,
     val spacing: Dp,
@@ -44,14 +52,13 @@ internal data class ExplodedLayersState(
     val tint: Float,
 )
 
-/**
- * The centrepiece: the ribbon pulled apart into one plane per half turn, with the row on the
- * plane in the middle, then collapsed back down so it reads as wrapped.
- */
 internal class ExplodedLayersSlide : ListSlideAdvanced<ExplodedLayersState>() {
 
     override val initialState: ExplodedLayersState
         get() = ExplodedLayersState(
+            trace = 0f,
+            construction = 0f,
+            widthScale = THIN,
             sandwiched = false,
             rotationX = 0f,
             spacing = 0.dp,
@@ -61,19 +68,36 @@ internal class ExplodedLayersSlide : ListSlideAdvanced<ExplodedLayersState>() {
 
     override val stateMutations: List<ExplodedLayersState.() -> ExplodedLayersState>
         get() = listOf(
+            { copy(construction = 1f) },
+            { copy(trace = 1f) },
+            { copy(construction = 0f, widthScale = 1f) },
             { copy(sandwiched = true) },
             { copy(rotationX = 58f, spacing = 104.dp, planes = 1f) },
             { copy(tint = 1f) },
-            { copy(rotationX = 0f, spacing = 0.dp, planes = 0f, tint = 0f) },
         )
 
     override val animator: (@Composable (@Composable () -> Unit) -> Unit)?
         get() = { content ->
-            Box(Modifier.parallax(1f).translateInX().fadeOut().blurOut()) { content() }
+            Box(Modifier.parallax(1f).translateInX().blurOut().fadeOut()) { content() }
         }
 
     @Composable
     override fun content(state: ExplodedLayersState) {
+        val trace by animateFloatAsState(
+            targetValue = state.trace,
+            animationSpec = tween(durationMillis = 4200, easing = FastOutSlowInEasing),
+            label = "trace",
+        )
+        val construction by animateFloatAsState(
+            targetValue = state.construction,
+            animationSpec = tween(durationMillis = 600),
+            label = "construction",
+        )
+        val widthScale by animateFloatAsState(
+            targetValue = state.widthScale,
+            animationSpec = spring(stiffness = Spring.StiffnessLow, visibilityThreshold = .0001f),
+            label = "widthScale",
+        )
         val rotationX by animateFloatAsState(
             targetValue = state.rotationX,
             animationSpec = spring(stiffness = Spring.StiffnessLow),
@@ -102,14 +126,20 @@ internal class ExplodedLayersSlide : ListSlideAdvanced<ExplodedLayersState>() {
             RibbonExploded(
                 rotationX = rotationX,
                 spacing = spacing,
-                width = 420.dp,
-                height = 112.dp,
-                colors = SPECTRUM,
+                width = 460.dp,
+                height = 124.dp,
+                colors = FLAT,
                 stroke = 20.dp,
                 loops = 3,
+                trace = trace,
+                construction = construction,
+                widthScale = widthScale,
                 sandwiched = state.sandwiched,
                 planes = planes,
+                points = planes,
                 tint = tint,
+                behindColor = BELOW,
+                frontColor = ABOVE,
             ) {
                 HabitRow(modifier = Modifier.fillMaxSize())
             }
@@ -121,8 +151,8 @@ internal class ExplodedLayersSlide : ListSlideAdvanced<ExplodedLayersState>() {
                 horizontalArrangement = Arrangement.spacedBy(40.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                LegendDot(color = Indigo500, label = "behind the row")
-                LegendDot(color = Rose500, label = "in front of it")
+                LegendDot(color = ABOVE, label = "above")
+                LegendDot(color = BELOW, label = "below")
             }
         }
     }
