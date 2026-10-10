@@ -71,7 +71,7 @@ fun main() {
         state = WindowState(
             placement = WindowPlacement.Maximized
         ),
-        title = "KotlinConf",
+        title = "UI Delight Presentation",
     ) {
         UIDelightPresentation()
     }

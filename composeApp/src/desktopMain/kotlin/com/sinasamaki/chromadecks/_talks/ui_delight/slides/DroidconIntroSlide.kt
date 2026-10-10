@@ -47,6 +47,7 @@ import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.components.Space
 import com.sinasamaki.chromadecks.ui.theme.Emerald200
 import com.sinasamaki.chromadecks.ui.theme.Green600
+import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Sky950
 import com.sinasamaki.chromadecks.ui.theme.Zinc200
 import kotlinx.coroutines.delay
@@ -211,7 +212,7 @@ class DroidconIntroSlide : ListSlideAdvanced<DroidconIntroSlideState>() {
                 rotation = rotationY.value,
                 tilt = tilt,
                 colors = DroidconLogoColors(
-                    base = Green600,
+                    base = Lime500,
                     shadow = Sky950,
                     highlight = Emerald200,
                 ),

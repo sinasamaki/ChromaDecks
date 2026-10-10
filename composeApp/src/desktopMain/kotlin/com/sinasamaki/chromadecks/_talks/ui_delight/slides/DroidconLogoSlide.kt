@@ -22,6 +22,7 @@ import com.sinasamaki.chromadecks._talks.ui_delight.components.DroidconLogoColor
 import com.sinasamaki.chromadecks.data.ListSlideAdvanced
 import com.sinasamaki.chromadecks.ui.theme.Emerald200
 import com.sinasamaki.chromadecks.ui.theme.Green600
+import com.sinasamaki.chromadecks.ui.theme.Lime500
 import com.sinasamaki.chromadecks.ui.theme.Sky950
 import kotlinx.coroutines.delay
 
@@ -61,7 +62,7 @@ class DroidconLogoSlide : ListSlideAdvanced<DroidconLogoSlideState>() {
             rotation = rotation,
             tilt = tilt,
             colors = DroidconLogoColors(
-                base = Green600,
+                base = Lime500,
                 shadow = Sky950,
                 highlight = Emerald200,
             ),
